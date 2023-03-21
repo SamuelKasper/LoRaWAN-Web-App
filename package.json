@@ -8,7 +8,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node ./js/db_connect.js"
+    "start": "node ./js/main.js"
   },
   "repository": {
     "type": "git",
