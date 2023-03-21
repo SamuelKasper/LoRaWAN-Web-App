@@ -1,3 +1,4 @@
+//installed browserify, so i can use require in browser
 const {MongoClient} = require('mongodb');
 async function main(){
     const uri = "mongodb+srv://samuelnoahkasper:T8Ugwdh9ZhFEe77v@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority";
