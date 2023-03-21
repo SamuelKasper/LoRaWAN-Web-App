@@ -1,4 +1,7 @@
 "use strict";
+/*import express from "express";
+const app = express();
+app.use(express.static("public"));*/
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,43 +11,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const mongodb_1 = require("mongodb");
-const app = (0, express_1.default)();
-const port = 8000;
-/*app.get("/", (req, res) => {
-    res.send("Hello!");
-});*/
-app.use(express_1.default.static("public"));
-/*app.listen(port, () =>{
-    console.log(`listening on ${port}`);
-});*/
-function connectDB() {
+//let temp1:HTMLTableColElement = <HTMLTableColElement> document.getElementById("temperature_1");
+//temp1.innerHTML = i.temperature;
+//document.getElementById("humidity_1")!.innerHTML = i.humidity;
+function get() {
     return __awaiter(this, void 0, void 0, function* () {
-        const uri = "mongodb+srv://samuelnoahkasper:T8Ugwdh9ZhFEe77v@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority";
-        const client = new mongodb_1.MongoClient(uri);
-        try {
-            yield client.connect();
-            yield listDB(client);
-        }
-        catch (e) {
-            console.error(e);
-        }
-        finally {
-            yield client.close();
-        }
+        //let url: string = "http://localhost:8000";
+        let url = "https://lorawan-web-app.onrender.com";
+        let resp = yield (yield fetch(url)).text();
+        console.log(resp);
+        //resp enthält die daten, die ins DOM sollen
     });
 }
-function listDB(client) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const dbList = yield client.db().admin().listDatabases();
-        dbList.databases.forEach(db => {
-            console.log(db.name);
-        });
-    });
-}
-connectDB();
+get();

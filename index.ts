@@ -1,37 +1,19 @@
-import express from "express";
-import {MongoClient} from "mongodb";
-
+/*import express from "express";
 const app = express();
-const port = 8000;
+app.use(express.static("public"));*/
 
-/*app.get("/", (req, res) => { 
-    res.send("Hello!");
-});*/
+//let temp1:HTMLTableColElement = <HTMLTableColElement> document.getElementById("temperature_1");
+//temp1.innerHTML = i.temperature;
+//document.getElementById("humidity_1")!.innerHTML = i.humidity;
 
-app.use(express.static("public"));
+async function get(): Promise<void> {
+    //let url: string = "http://localhost:8000";
+    let url: string = "https://lorawan-web-app.onrender.com";
+    let resp = await (await fetch(url)).text();
+    console.log(resp);
 
-/*app.listen(port, () =>{
-    console.log(`listening on ${port}`);
-});*/
-
-async function connectDB(){
-    const uri = "mongodb+srv://samuelnoahkasper:T8Ugwdh9ZhFEe77v@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority"
-    const client = new MongoClient(uri);
-    try{
-        await client.connect();
-        await listDB(client);
-    }catch(e){
-        console.error(e);
-    } finally {
-        await client.close();
-    }    
+    //resp enthält die daten, die ins DOM sollen
 }
 
-async function listDB(client: MongoClient){
-    const dbList = await client.db().admin().listDatabases();
-    dbList.databases.forEach(db => {
-        console.log(db.name);
-    })
-} 
+get();
 
-connectDB();
