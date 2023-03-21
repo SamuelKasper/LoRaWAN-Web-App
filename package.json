@@ -4,7 +4,8 @@
   "description": "",
   "main": "main.js",
   "dependencies": {
-    "mongodb": "^5.1.0"
+    "mongodb": "^5.1.0",
+    "typescript": "^5.0.2"
   },
   "devDependencies": {},
   "scripts": {
