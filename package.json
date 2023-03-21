@@ -2,13 +2,13 @@
   "name": "lorawan-web-app",
   "version": "1.0.0",
   "description": "",
-  "main": "db_connect.js",
+  "main": "main.js",
   "dependencies": {
     "mongodb": "^5.1.0"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./js/db_connect.js"
   },
   "repository": {
     "type": "git",
