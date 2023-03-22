@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LoRaWAN Web App</title>
-    <link rel="stylesheet" href="css/main.css">
-    <script src="/build/index.js"></script>
+    <link rel="stylesheet" href="css/main.css" type="text/css">
+    <!--<script src="/build/index.js"></script>-->
 </head>
 <body>
     <!--Banner at the top-->
@@ -23,20 +23,20 @@
                     <th>sensor_data</th>
                 </tr>
                 <tr>
-                    <td id="time_1">time</td>
-                    <td>none</td>
+                    <td>time</td>
+                    <td><%=locals.time || "no data"%></td>
                 </tr>
                 <tr>
-                    <td id="temperature_1">temperature</td>
-                    <td>none</td>
+                    <td>temperature</td>
+                    <td><%=locals.temperature || "no data"%></td>
                 </tr>
                 <tr>
-                    <td id="humidity_1">humidity</td>
-                    <td>none</td>
+                    <td>humidity</td>
+                    <td><%=locals.humidity || "no data"%></td>
                 </tr>
                 <tr>
-                    <td id="gateway_1">gateway</td>
-                    <td>none</td>
+                    <td>gateway</td>
+                    <td><%=locals.gateway || "no data"%></td>
                 </tr>
             </table>
         </div>

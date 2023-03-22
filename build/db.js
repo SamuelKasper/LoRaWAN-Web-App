@@ -34,10 +34,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongodb_1 = require("mongodb");
 const Http = __importStar(require("http"));
+// Erstelle Server und höre auf Port. Rufe handleRequest auf wenn jemand den Port aufruft
 let server = Http.createServer();
 server.addListener("request", handleRequest);
 server.listen(8000);
 let temp = "";
+// Schickt die daten die mit write festgelegt wurden.
 function handleRequest(_request, _response) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log("Test");
@@ -48,6 +50,7 @@ function handleRequest(_request, _response) {
         _response.end();
     });
 }
+// connects to mongodb | calls getEntries()
 function connectDB() {
     return __awaiter(this, void 0, void 0, function* () {
         const uri = "mongodb+srv://samuelnoahkasper:T8Ugwdh9ZhFEe77v@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority";
@@ -64,6 +67,7 @@ function connectDB() {
         }
     });
 }
+//Get DB enties and saves them in temp
 function getEntries(client) {
     return __awaiter(this, void 0, void 0, function* () {
         const db_entries = client.db("lorawan_data").collection("sensor_data");
