@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -32,24 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.connectDB = void 0;
 const mongodb_1 = require("mongodb");
-const Http = __importStar(require("http"));
-// Erstelle Server und höre auf Port. Rufe handleRequest auf wenn jemand den Port aufruft
-let server = Http.createServer();
-server.addListener("request", handleRequest);
-server.listen(8000);
-let temp = "";
-// Schickt die daten die mit write festgelegt wurden.
-function handleRequest(_request, _response) {
-    return __awaiter(this, void 0, void 0, function* () {
-        console.log("Test");
-        _response.setHeader("content-type", "text/html; charset=utf-8");
-        _response.setHeader("Access-Control-Allow-Origin", "*");
-        yield connectDB();
-        _response.write(temp);
-        _response.end();
-    });
-}
 // connects to mongodb | calls getEntries()
 function connectDB() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -57,7 +18,7 @@ function connectDB() {
         const client = new mongodb_1.MongoClient(uri);
         try {
             yield client.connect();
-            yield getEntries(client);
+            return yield getEntries(client);
         }
         catch (e) {
             console.error(e);
@@ -67,15 +28,12 @@ function connectDB() {
         }
     });
 }
+exports.connectDB = connectDB;
 //Get DB enties and saves them in temp
 function getEntries(client) {
     return __awaiter(this, void 0, void 0, function* () {
         const db_entries = client.db("lorawan_data").collection("sensor_data");
         let entries = yield db_entries.find().toArray();
-        entries.forEach(i => {
-            console.log("\n");
-            console.log("ID: " + i._id + "\ntemperature: " + i.temperature + "\nhumidity: " + i.humidity);
-            temp = "ID: " + i._id + "\ntemperature: " + i.temperature + "\nhumidity: " + i.humidity;
-        });
+        return entries;
     });
 }

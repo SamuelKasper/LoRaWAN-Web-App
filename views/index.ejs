@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LoRaWAN Web App</title>
     <link rel="stylesheet" href="css/main.css" type="text/css">
-    <!--<script src="/build/index.js"></script>-->
 </head>
 <body>
     <!--Banner at the top-->
@@ -15,86 +14,32 @@
     </div>
     <!--div for centering all Sensors-->
     <div id="sensors">
-        <!--Sensor Nr.1-->
-        <div id="sensor_1" class="sensor">
+        <% entries.forEach(entrie =>{%>
+            <div class="sensor">
             <table>
                 <tr>
-                    <th id="name_1">sensor_name</th>
+                    <th><%=entrie.name%></th>
                     <th>sensor_data</th>
                 </tr>
                 <tr>
                     <td>time</td>
-                    <td><%=locals.time || "no data"%></td>
-                </tr>
-                <tr>
-                    <td>temperature</td>
-                    <td><%=locals.temperature || "no data"%></td>
-                </tr>
-                <tr>
-                    <td>humidity</td>
-                    <td><%=locals.humidity || "no data"%></td>
-                </tr>
-                <tr>
-                    <td>gateway</td>
-                    <td><%=locals.gateway || "no data"%></td>
-                </tr>
-            </table>
-        </div>
-        <!--Sensor Nr.1 End-->
-
-        <!--Sensor Nr.2-->
-        <div id="sensor_2" class="sensor">
-            <table>
-                <tr>
-                    <th>sensor_name</th>
-                    <th>sensor_data</th>
-                </tr>
-                <tr>
-                    <td>time</td>
-                    <td>00:00:00</td>
+                    <td><%=entrie.time%></td>
                 </tr>
                 <tr>
                     <td>temperatur</td>
-                    <td>20°C</td>
+                    <td><%=entrie.temperature%></td>
                 </tr>
                 <tr>
                     <td>humidity</td>
-                    <td>60%</td>
+                    <td><%=entrie.humidity%></td>
                 </tr>
                 <tr>
                     <td>gateway</td>
-                    <td>gateway-name-lorawan</td>
+                    <td><%=entrie.gateway%></td>
                 </tr>
             </table>
         </div>
-        <!--Sensor Nr.2 End-->
-
-        <!--Sensor Nr.3-->
-        <div id="sensor_2" class="sensor">
-            <table>
-                <tr>
-                    <th>sensor_name</th>
-                    <th>sensor_data</th>
-                </tr>
-                <tr>
-                    <td>time</td>
-                    <td>00:00:00</td>
-                </tr>
-                <tr>
-                    <td>temperatur</td>
-                    <td>20°C</td>
-                </tr>
-                <tr>
-                    <td>humidity</td>
-                    <td>60%</td>
-                </tr>
-                <tr>
-                    <td>gateway</td>
-                    <td>gateway-name-lorawan</td>
-                </tr>
-            </table>
-        </div>
-        <!--Sensor Nr.3 End-->
+        <%});%>
     </div>
     
 </body>
