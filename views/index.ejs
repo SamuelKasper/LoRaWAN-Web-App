@@ -14,35 +14,80 @@
     </div>
     <!--div for centering all Sensors-->
     <div id="sensors">
-        <% entries.forEach(entrie =>{%>
+        <!-- ToDo: Decide between zisterne and plants. Only generate the fields they need-->
+        <% entries.forEach(entrie =>{
+            if(entrie.level){%>
+                <div class="sensor">
+            <table>
+                <tr>
+                    <th><%=entrie.name%></th>
+                    <th>Daten</th>
+                </tr>
+                <tr>
+                    <td >Zeitstempel</td>
+                    <td><%=entrie.time || "none"%></td>
+                </tr>
+                <tr>
+                    <td>Temperatur</td>
+                    <td><%=entrie.temperature || "none"%></td>
+                </tr>
+                <tr>
+                    <td>Füllstand</td>
+                    <td><%=entrie.level  || "none"%></td>
+                </tr>
+                <tr>
+                    <td>Gateway</td>
+                    <td><%=entrie.gateway || "none"%></td>
+                </tr>
+            </table>
+        </div>
+            <%}else{%>
             <div class="sensor">
             <table>
                 <tr>
                     <th><%=entrie.name%></th>
-                    <th class="th_btn"><button>Bearbeiten</button></th>
+                    <th>Daten</th>
                 </tr>
                 <tr>
-                    <td>time</td>
-                    <td><%=entrie.time%></td>
+                    <td >Zeitstempel</td>
+                    <td><%=entrie.time || "none"%></td>
                 </tr>
                 <tr>
-                    <td>temperatur</td>
-                    <td><%=entrie.temperature%></td>
+                    <td>Gateway</td>
+                    <td><%=entrie.gateway || "none"%></td>
                 </tr>
                 <tr>
-                    <td>humidity</td>
-                    <td><%=entrie.humidity%></td>
+                    <td>Temperatur</td>
+                    <td><%=entrie.temperature || "none"%></td>
                 </tr>
                 <tr>
-                    <td>gateway</td>
-                    <td><%=entrie.gateway%></td>
+                    <td>Bodenfeuchtigkeit</td>
+                    <td><%=entrie.humidity || "none"%></td>
+                </tr>
+                <tr>
+                    <td>Bewässerungsmenge</td>
+                    <td class="noPadding background_color_225">
+                        <form>
+                            <select class="level_fit">
+                                <option value="5">5 Liter</option>
+                                <option value="10">10 Liter</option>
+                                <option value="20">20 Liter</option>
+                                <option value="30">30 Liter</option>
+                                <option value="50">50 Liter</option>
+                                <option value="70">70 Liter</option>
+                                <option value="100">100 Liter</option>
+                            </select>
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Bewässerungszeit</td>
+                    <td class="noPadding background_color_225"><input type="time" name="watering_time" class="watering_time_fit"></td>
                 </tr>
             </table>
         </div>
-        <%});%>
+        <%}});%>
     </div>
-
-    <div id="add"><button>+</button></div>
     
 </body>
 </html>

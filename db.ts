@@ -18,5 +18,8 @@ export async function connectDB(){
 async function getEntries(client: MongoClient){
     const db_entries = client.db("lorawan_data").collection("sensor_data");
     let entries = await db_entries.find().toArray();
+    entries.forEach(entrie => {
+        entrie.time = new Date(entrie.time).toLocaleString("de-DE");
+    })
     return entries;
 } 

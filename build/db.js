@@ -34,6 +34,9 @@ function getEntries(client) {
     return __awaiter(this, void 0, void 0, function* () {
         const db_entries = client.db("lorawan_data").collection("sensor_data");
         let entries = yield db_entries.find().toArray();
+        entries.forEach(entrie => {
+            entrie.time = new Date(entrie.time).toLocaleString("de-DE");
+        });
         return entries;
     });
 }
