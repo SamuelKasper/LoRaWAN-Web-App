@@ -75,6 +75,11 @@ padding: 0px;
     background-color: rgb(225, 225, 225);
 }
 
+.save_btn{
+    width: 100%;
+    padding: 3px;
+}
+
 @media (max-width: 767px) {
     table{
         width: auto;

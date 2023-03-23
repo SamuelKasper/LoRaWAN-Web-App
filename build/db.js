@@ -9,16 +9,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.connectDB = void 0;
+exports.updateDB = exports.getEntries = void 0;
 const mongodb_1 = require("mongodb");
-// connects to mongodb | calls getEntries()
-function connectDB() {
+// returns MongoClient
+function getClient() {
     return __awaiter(this, void 0, void 0, function* () {
-        const uri = "mongodb+srv://samuelnoahkasper:T8Ugwdh9ZhFEe77v@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority";
-        const client = new mongodb_1.MongoClient(uri);
+        return new mongodb_1.MongoClient("mongodb+srv://samuelnoahkasper:T8Ugwdh9ZhFEe77v@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority");
+    });
+}
+//Get DB enties and saves them in temp
+function getEntries() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let client = yield getClient();
         try {
             yield client.connect();
-            return yield getEntries(client);
+            const db_entries = client.db("lorawan_data").collection("sensor_data");
+            let entries = yield db_entries.find().toArray();
+            entries.forEach(entrie => {
+                entrie.time = new Date(entrie.time).toLocaleString("de-DE");
+            });
+            return entries;
         }
         catch (e) {
             console.error(e);
@@ -28,15 +38,22 @@ function connectDB() {
         }
     });
 }
-exports.connectDB = connectDB;
-//Get DB enties and saves them in temp
-function getEntries(client) {
+exports.getEntries = getEntries;
+// Updates a db entrie
+function updateDB(_id, item) {
     return __awaiter(this, void 0, void 0, function* () {
-        const db_entries = client.db("lorawan_data").collection("sensor_data");
-        let entries = yield db_entries.find().toArray();
-        entries.forEach(entrie => {
-            entrie.time = new Date(entrie.time).toLocaleString("de-DE");
-        });
-        return entries;
+        let client = yield getClient();
+        try {
+            yield client.connect();
+            const collection = client.db("lorawan_data").collection("sensor_data");
+            collection.updateOne({ "_id": new mongodb_1.ObjectId(_id) }, { $set: item });
+        }
+        catch (e) {
+            console.error(e);
+        }
+        finally {
+            yield client.close();
+        }
     });
 }
+exports.updateDB = updateDB;
