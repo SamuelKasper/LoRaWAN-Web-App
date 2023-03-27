@@ -2,6 +2,7 @@ import express from "express";
 import { getEntries, updateDB } from "./db";
 const app = express();
 app.use(express.static("views"));
+app.use(express.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
 // Show db entries on load
@@ -11,19 +12,17 @@ app.get('/', async (req, res) => {
 });
   
 //replace req.body. with data from ttn
-app.post('/update', (req, res) => {
-    let id = req.body.id;
+app.post('/update', async (req, res) => {
+    let id = req.body.dbid;
     let entrie = {
         name: req.body.name || "none",
-        time: req.body.time  || "none",
-        temperature: req.body.temperature || "none",
-        humidity: req.body.humidity  || "none",
-        level: req.body.level  || "none",
-        gateway: req.body.gateway  || "none",
         watering_amount: req.body.watering_amount  || "none",
         watering_time: req.body.watering_time  || "none"
     };
     updateDB(id,entrie);
+    // relode page
+    let entries = await getEntries() || [];
+    res.render("index", { entries });
 });
 
 

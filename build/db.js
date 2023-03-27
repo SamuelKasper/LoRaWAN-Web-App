@@ -46,7 +46,8 @@ function updateDB(_id, item) {
         try {
             yield client.connect();
             const collection = client.db("lorawan_data").collection("sensor_data");
-            collection.updateOne({ "_id": new mongodb_1.ObjectId(_id) }, { $set: item });
+            // der hier drunter geht nicht
+            yield collection.updateOne({ "_id": new mongodb_1.ObjectId(_id) }, { $set: item });
         }
         catch (e) {
             console.error(e);

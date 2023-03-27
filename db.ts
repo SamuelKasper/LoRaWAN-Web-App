@@ -29,7 +29,8 @@ export async function updateDB(_id: string, item: {}){
     try{
         await client.connect();
         const collection = client.db("lorawan_data").collection("sensor_data");
-        collection.updateOne({"_id": new ObjectId(_id)},{$set: item});
+        // der hier drunter geht nicht
+        await collection.updateOne({"_id": new ObjectId(_id)},{$set: item});
     }catch(e){
         console.error(e);
     } finally {

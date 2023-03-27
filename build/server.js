@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const db_1 = require("./db");
 const app = (0, express_1.default)();
 app.use(express_1.default.static("views"));
+app.use(express_1.default.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 // Show db entries on load
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -23,20 +24,18 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render("index", { entries });
 }));
 //replace req.body. with data from ttn
-app.post('/update', (req, res) => {
-    let id = req.body.id;
+app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = req.body.dbid;
     let entrie = {
         name: req.body.name || "none",
-        time: req.body.time || "none",
-        temperature: req.body.temperature || "none",
-        humidity: req.body.humidity || "none",
-        level: req.body.level || "none",
-        gateway: req.body.gateway || "none",
         watering_amount: req.body.watering_amount || "none",
         watering_time: req.body.watering_time || "none"
     };
     (0, db_1.updateDB)(id, entrie);
-});
+    // relode page
+    let entries = (yield (0, db_1.getEntries)()) || [];
+    res.render("index", { entries });
+}));
 /*
 app.put('/', (req, res) => {
     res.send("recieved put");

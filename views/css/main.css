@@ -7,6 +7,7 @@ th, td{
     text-align: left;
     padding-left: 15px;
     padding-right: 15px;
+    padding-bottom: 5px;
 }
 tr{
     background-color: white;
@@ -14,6 +15,10 @@ tr{
 th{
     background-color: rgb(130, 195, 130);
     min-width: 150px;
+}
+
+.margin-top-20{
+    margin-top: 20px;
 }
 
 h1{
@@ -24,9 +29,9 @@ h3{
     margin-top: 0px;
 }
 
-table{
+/*table{
     width: 450px;
-}
+}*/
 
 .noPadding{
 padding: 0px;
@@ -78,6 +83,10 @@ padding: 0px;
 .save_btn{
     width: 100%;
     padding: 3px;
+}
+
+.w150px{
+    width: 150px !important;
 }
 
 @media (max-width: 767px) {
