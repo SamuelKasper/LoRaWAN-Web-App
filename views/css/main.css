@@ -1,4 +1,35 @@
-body{
+.btn-filter-margin{
+    margin: 10px;
+    margin-right: 30px;
+}
+
+.navbar-heading{
+    margin: 10px;
+    margin-left: 30px;
+}
+
+.navbar{
+    background-color: #e7f1ff !important;
+}
+
+.margin-top-20{
+    margin-top: 20px;
+}
+
+.card{
+    border-radius: 0px !important;
+}
+
+.margin-lr-10px{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.w150px{
+    width: 150px !important;
+}
+
+/*body{
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
 }
@@ -32,7 +63,7 @@ h3{
 /*table{
     width: 450px;
 }*/
-
+/*
 .noPadding{
 padding: 0px;
 }
@@ -85,9 +116,7 @@ padding: 0px;
     padding: 3px;
 }
 
-.w150px{
-    width: 150px !important;
-}
+
 
 @media (max-width: 767px) {
     table{
@@ -112,3 +141,4 @@ padding: 0px;
         font-size: 12px;
     }
 }
+*/

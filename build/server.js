@@ -31,17 +31,18 @@ app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         watering_amount: req.body.watering_amount || "none",
         watering_time: req.body.watering_time || "none"
     };
-    (0, db_1.updateDB)(id, entrie);
+    yield (0, db_1.updateDB)(id, entrie);
     // relode page
-    let entries = (yield (0, db_1.getEntries)()) || [];
+    res.redirect('back');
+    //window.location.reload();
+}));
+//replace req.body. with data from ttn
+app.post('/filter', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let entrie = {
+        type: req.body.filter_type,
+        name: req.body.filter_search
+    };
+    let entries = (yield (0, db_1.getFilteredEntries)(entrie)) || [];
     res.render("index", { entries });
 }));
-/*
-app.put('/', (req, res) => {
-    res.send("recieved put");
-});
-
-app.delete('/', (req, res) => {
-    res.send("recieved delete");
-});*/
 app.listen(8000);

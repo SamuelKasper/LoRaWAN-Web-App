@@ -13,14 +13,48 @@
 </head>
 
 <body>
-    <!--Banner at the top-->
-    <div id="header">
-        <h1>LoRaWAN</h1>
-        <h3>Web App</h3>
+    <!--Navbar-->
+    <nav class="navbar sticky-top navbar-light justify-content-between">
+        <a class="navbar-brand navbar-heading">LoRaWAN Web-App</a>
+        <button class="btn btn-primary btn-filter-margin" data-bs-toggle="collapse" data-bs-target="#collapseFilter">Filter</button>
+    </nav>
+
+    <!--Filter area-->
+    <div class="collapse" id="collapseFilter">
+        <div class="card card-body">
+            <form action="/filter" method="post" class="margin-lr-10px">
+                <div class="row">
+                    <div class="col-2">
+                        <input type="radio" id="sensor" name="filter_type" value="sensor">
+                        <label for="sensor">Sensor</label>
+                    </div>
+                    <div class="col-2">
+                        <input type="radio" id="zistern" name="filter_type" value="zistern">
+                        <label for="zistern">Zisterne</label>
+                    </div>
+                    <div class="col-2">
+                        <input type="radio" id="pump" name="filter_type" value="pump">
+                        <label for="pump">Pumpe</label> 
+                    </div>
+                    <div class="col-3"></div>
+                    <div class="col-3">
+                        <div class="input-group">
+                            <input type="text" id="filter_search" name="filter_search" class="form-control" placeholder="Sensor 1" aria-label="Suche" aria-describedby="button-addon2" value="">
+                            <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit" id="button-addon2">Suche</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!--Akkordeon-->
-    <div class="accordion" id="accordion">
+    <div class="container-fluid margin-top-20">
+    <div class="row">
+    <div class="col-1"></div>
+    <div class="accordion col-10" id="accordion">
         <!--Item 1-->
         <%entries.forEach(entrie=>{
             let no_spaces_name = entrie.name.replace(" ","_");%>
@@ -94,7 +128,7 @@
                             <%}%>
 
                             <!--Bewässerungsmenge-->
-                            <%if(entrie.watering_time){%>
+                            <%if(entrie.watering_time && entrie.watering_amount != "none"){%>
                                 <tr>
                                     <td><strong>Bewässerungsmenge:</strong></td>
                                     <td>
@@ -108,7 +142,7 @@
                             <%}%>
 
                             <!--Bewässerungszeit-->
-                            <%if(entrie.watering_time){%>
+                            <%if(entrie.watering_time && entrie.watering_time != "none"){%>
                                 <tr>
                                     <td><strong>Bewässerungszeit:</strong></td>
                                     <td>
@@ -137,7 +171,10 @@
                 </div>
             </div>
             <%});%>
+        </div>
     </div>
+    <div class="col-1"></div>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"

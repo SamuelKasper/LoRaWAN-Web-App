@@ -1,5 +1,6 @@
 import express from "express";
-import { getEntries, updateDB } from "./db";
+import url from "node:url";
+import { getEntries, getFilteredEntries, updateDB } from "./db";
 const app = express();
 app.use(express.static("views"));
 app.use(express.urlencoded({extended: true}));
@@ -19,21 +20,20 @@ app.post('/update', async (req, res) => {
         watering_amount: req.body.watering_amount  || "none",
         watering_time: req.body.watering_time  || "none"
     };
-    updateDB(id,entrie);
+    await updateDB(id,entrie);
     // relode page
-    let entries = await getEntries() || [];
+    res.redirect('back');
+    //window.location.reload();
+});
+
+//replace req.body. with data from ttn
+app.post('/filter', async (req, res) => {
+    let entrie = {
+        type: req.body.filter_type,
+        name: req.body.filter_search
+    };
+    let entries = await getFilteredEntries(entrie) || [];
     res.render("index", { entries });
 });
-
-
-
-/*
-app.put('/', (req, res) => {
-    res.send("recieved put");
-});
-
-app.delete('/', (req, res) => {
-    res.send("recieved delete");
-});*/
 
 app.listen(8000);
