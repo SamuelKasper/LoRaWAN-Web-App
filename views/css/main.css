@@ -29,6 +29,14 @@
     width: 150px !important;
 }
 
+.align-center{
+    align-items: center;
+}
+
+.btn-align-right{
+    text-align: right;
+}
+
 /*body{
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;

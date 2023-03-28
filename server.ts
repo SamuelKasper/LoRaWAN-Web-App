@@ -33,7 +33,7 @@ app.post('/filter', async (req, res) => {
         name: req.body.filter_search
     };
     let entries = await getFilteredEntries(entrie) || [];
-    res.render("index", { entries });
+    res.render("index", { entries }); 
 });
 
 app.listen(8000);
