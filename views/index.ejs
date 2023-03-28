@@ -200,16 +200,16 @@ function myFilter(entrieString){
                 document.getElementById(option[0]).style = "display: none";
             }
         }else{
-            if(option[1] == radioBtn){
+            if(radioBtn == "all"){
                 document.getElementById(option[0]).style = "display: block";
             }else{
-                document.getElementById(option[0]).style = "display: none";
+                if(option[1] == radioBtn){
+                    document.getElementById(option[0]).style = "display: block";
+                }else{
+                    document.getElementById(option[0]).style = "display: none";
+                }
             }
-        }
-        
-        if(radioBtn == "all"){
-            document.getElementById(option[0]).style = "display: block";
-        }
+        }  
     }
 }
 </script>
