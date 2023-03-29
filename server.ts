@@ -1,5 +1,4 @@
 import express from "express";
-import url from "node:url";
 import { getEntries, getFilteredEntries, updateDB } from "./db";
 const app = express();
 app.use(express.static("views"));
@@ -10,6 +9,11 @@ app.set("view engine", "ejs");
 app.get('/', async (req, res) => {
     let entries = await getEntries() || [];
     res.render("index", { entries });
+});
+
+// recieves uplink from webhook
+app.get('/uplink', async (req, res) => {
+    console.log(req.body);
 });
   
 //replace req.body. with data from ttn
@@ -27,13 +31,13 @@ app.post('/update', async (req, res) => {
 });
 
 //replace req.body. with data from ttn
-app.post('/filter', async (req, res) => {
+/*app.post('/filter', async (req, res) => {
     let entrie = {
         type: req.body.filter_type,
         name: req.body.filter_search
     };
     let entries = await getFilteredEntries(entrie) || [];
     res.render("index", { entries }); 
-});
+});*/
 
 app.listen(8000);

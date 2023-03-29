@@ -23,6 +23,10 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let entries = (yield (0, db_1.getEntries)()) || [];
     res.render("index", { entries });
 }));
+// recieves uplink from webhook
+app.get('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
+}));
 //replace req.body. with data from ttn
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.body.dbid;
@@ -37,12 +41,12 @@ app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     //window.location.reload();
 }));
 //replace req.body. with data from ttn
-app.post('/filter', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+/*app.post('/filter', async (req, res) => {
     let entrie = {
         type: req.body.filter_type,
         name: req.body.filter_search
     };
-    let entries = (yield (0, db_1.getFilteredEntries)(entrie)) || [];
+    let entries = await getFilteredEntries(entrie) || [];
     res.render("index", { entries });
-}));
+});*/
 app.listen(8000);
