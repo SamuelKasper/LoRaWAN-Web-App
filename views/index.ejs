@@ -23,7 +23,7 @@
     <div class="collapse" id="collapseFilter">
         <div class="card card-body">
             <form action="#" method="post" class="margin-lr-10px">
-                <div class="row align-center">
+                <div class="filter-container align-center">
                     <div class="col-2">
                         <input type="radio" id="sensor" name="filter_type" value="sensor">
                         <label for="sensor">Sensor</label>
@@ -61,8 +61,8 @@
     <!--Akkordeon-->
     <div class="container-fluid margin-top-20">
     <div class="row">
-    <div class="col-1"></div>
-    <div class="accordion col-10" id="accordion">
+    <div class="col-sm-1 col-lg-3"></div>
+    <div class="accordion col-sm-10 col-lg-6" id="accordion">
         <!--Item 1-->
         <%entries.forEach(entrie=>{
             let no_spaces_name = entrie.name.replace(" ","_");%>
@@ -181,7 +181,7 @@
             <%});%>
         </div>
     </div>
-    <div class="col-1"></div>
+    <div class="col-sm-1 col-lg-3"></div>
 </div>
 
 <script>

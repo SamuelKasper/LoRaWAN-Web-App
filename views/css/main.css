@@ -37,6 +37,37 @@
     text-align: right;
 }
 
+.filter-container{
+    display: flex;
+    flex-direction: row;
+}
+
+@media (max-width: 565px) {
+    .filter-container{
+        flex-direction: column;
+    }
+    .col-2{
+        width: auto !important;
+        margin-bottom: 10px;
+    }
+    tr{
+        display: flex !important;
+        flex-direction: column !important;
+        margin-bottom: 10px;
+    }
+    table{
+        margin: auto;
+    }
+    td{
+        display: flex;
+        justify-content: center;
+    }
+}
+
+@media (min-width: 1000px){
+    
+}
+
 /*body{
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
