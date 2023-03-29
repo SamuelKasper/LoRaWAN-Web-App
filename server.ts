@@ -2,9 +2,7 @@ import express from "express";
 import { getEntries, updateDB } from "./db";
 const app = express();
 app.use(express.static("views"));
-//Einkommentieren damit speichern in db klappt
-//app.use(express.urlencoded({extended: true}));
-//Einkommentieren damit daten empfangen von Postman klappt
+app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.set("view engine", "ejs");
 

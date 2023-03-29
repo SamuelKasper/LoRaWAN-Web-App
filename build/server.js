@@ -16,9 +16,7 @@ const express_1 = __importDefault(require("express"));
 const db_1 = require("./db");
 const app = (0, express_1.default)();
 app.use(express_1.default.static("views"));
-//Einkommentieren damit speichern in db klappt
-//app.use(express.urlencoded({extended: true}));
-//Einkommentieren damit daten empfangen von Postman klappt
+app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 app.set("view engine", "ejs");
 // Show db entries on load
