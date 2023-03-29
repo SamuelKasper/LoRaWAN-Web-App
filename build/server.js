@@ -16,7 +16,10 @@ const express_1 = __importDefault(require("express"));
 const db_1 = require("./db");
 const app = (0, express_1.default)();
 app.use(express_1.default.static("views"));
-app.use(express_1.default.urlencoded({ extended: true }));
+//Einkommentieren damit speichern in db klappt
+//app.use(express.urlencoded({extended: true}));
+//Einkommentieren damit daten empfangen von Postman klappt
+app.use(express_1.default.json());
 app.set("view engine", "ejs");
 // Show db entries on load
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -24,10 +27,23 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render("index", { entries });
 }));
 // recieves uplink from webhook
-app.get('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
+app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //TODO: decide if device is already in db or is a new device
+    let id = "641afb263c5c12d453f2f48e";
+    let data = {
+        gateway: req.body.data.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
+        temperature: req.body.data.uplink_message.decoded_payload.TempC_SHT,
+        humidity: req.body.data.uplink_message.decoded_payload.Hum_SHT,
+        time: req.body.data.received_at,
+        //user input
+        name: req.body.identifiers[0].device_ids.device_id,
+        watering_amount: req.body.watering_amount || "none",
+        watering_time: req.body.watering_time || "none"
+    };
+    yield (0, db_1.updateDB)(id, data);
+    res.redirect('back');
 }));
-//replace req.body. with data from ttn
+//needs: app.use(express.urlencoded({extended: true})); to work
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.body.dbid;
     let entrie = {
@@ -38,15 +54,5 @@ app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     yield (0, db_1.updateDB)(id, entrie);
     // relode page
     res.redirect('back');
-    //window.location.reload();
 }));
-//replace req.body. with data from ttn
-/*app.post('/filter', async (req, res) => {
-    let entrie = {
-        type: req.body.filter_type,
-        name: req.body.filter_search
-    };
-    let entries = await getFilteredEntries(entrie) || [];
-    res.render("index", { entries });
-});*/
 app.listen(8000);

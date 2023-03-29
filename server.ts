@@ -1,8 +1,11 @@
 import express from "express";
-import { getEntries, getFilteredEntries, updateDB } from "./db";
+import { getEntries, updateDB } from "./db";
 const app = express();
 app.use(express.static("views"));
-app.use(express.urlencoded({extended: true}));
+//Einkommentieren damit speichern in db klappt
+//app.use(express.urlencoded({extended: true}));
+//Einkommentieren damit daten empfangen von Postman klappt
+app.use(express.json());
 app.set("view engine", "ejs");
 
 // Show db entries on load
@@ -12,11 +15,24 @@ app.get('/', async (req, res) => {
 });
 
 // recieves uplink from webhook
-app.get('/uplink', async (req, res) => {
-    console.log(req.body);
+app.post('/uplink', async (req, res) => {
+    //TODO: decide if device is already in db or is a new device
+    let id = "641afb263c5c12d453f2f48e";
+    let data = {
+        gateway: req.body.data.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
+        temperature: req.body.data.uplink_message.decoded_payload.TempC_SHT,
+        humidity: req.body.data.uplink_message.decoded_payload.Hum_SHT,
+        time: req.body.data.received_at,
+        //user input
+        name: req.body.identifiers[0].device_ids.device_id,
+        watering_amount: req.body.watering_amount  || "none",
+        watering_time: req.body.watering_time  || "none"
+    }
+    await updateDB(id,data);
+    res.redirect('back');
 });
   
-//replace req.body. with data from ttn
+//needs: app.use(express.urlencoded({extended: true})); to work
 app.post('/update', async (req, res) => {
     let id = req.body.dbid;
     let entrie = {
@@ -27,17 +43,6 @@ app.post('/update', async (req, res) => {
     await updateDB(id,entrie);
     // relode page
     res.redirect('back');
-    //window.location.reload();
 });
-
-//replace req.body. with data from ttn
-/*app.post('/filter', async (req, res) => {
-    let entrie = {
-        type: req.body.filter_type,
-        name: req.body.filter_search
-    };
-    let entries = await getFilteredEntries(entrie) || [];
-    res.render("index", { entries }); 
-});*/
 
 app.listen(8000);
