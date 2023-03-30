@@ -28,7 +28,7 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //TODO: decide if device is already in db or is a new device
     // use dev_eui and add zeros at the end to fit 12byte and use it as id for mongodb
-    let id = "641afb263c5c12d453f2f48e";
+    /*let id = "641afb263c5c12d453f2f48e";
     let data = {
         gateway: req.body.data.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
         temperature: req.body.data.uplink_message.decoded_payload.TempC_SHT,
@@ -36,11 +36,11 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         time: req.body.data.received_at,
         //user input
         name: req.body.identifiers[0].device_ids.device_id,
-        watering_amount: req.body.watering_amount || "none",
-        watering_time: req.body.watering_time || "none"
-    };
-    yield (0, db_1.updateDB)(id, data);
-    console.log("ok");
+        watering_amount: req.body.watering_amount  || "none",
+        watering_time: req.body.watering_time  || "none"
+    }
+    await updateDB(id,data);*/
+    console.log(req.body);
     res.sendStatus(200);
     //res.redirect('back');
 }));
