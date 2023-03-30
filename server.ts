@@ -5,7 +5,7 @@ app.use(express.static("views"));
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.set("view engine", "ejs");
-
+ 
 // Show db entries on load
 app.get('/', async (req, res) => {
     let entries = await getEntries() || [];
