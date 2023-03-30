@@ -25,10 +25,12 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render("index", { entries });
 }));
 // recieves uplink from webhook
+let id, data;
 app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //TODO: decide if device is already in db or is a new device
-    let id = "641afb263c5c12d453f2f48e";
-    let data = {
+    // use dev_eui and add zeros at the end to fit 12byte and use it as id for mongodb
+    id = "641afb263c5c12d453f2f48e";
+    data = {
         gateway: req.body.data.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
         temperature: req.body.data.uplink_message.decoded_payload.TempC_SHT,
         humidity: req.body.data.uplink_message.decoded_payload.Hum_SHT,
@@ -38,8 +40,10 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         watering_amount: req.body.watering_amount || "none",
         watering_time: req.body.watering_time || "none"
     };
-    yield (0, db_1.updateDB)(id, data);
-    res.redirect('back');
+    //await updateDB(id,data);
+    console.log("ok");
+    res.send("ok");
+    //res.redirect('back');
 }));
 //needs: app.use(express.urlencoded({extended: true})); to work
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
