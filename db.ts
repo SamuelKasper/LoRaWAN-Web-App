@@ -23,47 +23,13 @@ export async function getEntries(){
     }    
 } 
 
-export async function getFilteredEntries(item: {}){
-    let client = await getClient();
-    try{
-        await client.connect();
-        const db_entries = client.db("lorawan_data").collection("sensor_data");
-        
-        //check item
-        let itemObject = JSON.parse(JSON.stringify(item));
-        let entries;
-        if(itemObject.name != ""){
-            //name (+type)
-            entries = await db_entries.find(itemObject).toArray();
-            console.log("namecheck: ",entries);
-        }else{
-            delete itemObject["name"];
-            if(itemObject.type){
-                //type
-                entries = await db_entries.find(itemObject).toArray();
-            }else{
-                //nothing
-                entries = await db_entries.find().toArray();
-            }
-        }
-        
-        entries.forEach(entrie => {
-            entrie.time = new Date(entrie.time).toLocaleString("de-DE");
-        });
-        return entries;
-    }catch(e){
-        console.error(e);
-    } finally {
-        await client.close();
-    }   
-}
-
 // Updates a db entrie
 export async function updateDB(_id: string, item: {}){
     let client = await getClient();
     try{
         await client.connect();
         const collection = client.db("lorawan_data").collection("sensor_data");
+        
         // der hier drunter geht nicht
         await collection.updateOne({"_id": new ObjectId(_id)},{$set: item});
     }catch(e){
@@ -72,3 +38,33 @@ export async function updateDB(_id: string, item: {}){
         await client.close();
     }    
 }
+
+// Updates a db entrie or adds a new one. Called by ttn uplink.
+export async function updateDBbyUplink(_dev_eui: string,item: {}){
+    let client = await getClient();
+    try{
+        await client.connect();
+        const collection = client.db("lorawan_data").collection("sensor_data");
+        // get the entrie by the dev_eui
+        let result = await collection.find({"dev_eui":_dev_eui}).toArray();
+        // if theres no entry in db, generate one
+        if(result.length == 0){
+            let obj = JSON.parse(JSON.stringify(item));
+            let res = await collection.insertOne({
+                gateway:`${obj.gateway}`,temperature:`${obj.temperature}`,humidity:`${obj.humidity}`,
+                time:`${obj.time}`,dev_eui:`${obj.dev_eui}`,name:`${obj.name}`,
+                watering_amount:`${obj.watering_amount}`,watering_time:`${obj.watering_time}`});
+            console.log("generated new entrie with id: " +res.insertedId);
+        }else{
+            // if there is a db entry, get id from entrie and update
+            let obj = JSON.parse(JSON.stringify(result));
+            let res = await collection.updateOne({"_id": new ObjectId(obj[0]._id)},{$set: item});
+            console.log("found:"+ res.matchedCount +"entrie.", "\nupdated id: " + obj[0]._id);
+        }
+    }catch(e){
+        console.error(e);
+    } finally {
+        await client.close();
+    }    
+}
+

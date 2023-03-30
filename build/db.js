@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateDB = exports.getFilteredEntries = exports.getEntries = void 0;
+exports.updateDBbyUplink = exports.updateDB = exports.getEntries = void 0;
 const mongodb_1 = require("mongodb");
 // returns MongoClient
 function getClient() {
@@ -39,45 +39,6 @@ function getEntries() {
     });
 }
 exports.getEntries = getEntries;
-function getFilteredEntries(item) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let client = yield getClient();
-        try {
-            yield client.connect();
-            const db_entries = client.db("lorawan_data").collection("sensor_data");
-            //check item
-            let itemObject = JSON.parse(JSON.stringify(item));
-            let entries;
-            if (itemObject.name != "") {
-                //name (+type)
-                entries = yield db_entries.find(itemObject).toArray();
-                console.log("namecheck: ", entries);
-            }
-            else {
-                delete itemObject["name"];
-                if (itemObject.type) {
-                    //type
-                    entries = yield db_entries.find(itemObject).toArray();
-                }
-                else {
-                    //nothing
-                    entries = yield db_entries.find().toArray();
-                }
-            }
-            entries.forEach(entrie => {
-                entrie.time = new Date(entrie.time).toLocaleString("de-DE");
-            });
-            return entries;
-        }
-        catch (e) {
-            console.error(e);
-        }
-        finally {
-            yield client.close();
-        }
-    });
-}
-exports.getFilteredEntries = getFilteredEntries;
 // Updates a db entrie
 function updateDB(_id, item) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -97,3 +58,38 @@ function updateDB(_id, item) {
     });
 }
 exports.updateDB = updateDB;
+// Updates a db entrie or adds a new one. Called by ttn uplink.
+function updateDBbyUplink(_dev_eui, item) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let client = yield getClient();
+        try {
+            yield client.connect();
+            const collection = client.db("lorawan_data").collection("sensor_data");
+            // get the entrie by the dev_eui
+            let result = yield collection.find({ "dev_eui": _dev_eui }).toArray();
+            // if theres no entry in db, generate one
+            if (result.length == 0) {
+                let obj = JSON.parse(JSON.stringify(item));
+                let res = yield collection.insertOne({
+                    gateway: `${obj.gateway}`, temperature: `${obj.temperature}`, humidity: `${obj.humidity}`,
+                    time: `${obj.time}`, dev_eui: `${obj.dev_eui}`, name: `${obj.name}`,
+                    watering_amount: `${obj.watering_amount}`, watering_time: `${obj.watering_time}`
+                });
+                console.log("generated new entrie with id: " + res.insertedId);
+            }
+            else {
+                // if there is a db entry, get id from entrie and update
+                let obj = JSON.parse(JSON.stringify(result));
+                let res = yield collection.updateOne({ "_id": new mongodb_1.ObjectId(obj[0]._id) }, { $set: item });
+                console.log("found:" + res.matchedCount + "entrie.", "\nupdated id: " + obj[0]._id);
+            }
+        }
+        catch (e) {
+            console.error(e);
+        }
+        finally {
+            yield client.close();
+        }
+    });
+}
+exports.updateDBbyUplink = updateDBbyUplink;
