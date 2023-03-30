@@ -29,7 +29,8 @@ app.post('/uplink', async (req, res) => {
     }
     await updateDB(id,data);
     console.log("ok");
-    res.redirect('back');
+    res.sendStatus(200);
+    //res.redirect('back');
 });
   
 //needs: app.use(express.urlencoded({extended: true})); to work

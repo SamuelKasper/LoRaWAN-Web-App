@@ -41,7 +41,8 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     };
     yield (0, db_1.updateDB)(id, data);
     console.log("ok");
-    res.redirect('back');
+    res.sendStatus(200);
+    //res.redirect('back');
 }));
 //needs: app.use(express.urlencoded({extended: true})); to work
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
