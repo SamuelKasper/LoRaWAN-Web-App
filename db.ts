@@ -63,9 +63,9 @@ export async function updateDBbyUplink(_dev_eui: string,item: {}){
             let res_obj = JSON.parse(JSON.stringify(result));
             let obj = JSON.parse(JSON.stringify(item));
 
-            let res = await collection.updateOne({"_id": new ObjectId(res_obj[0]._id)},{
+            let res = await collection.updateOne({"_id": new ObjectId(res_obj[0]._id)},{$set:{
                 gateway:`${obj.gateway}`,temperature:`${obj.temperature}`,humidity:`${obj.humidity}`,
-                time:`${obj.time}`,dev_eui:`${obj.dev_eui}`}/*{$set: item}*/);
+                time:`${obj.time}`,dev_eui:`${obj.dev_eui}`}}/*{$set: item}*/);
 
             console.log("found: "+ res.matchedCount +" entrie.", "\nupdated id: " + obj[0]._id);
         }

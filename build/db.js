@@ -82,10 +82,10 @@ function updateDBbyUplink(_dev_eui, item) {
                 // if there is a db entry, get id from entrie and update
                 let res_obj = JSON.parse(JSON.stringify(result));
                 let obj = JSON.parse(JSON.stringify(item));
-                let res = yield collection.updateOne({ "_id": new mongodb_1.ObjectId(res_obj[0]._id) }, {
-                    gateway: `${obj.gateway}`, temperature: `${obj.temperature}`, humidity: `${obj.humidity}`,
-                    time: `${obj.time}`, dev_eui: `${obj.dev_eui}`
-                } /*{$set: item}*/);
+                let res = yield collection.updateOne({ "_id": new mongodb_1.ObjectId(res_obj[0]._id) }, { $set: {
+                        gateway: `${obj.gateway}`, temperature: `${obj.temperature}`, humidity: `${obj.humidity}`,
+                        time: `${obj.time}`, dev_eui: `${obj.dev_eui}`
+                    } } /*{$set: item}*/);
                 console.log("found: " + res.matchedCount + " entrie.", "\nupdated id: " + obj[0]._id);
             }
         }
