@@ -1,5 +1,4 @@
 import express from "express";
-import { json } from "stream/consumers";
 import { getEntries, updateDB, updateDBbyUplink } from "./db";
 const app = express();
 app.use(express.static("views"));
@@ -19,6 +18,7 @@ app.post('/uplink', async (req, res) => {
     // use dev_eui and add zeros at the end to fit 12byte and use it as id for mongodb
     let jsonObj = JSON.parse(JSON.stringify(req.body));
     console.log(jsonObj.data);
+    /*
     let dev_eui = jsonObj.data.end_device_ids.dev_eui;
 
     let data = {
@@ -33,7 +33,8 @@ app.post('/uplink', async (req, res) => {
         watering_amount: req.body.watering_amount  || "none",
         watering_time: req.body.watering_time  || "none"
     }
-    await updateDBbyUplink(dev_eui,data);
+
+    await updateDBbyUplink(dev_eui,data);*/
     res.sendStatus(200);
     //res.redirect('back');
 });
