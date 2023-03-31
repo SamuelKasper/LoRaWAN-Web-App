@@ -67,7 +67,7 @@ export async function updateDBbyUplink(_dev_eui: string,item: {}){
                 gateway:`${obj.gateway}`,temperature:`${obj.temperature}`,humidity:`${obj.humidity}`,
                 time:`${obj.time}`,dev_eui:`${obj.dev_eui}`}}/*{$set: item}*/);
 
-            console.log("found: "+ res.matchedCount +" entrie.", "\nupdated id: " + obj[0]._id);
+            console.log("found: "+ res.matchedCount +" entrie.", "\nupdated id: " + res_obj[0]._id);
         }
     }catch(e){
         console.error(e);

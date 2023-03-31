@@ -1,0 +1,8 @@
+1. Filter nach den Sensoreigenschaften (temperatur, feuchtigkeit, wasserspiegel) ermöglichen.
+- Bisheriger Filter macht so keinen Sinn mehr.
+- Suchleiste sollte auch nur Teile erkennen
+
+2. CSS anpassen
+- Name Feld ist zu klein für den Gerätenamen.
+
+3. Bewässerungsmenge / Zeit auf Konzept anpassen. Macht so keinen Sinn mehr.
