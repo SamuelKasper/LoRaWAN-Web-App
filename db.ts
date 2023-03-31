@@ -43,23 +43,31 @@ export async function updateDB(_id: string, item: {}){
 export async function updateDBbyUplink(_dev_eui: string,item: {}){
     let client = await getClient();
     try{
+        // connect to db and get collection object
         await client.connect();
         const collection = client.db("lorawan_data").collection("sensor_data");
-        // get the entrie by the dev_eui
+        // get the db entrie by looking at the dev_eui
         let result = await collection.find({"dev_eui":_dev_eui}).toArray();
-        // if theres no entry in db, generate one
+
+        // if theres no db entrie, make a new one
         if(result.length == 0){
             let obj = JSON.parse(JSON.stringify(item));
             let res = await collection.insertOne({
                 gateway:`${obj.gateway}`,temperature:`${obj.temperature}`,humidity:`${obj.humidity}`,
                 time:`${obj.time}`,dev_eui:`${obj.dev_eui}`,name:`${obj.name}`,
                 watering_amount:`${obj.watering_amount}`,watering_time:`${obj.watering_time}`});
-            console.log("generated new entrie with id: " +res.insertedId);
+            
+                console.log("Generated new entrie with id: " +res.insertedId);
         }else{
             // if there is a db entry, get id from entrie and update
-            let obj = JSON.parse(JSON.stringify(result));
-            let res = await collection.updateOne({"_id": new ObjectId(obj[0]._id)},{$set: item});
-            console.log("found:"+ res.matchedCount +"entrie.", "\nupdated id: " + obj[0]._id);
+            let res_obj = JSON.parse(JSON.stringify(result));
+            let obj = JSON.parse(JSON.stringify(item));
+
+            let res = await collection.updateOne({"_id": new ObjectId(res_obj[0]._id)},{
+                gateway:`${obj.gateway}`,temperature:`${obj.temperature}`,humidity:`${obj.humidity}`,
+                time:`${obj.time}`,dev_eui:`${obj.dev_eui}`}/*{$set: item}*/);
+
+            console.log("found: "+ res.matchedCount +" entrie.", "\nupdated id: " + obj[0]._id);
         }
     }catch(e){
         console.error(e);

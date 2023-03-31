@@ -13,11 +13,11 @@ app.get('/', async (req, res) => {
 });
 
 // recieves uplink from webhook
+// to test this with postman, place .data after jsonObj. Must be removed bedore uploading to render!
 app.post('/uplink', async (req, res) => {
-    //TODO: decide if device is already in db or is a new device
-    // use dev_eui and add zeros at the end to fit 12byte and use it as id for mongodb
+    // parse request body into a jsonObj.
     let jsonObj = JSON.parse(JSON.stringify(req.body));
-
+    // use dev_eui as identifier to get the mongodb id later
     let dev_eui = jsonObj.end_device_ids.dev_eui;
 
     let data = {
@@ -27,18 +27,18 @@ app.post('/uplink', async (req, res) => {
         time: jsonObj.received_at,
         dev_eui: jsonObj.end_device_ids.dev_eui,
 
-        //user input
+        //fields that can be changed by the user
         name: jsonObj.end_device_ids.device_id,
-        watering_amount: req.body.watering_amount  || "none",
-        watering_time: req.body.watering_time  || "none"
+        watering_amount: "0",
+        watering_time:"08:00"
     }
 
     await updateDBbyUplink(dev_eui,data);
+    // respond to ttn. Otherwise the uplink will fail.
     res.sendStatus(200);
-    //res.redirect('back');
 });
   
-//needs: app.use(express.urlencoded({extended: true})); to work
+// updates the user input fields.
 app.post('/update', async (req, res) => {
     let id = req.body.dbid;
     let entrie = {
