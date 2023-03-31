@@ -29,8 +29,7 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     //TODO: decide if device is already in db or is a new device
     // use dev_eui and add zeros at the end to fit 12byte and use it as id for mongodb
     let jsonObj = JSON.parse(JSON.stringify(req.body));
-    console.log(jsonObj.data);
-    console.log("end_device_ids: ", jsonObj.data.end_device_ids);
+    console.log(jsonObj);
     /*let dev_eui = jsonObj.data.end_device_ids.dev_eui;
 
     let data = {
