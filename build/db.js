@@ -74,7 +74,7 @@ function updateDBbyUplink(_dev_eui, item) {
                 let res = yield collection.insertOne({
                     gateway: `${obj.gateway}`, temperature: `${obj.temperature}`, humidity: `${obj.humidity}`,
                     time: `${obj.time}`, dev_eui: `${obj.dev_eui}`, name: `${obj.name}`,
-                    watering_amount: `${obj.watering_amount}`, watering_time: `${obj.watering_time}`
+                    watering_amount: `${obj.watering_amount}`, watering_time: `${obj.watering_time}`, rssi: `${obj.rssi}`
                 });
                 console.log("Generated new entrie with id: " + res.insertedId);
             }
@@ -84,7 +84,7 @@ function updateDBbyUplink(_dev_eui, item) {
                 let obj = JSON.parse(JSON.stringify(item));
                 let res = yield collection.updateOne({ "_id": new mongodb_1.ObjectId(res_obj[0]._id) }, { $set: {
                         gateway: `${obj.gateway}`, temperature: `${obj.temperature}`, humidity: `${obj.humidity}`,
-                        time: `${obj.time}`, dev_eui: `${obj.dev_eui}`
+                        time: `${obj.time}`, dev_eui: `${obj.dev_eui}`, rssi: `${obj.rssi}`
                     } } /*{$set: item}*/);
                 console.log("found: " + res.matchedCount + " entrie.", "\nupdated id: " + res_obj[0]._id);
             }

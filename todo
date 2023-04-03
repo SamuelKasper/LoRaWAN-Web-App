@@ -9,14 +9,4 @@
 
 4. Wird das richtige Gateway und rssi angezeigt? Gibt ja mehrere in der payload
 
-4. Felder in Web-App
-[E = Editable | NE = not Editable]
-- Name (E)
-- Gerätename (NE)
-- Zeitstempel (NE)
-- Gateway (NE)
-- Temperatur (NE)
-- Bodenfeuchtigkeit (NE)
-- Füllstand (NE)
-- Wassermenge (E)
-- Bewässerungszeit (E)
+5. Zeitstempel zeig 2h früher an

@@ -55,7 +55,7 @@ export async function updateDBbyUplink(_dev_eui: string,item: {}){
             let res = await collection.insertOne({
                 gateway:`${obj.gateway}`,temperature:`${obj.temperature}`,humidity:`${obj.humidity}`,
                 time:`${obj.time}`,dev_eui:`${obj.dev_eui}`,name:`${obj.name}`,
-                watering_amount:`${obj.watering_amount}`,watering_time:`${obj.watering_time}`});
+                watering_amount:`${obj.watering_amount}`,watering_time:`${obj.watering_time}`,rssi:`${obj.rssi}`});
             
                 console.log("Generated new entrie with id: " +res.insertedId);
         }else{
@@ -65,7 +65,7 @@ export async function updateDBbyUplink(_dev_eui: string,item: {}){
 
             let res = await collection.updateOne({"_id": new ObjectId(res_obj[0]._id)},{$set:{
                 gateway:`${obj.gateway}`,temperature:`${obj.temperature}`,humidity:`${obj.humidity}`,
-                time:`${obj.time}`,dev_eui:`${obj.dev_eui}`}}/*{$set: item}*/);
+                time:`${obj.time}`,dev_eui:`${obj.dev_eui}`,rssi:`${obj.rssi}`}}/*{$set: item}*/);
 
             console.log("found: "+ res.matchedCount +" entrie.", "\nupdated id: " + res_obj[0]._id);
         }
