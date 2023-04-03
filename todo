@@ -9,4 +9,8 @@
 
 4. Wird das richtige Gateway und rssi angezeigt? Gibt ja mehrere in der payload
 
-5. Zeitstempel zeig 2h früher an
+5. fixed: Zeitstempel zeig 2h früher an
+
+6. description wird in ejs nicht eingesetzt. nur als value im dom
+
+7. rssi und gateway sind manchmal nicht die richtigen, da es mehrere gibt

@@ -25,11 +25,12 @@ app.post('/uplink', async (req, res) => {
         gateway: jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
         temperature: jsonObj.uplink_message.decoded_payload.TempC_SHT,
         humidity: jsonObj.uplink_message.decoded_payload.Hum_SHT,
-        time: jsonObj.received_at,
+        time: jsonObj.received_at.toLocaleDateString('de-DE'),
         dev_eui: jsonObj.end_device_ids.dev_eui,
         rssi: jsonObj.uplink_message.rx_metadata[0].rssi,
 
-        //fields that can be changed by the user. Only applied at first appearance.
+        //init values.
+        //fields that can be changed by the user. Only applied at first appearance in db. Later changed by /update.
         description: "",
         watering_amount: "0",
         watering_time:"08:00"
