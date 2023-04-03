@@ -81,11 +81,9 @@
                         <table>
                             <!--Name-->
                             <tr>
-                                <td><strong>Name:</strong></td>
+                                <td><strong>Gerätename:</strong></td>
                                 <td>
-                                    <div class="input-group w150px">
-                                        <input name="name" type="text" class="form-control" value="<%=entrie.name%>">
-                                    </div>
+                                    <%=entrie.name%>
                                 </td>
                             </tr>
 
@@ -104,6 +102,17 @@
                                     <%=entrie.gateway || "none" %>
                                 </td>
                             </tr>
+
+                            <!--Signal Strength-->
+                            <tr>
+                                <td><strong>RSSI:</strong></td>
+                                <td>
+                                    <%=entrie.rssi || "none" %>
+                                </td>
+                            </tr>
+                            
+                            <!--Spacing-->
+                            <tr><td><hr></td></tr>
 
                             <!--Temperatur-->
                             <%if(entrie.temperature){%>
@@ -135,6 +144,21 @@
                                 </tr>
                             <%}%>
 
+                            <!--Spacing-->
+                            <tr><td><hr></td></tr>
+
+                            <!--Bewässerungszeit-->
+                            <%if(entrie.watering_time && entrie.watering_time != "none"){%>
+                                <tr>
+                                    <td><strong>Bewässerungszeit:</strong></td>
+                                    <td>
+                                        <input id="watering_time" name="watering_time" type="time"
+                                            class="input-group-text"
+                                            value="<%=entrie.watering_time%>">
+                                    </td>
+                                </tr>
+                            <%}%>
+
                             <!--Bewässerungsmenge-->
                             <%if(entrie.watering_time && entrie.watering_amount != "none"){%>
                                 <tr>
@@ -149,17 +173,15 @@
                                 </tr>
                             <%}%>
 
-                            <!--Bewässerungszeit-->
-                            <%if(entrie.watering_time && entrie.watering_time != "none"){%>
-                                <tr>
-                                    <td><strong>Bewässerungszeit:</strong></td>
-                                    <td>
-                                        <input id="watering_time" name="watering_time" type="time"
-                                            class="input-group-text"
-                                            value="<%=entrie.watering_time%>">
-                                    </td>
-                                </tr>
-                            <%}%>
+                            <!--Beschreibung-->
+                            <tr>
+                                <td><strong>Beschreibung:</strong></td>
+                                <td>
+                                    <div class="input-group">
+                                        <textarea id="description" name="description" class="form-control" value="<%=entrie.description%>"></textarea>
+                                    </div>
+                                </td>
+                            </tr>
 
                             <!--ID-->   
                             <tr hidden>

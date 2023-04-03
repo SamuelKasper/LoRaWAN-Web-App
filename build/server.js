@@ -32,13 +32,15 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     // use dev_eui as identifier to get the mongodb id later
     let dev_eui = jsonObj.end_device_ids.dev_eui;
     let data = {
+        name: jsonObj.end_device_ids.device_id,
         gateway: jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
         temperature: jsonObj.uplink_message.decoded_payload.TempC_SHT,
         humidity: jsonObj.uplink_message.decoded_payload.Hum_SHT,
         time: jsonObj.received_at,
         dev_eui: jsonObj.end_device_ids.dev_eui,
-        //fields that can be changed by the user
-        name: jsonObj.end_device_ids.device_id,
+        rssi: jsonObj.uplink_message.rx_metadata[0].rssi,
+        //fields that can be changed by the user. Only applied at first appearance.
+        description: "",
         watering_amount: "0",
         watering_time: "08:00"
     };
@@ -50,7 +52,7 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.body.dbid;
     let entrie = {
-        name: req.body.name || "none",
+        description: req.body.description || "none",
         watering_amount: req.body.watering_amount || "none",
         watering_time: req.body.watering_time || "none"
     };
