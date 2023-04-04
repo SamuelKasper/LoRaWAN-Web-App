@@ -2,15 +2,10 @@
 - Bisheriger Filter macht so keinen Sinn mehr.
 - Suchleiste sollte auch nur Teile erkennen
 
-2. CSS anpassen
-- Name Feld ist zu klein für den Gerätenamen.
-
 3. Bewässerungsmenge / Zeit auf Konzept anpassen. Macht so keinen Sinn mehr.
 
 4. Wird das richtige Gateway und rssi angezeigt? Gibt ja mehrere in der payload
 
 5. Zeitstempel zeig 2h früher an
 
-6. description wird in ejs nicht eingesetzt. nur als value im dom
-
-7. rssi und gateway sind manchmal nicht die richtigen, da es mehrere gibt
+6. rssi und gateway sind manchmal nicht die richtigen, da es mehrere gibt

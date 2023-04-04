@@ -19,7 +19,7 @@ app.post('/uplink', async (req, res) => {
     let jsonObj = JSON.parse(JSON.stringify(req.body));
     // use dev_eui as identifier to get the mongodb id later
     let dev_eui = jsonObj.end_device_ids.dev_eui;
-
+ 
     let data = {
         name: jsonObj.end_device_ids.device_id,
         gateway: jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,

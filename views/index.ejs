@@ -25,16 +25,16 @@
             <form action="#" method="post" class="margin-lr-10px">
                 <div class="filter-container align-center">
                     <div class="col-2">
-                        <input type="radio" id="sensor" name="filter_type" value="sensor">
-                        <label for="sensor">Sensor</label>
+                        <input type="radio" id="temp" name="filter_type" value="temp">
+                        <label for="sensor">Temperatur</label>
                     </div>
                     <div class="col-2">
-                        <input type="radio" id="zistern" name="filter_type" value="zistern">
-                        <label for="zistern">Zisterne</label>
+                        <input type="radio" id="level" name="filter_type" value="level">
+                        <label for="zistern">Füllstand</label>
                     </div>
                     <div class="col-2">
-                        <input type="radio" id="pump" name="filter_type" value="pump">
-                        <label for="pump">Pumpe</label> 
+                        <input type="radio" id="io" name="filter_type" value="io">
+                        <label for="pump">I/O (wip)</label> 
                     </div>
                     <div class="col-2">
                         <input type="radio" id="all" name="filter_type" value="all">
@@ -48,7 +48,8 @@
                         <%
                         let str = "";
                         entries.forEach(entrie=>{
-                            str = str + entrie._id+","+entrie.type+","+entrie.name+"-";
+                            //add parameters for search
+                            str = str + entrie._id+","+entrie.name+","+entrie.temperature+","+entrie.level+"|";
                         });
                         %>
                         <button class="btn btn-primary" type="button" id="button-addon2" onclick="myFilter('<%=str%>')">Suche</button>
@@ -208,28 +209,49 @@
 
 <script>
 function myFilter(entrieString){
-    let radioBtn = document.querySelector('input[name="filter_type"]:checked').id;
+    //checked radio button
+    let radioBtn = document.querySelector('input[name="filter_type"]:checked'); //.id?
+    //search bar value
     let search = document.getElementById("filter_search").value;
-    let entries = entrieString.split("-");
+    //akkordeon entries with id, type, name
+    let entries = entrieString.split("|");
 
     for(let i=0;i<entries.length-1;i++){
         let option = entries[i].split(",");
 
         if(search!=""){
-            if(option[2] == search){
+            // option[2] is the entrie name. save in name to convert it to string to use include
+            let name = option[1]+"";
+            if(name.includes(search)){
                 document.getElementById(option[0]).style = "display: block";
             }else{
                 document.getElementById(option[0]).style = "display: none";
             }
         }else{
-            if(radioBtn == "all"){
-                document.getElementById(option[0]).style = "display: block";
-            }else{
-                if(option[1] == radioBtn){
+            // if button was checked
+            if(radioBtn){
+                console.log(`radio button ${radioBtn.id} was checked`);
+                // if button all was checked
+                if(radioBtn.id == "all"){
                     document.getElementById(option[0]).style = "display: block";
-                }else{
-                    document.getElementById(option[0]).style = "display: none";
+                // if button temperature was checked
+                }else if(radioBtn.id=="temp"){
+                    if(option[2] == "undefined"){
+                        document.getElementById(option[0]).style = "display: none";
+                    }else{
+                        document.getElementById(option[0]).style = "display: block";
+                    }
+                //if button füllstand was checked
+                }else if(radioBtn.id=="level"){
+                    if(option[3] == "undefined"){
+                        document.getElementById(option[0]).style = "display: none";
+                    }else{
+                        document.getElementById(option[0]).style = "display: block";
+                    }
                 }
+            }else{
+                console.log("radio button was not checked");
+                document.getElementById(option[0]).style = "display: block";
             }
         }  
     }

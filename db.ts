@@ -15,6 +15,7 @@ export async function getEntries(){
         entries.forEach(entrie => {
             entrie.time = new Date(entrie.time).toLocaleString("de-DE");
         });
+        console.log(entries);
         return entries; 
     }catch(e){
         console.error(e);
