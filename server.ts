@@ -25,7 +25,7 @@ app.post('/uplink', async (req, res) => {
         gateway: jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
         temperature: jsonObj.uplink_message.decoded_payload.TempC_SHT,
         humidity: jsonObj.uplink_message.decoded_payload.Hum_SHT,
-        time: jsonObj.received_at.toLocaleDateString('de-DE'),
+        time: jsonObj.received_at.toLocaleString('de-DE'),
         dev_eui: jsonObj.end_device_ids.dev_eui,
         rssi: jsonObj.uplink_message.rx_metadata[0].rssi,
 
