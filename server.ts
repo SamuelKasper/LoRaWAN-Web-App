@@ -9,6 +9,33 @@ app.set("view engine", "ejs");
 // Show db entries on load
 app.get('/', async (req, res) => {
     let entries = await getEntries() || [];
+    // test for reaacting to data
+    for(let i=0;i<entries.length;i++){
+        let tempStatus = "";
+        let humStatus = ""
+        // Temperature
+        if(parseInt(entries[i].temperature) <0){
+            tempStatus = "sehr kalt";
+        }else if(parseInt(entries[i].temperature) <15){
+            tempStatus = "kalt";
+        }else if(parseInt(entries[i].temperature) >=15 && parseInt(entries[i].temperature) <=22){
+            tempStatus = "raumtemperatur";
+        }else if(parseInt(entries[i].temperature) >22){
+            tempStatus = "warm";
+        }
+        entries[i].tempStatus = tempStatus;
+
+        // Humidity
+        if(parseInt(entries[i].humidity) <50){
+            humStatus = "Ja";
+        }else if(parseInt(entries[i].temperature) >=50){
+            humStatus = "Nein";        
+        }
+        entries[i].humStatus = humStatus;
+    }
+    // test end
+    
+    console.log(entries);
     res.render("index", { entries });
 });
 

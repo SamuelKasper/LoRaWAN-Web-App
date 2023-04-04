@@ -13,10 +13,7 @@ export async function getEntries(){
         const db_entries = client.db("lorawan_data").collection("sensor_data");
         let entries = await db_entries.find().toArray();
         entries.forEach(entrie => {
-            // add two hours for time delay between server location and germany
             entrie.time = new Date(entrie.time).toLocaleString("de-DE",{timeZone: "Europe/Berlin"});
-            //entrie.time.setHours(entrie.time.getHours()+2);
-            //entrie.time.toLocaleString("de-DE");
         });
         console.log(entries);
         return entries; 

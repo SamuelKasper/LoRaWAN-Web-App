@@ -120,7 +120,7 @@
                                 <tr>
                                     <td><strong>Temperatur:</strong></td>
                                     <td>
-                                        <%=entrie.temperature || "none" %>
+                                        <%=entrie.temperature +"°C | Das ist "+entrie.tempStatus || "none" %>
                                     </td>
                                 </tr>
                             <%}%>
@@ -130,7 +130,7 @@
                                 <tr>
                                     <td><strong>Bodenfeuchtigkeit:</strong></td>
                                     <td>
-                                        <%=entrie.humidity || "none" %>
+                                        <%=entrie.humidity +"% | Bewässerung nötig: "+entrie.humStatus || "none" %>
                                     </td>
                                 </tr>
                             <%}%>
