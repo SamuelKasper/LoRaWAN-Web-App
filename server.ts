@@ -108,7 +108,7 @@ function sendDownlink(){
         }),
         headers: {
             "Content-type":"application/json;",
-            "Authorization":"Bearer NNSXS.72OYCYYVWWBJ34RGKN4VGVXVM7LVRQRVEWAYP7Q.W2KBBVTF6KWNNEMTWD43XWOWSFQZ3IUU7BCGH24XZ7FEWZHYI5KQ",
+            "Authorization":"",
             "User-Agent":"webapp/1.0"
         }
     });

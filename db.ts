@@ -54,7 +54,7 @@ export async function updateDBbyUplink(_dev_eui: string,item: {}){
         if(result.length == 0){
             let obj = JSON.parse(JSON.stringify(item));
             let res = await collection.insertOne({
-                gateway:`${obj.gateway}`,temperature:`${obj.air_temperature}`,humidity:`${obj.air_humidity}`,
+                gateway:`${obj.gateway}`,air_temperature:`${obj.air_temperature}`,air_humidity:`${obj.air_humidity}`,
                 soil_temperature:`${obj.soil_temperature}`,soil_humidity:`${obj.soil_humidity}`,distance:`${obj.distance}`,
                 time:`${obj.time}`,dev_eui:`${obj.dev_eui}`,name:`${obj.name}`,
                 watering_amount:`${obj.watering_amount}`,watering_time:`${obj.watering_time}`,rssi:`${obj.rssi}`});
@@ -66,7 +66,7 @@ export async function updateDBbyUplink(_dev_eui: string,item: {}){
             let obj = JSON.parse(JSON.stringify(item));
 
             let res = await collection.updateOne({"_id": new ObjectId(res_obj[0]._id)},{$set:{
-                gateway:`${obj.gateway}`,temperature:`${obj.air_temperature}`,humidity:`${obj.air_humidity}`,
+                gateway:`${obj.gateway}`,air_temperature:`${obj.air_temperature}`,air_humidity:`${obj.air_humidity}`,
                 soil_temperature:`${obj.soil_temperature}`,soil_humidity:`${obj.soil_humidity}`,distance:`${obj.distance}`,
                 time:`${obj.time}`,dev_eui:`${obj.dev_eui}`,rssi:`${obj.rssi}`}}/*{$set: item}*/);
 
