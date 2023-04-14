@@ -22,35 +22,31 @@ app.set("view engine", "ejs");
 // Show db entries on load
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let entries = (yield (0, db_1.getEntries)()) || [];
-    // test for reaacting to data
+    // Reacting to data
     for (let i = 0; i < entries.length; i++) {
-        let tempStatus = "";
-        let humStatus = "";
-        // Temperature
-        if (parseInt(entries[i].temperature) < 0) {
-            tempStatus = "sehr kalt";
+        //soil_humidity status
+        if (entries[i].soil_humidity != "undefined") {
+            let humStatus = "";
+            entries[i].soil_humidity = entries[i].soil_humidity.replace("%", "");
+            if (parseInt(entries[i].soil_humidity) < 50) {
+                humStatus = "Ja";
+            }
+            else if (parseInt(entries[i].soil_humidity) >= 50) {
+                humStatus = "Nein";
+            }
+            entries[i].humStatus = humStatus;
+            entries[i].soil_humidity = entries[i].soil_humidity + "%";
         }
-        else if (parseInt(entries[i].temperature) < 15) {
-            tempStatus = "kalt";
+        //
+        if (entries[i].distance != "undefined") {
+            let max = parseInt(entries[i].max_distance) * 10;
+            let dist = parseInt(entries[i].distance);
+            let percent = parseInt(entries[i].distance) / max * 100;
+            let percent_str = percent.toFixed(1);
+            entries[i].distance = percent_str + "% (" + dist / 10 + "cm)";
         }
-        else if (parseInt(entries[i].temperature) >= 15 && parseInt(entries[i].temperature) <= 22) {
-            tempStatus = "raumtemperatur";
-        }
-        else if (parseInt(entries[i].temperature) > 22) {
-            tempStatus = "warm";
-        }
-        entries[i].tempStatus = tempStatus;
-        // Humidity
-        if (parseInt(entries[i].humidity) < 50) {
-            humStatus = "Ja";
-        }
-        else if (parseInt(entries[i].temperature) >= 50) {
-            humStatus = "Nein";
-        }
-        entries[i].humStatus = humStatus;
     }
     // test end
-    console.log(entries);
     res.render("index", { entries });
 }));
 // recieves uplink from webhook
@@ -77,9 +73,10 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         rssi: jsonObj.uplink_message.rx_metadata[0].rssi,
         //init values.
         //fields that can be changed by the user. Only applied at first appearance in db. Later changed by /update.
-        description: "",
+        description: "Beschreibung...",
         watering_amount: "0",
-        watering_time: "08:00"
+        watering_time: "08:00",
+        max_distance: "0"
     };
     yield (0, db_1.updateDBbyUplink)(dev_eui, data);
     // respond to ttn. Otherwise the uplink will fail.
@@ -88,10 +85,12 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 // updates the user input fields.
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.body.dbid;
+    console.log(req.body);
     let entrie = {
-        description: req.body.description || "none",
-        watering_amount: req.body.watering_amount || "none",
-        watering_time: req.body.watering_time || "none"
+        description: req.body.description || "undefined",
+        watering_amount: req.body.watering_amount || "undefined",
+        watering_time: req.body.watering_time || "undefined",
+        max_distance: req.body.max_distance || "undefined"
     };
     yield (0, db_1.updateDB)(id, entrie);
     // relode page

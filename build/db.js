@@ -28,7 +28,6 @@ function getEntries() {
             entries.forEach(entrie => {
                 entrie.time = new Date(entrie.time).toLocaleString("de-DE", { timeZone: "Europe/Berlin" });
             });
-            console.log(entries);
             return entries;
         }
         catch (e) {
@@ -88,7 +87,7 @@ function updateDBbyUplink(_dev_eui, item) {
                         gateway: `${obj.gateway}`, air_temperature: `${obj.air_temperature}`, air_humidity: `${obj.air_humidity}`,
                         soil_temperature: `${obj.soil_temperature}`, soil_humidity: `${obj.soil_humidity}`, distance: `${obj.distance}`,
                         time: `${obj.time}`, dev_eui: `${obj.dev_eui}`, rssi: `${obj.rssi}`
-                    } } /*{$set: item}*/);
+                    } });
                 console.log("found: " + res.matchedCount + " entrie.", "\nupdated id: " + res_obj[0]._id);
             }
         }

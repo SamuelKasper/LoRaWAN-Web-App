@@ -92,7 +92,7 @@
                             <tr>
                                 <td><strong>Zeitstempel:</strong></td>
                                 <td>
-                                    <%=entrie.time || "none" %>
+                                    <%=entrie.time %>
                                 </td>
                             </tr>
 
@@ -100,7 +100,7 @@
                             <tr>
                                 <td><strong>Gateway:</strong></td>
                                 <td>
-                                    <%=entrie.gateway || "none" %>
+                                    <%=entrie.gateway %>
                                 </td>
                             </tr>
 
@@ -108,59 +108,59 @@
                             <tr>
                                 <td><strong>RSSI:</strong></td>
                                 <td>
-                                    <%=entrie.rssi || "none" %>
+                                    <%=entrie.rssi %>
                                 </td>
                             </tr>
                             
                             <!--Spacing-->
                             <tr><td><hr></td></tr>
 
-                            <!--LuftTemperatur-->
-                            <%if(entrie.air_temperature){%>
+                            <!--Lufttemperatur-->
+                            <%if(entrie.air_temperature != "undefined"){%>
                                 <tr>
-                                    <td><strong>Temperatur:</strong></td>
+                                    <td><strong>Lufttemperatur:</strong></td>
                                     <td>
-                                        <%=entrie.air_temperature +"°C | Das ist "+entrie.tempStatus || "none" %>
+                                        <%=entrie.air_temperature +" °C" %>
                                     </td>
                                 </tr>
                             <%}%>
 
                             <!--Luftfeuchtigkeit-->
-                            <%if(entrie.air_humidity){%>
+                            <%if(entrie.air_humidity != "undefined"){%>
                                 <tr>
                                     <td><strong>Luftfeuchtigkeit:</strong></td>
                                     <td>
-                                        <%=entrie.air_humidity +"% | Bewässerung nötig: "+entrie.humStatus || "none" %>
+                                        <%=entrie.air_humidity +" %" %>
                                     </td>
                                 </tr>
                             <%}%>
 
                             <!--Bodentemperatur-->
-                            <%if(entrie.soil_temperature){%>
+                            <%if(entrie.soil_temperature != "undefined"){%>
                                 <tr>
                                     <td><strong>Bodentemperatur:</strong></td>
                                     <td>
-                                        <%=entrie.soil_temperature +" | Das ist "+entrie.tempStatus || "none" %>
+                                        <%=entrie.soil_temperature %>
                                     </td>
                                 </tr>
                             <%}%>
 
                             <!--Bodenfeuchtigkeit-->
-                            <%if(entrie.soil_humidity){%>
+                            <%if(entrie.soil_humidity != "undefined"){%>
                                 <tr>
                                     <td><strong>Bodenfeuchtigkeit:</strong></td>
                                     <td>
-                                        <%=entrie.soil_humidity +" | Bewässerung nötig: "+entrie.humStatus || "none" %>
+                                        <%=entrie.soil_humidity +" | Bewässerung nötig: "+entrie.humStatus %>
                                     </td>
                                 </tr>
                             <%}%>
 
                             <!--Füllstand-->
-                            <%if(entrie.distance){%>
+                            <%if(entrie.distance != "undefined"){%>
                                 <tr>
                                     <td><strong>Füllstand:</strong></td>
                                     <td>
-                                        <%=entrie.distance || "none" %>
+                                        <%=entrie.distance%>
                                     </td>
                                 </tr>
                             <%}%>
@@ -169,7 +169,7 @@
                             <tr><td><hr></td></tr>
 
                             <!--Bewässerungszeit-->
-                            <%if(entrie.watering_time && entrie.watering_time != "none"){%>
+                            <%if(entrie.soil_humidity!="undefined"){%>
                                 <tr>
                                     <td><strong>Bewässerungszeit:</strong></td>
                                     <td>
@@ -181,7 +181,7 @@
                             <%}%>
 
                             <!--Bewässerungsmenge-->
-                            <%if(entrie.watering_time && entrie.watering_amount != "none"){%>
+                            <%if(entrie.soil_humidity!="undefined"){%>
                                 <tr>
                                     <td><strong>Bewässerungsmenge:</strong></td>
                                     <td>
@@ -189,6 +189,20 @@
                                             <input id="watering_amount" name="watering_amount" type="text" class="form-control"
                                                 value="<%=entrie.watering_amount%>">
                                             <span class="input-group-text">Liter</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <%}%>
+
+                            <!--Maximaler Füllstand-->
+                            <%if(entrie.distance!="undefined"){%>
+                                <tr>
+                                    <td><strong>Maximale Distanz <br>zum Boden:</strong></td>
+                                    <td>
+                                        <div class="input-group w150px">
+                                            <input id="max_distance" name="max_distance" type="text" class="form-control"
+                                                value="<%=entrie.max_distance%>">
+                                            <span class="input-group-text">cm</span>
                                         </div>
                                     </td>
                                 </tr>
