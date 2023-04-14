@@ -73,7 +73,8 @@ function updateDBbyUplink(_dev_eui, item) {
             if (result.length == 0) {
                 let obj = JSON.parse(JSON.stringify(item));
                 let res = yield collection.insertOne({
-                    gateway: `${obj.gateway}`, temperature: `${obj.temperature}`, humidity: `${obj.humidity}`,
+                    gateway: `${obj.gateway}`, temperature: `${obj.air_temperature}`, humidity: `${obj.air_humidity}`,
+                    soil_temperature: `${obj.soil_temperature}`, soil_humidity: `${obj.soil_humidity}`, distance: `${obj.distance}`,
                     time: `${obj.time}`, dev_eui: `${obj.dev_eui}`, name: `${obj.name}`,
                     watering_amount: `${obj.watering_amount}`, watering_time: `${obj.watering_time}`, rssi: `${obj.rssi}`
                 });
@@ -84,7 +85,8 @@ function updateDBbyUplink(_dev_eui, item) {
                 let res_obj = JSON.parse(JSON.stringify(result));
                 let obj = JSON.parse(JSON.stringify(item));
                 let res = yield collection.updateOne({ "_id": new mongodb_1.ObjectId(res_obj[0]._id) }, { $set: {
-                        gateway: `${obj.gateway}`, temperature: `${obj.temperature}`, humidity: `${obj.humidity}`,
+                        gateway: `${obj.gateway}`, temperature: `${obj.air_temperature}`, humidity: `${obj.air_humidity}`,
+                        soil_temperature: `${obj.soil_temperature}`, soil_humidity: `${obj.soil_humidity}`, distance: `${obj.distance}`,
                         time: `${obj.time}`, dev_eui: `${obj.dev_eui}`, rssi: `${obj.rssi}`
                     } } /*{$set: item}*/);
                 console.log("found: " + res.matchedCount + " entrie.", "\nupdated id: " + res_obj[0]._id);

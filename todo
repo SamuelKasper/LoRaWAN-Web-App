@@ -6,3 +6,7 @@
 4. Wird das richtige Gateway und rssi angezeigt? Gibt ja mehrere in der payload
 
 5. "Bewässerung nötig" - Anzeigen von den letzten drei Sensorwerten abhängig machen. Diese extra in db speichern
+
+6. Feld zum Angeben bei welcher DIstanz des Ultraschallsensors der Behälter leer insertedId
+
+- Anzeige nach RSSI mit Angabe ob das Gut / Schlecht etc. ist

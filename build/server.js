@@ -63,8 +63,15 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     let data = {
         name: jsonObj.end_device_ids.device_id,
         gateway: jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
-        temperature: jsonObj.uplink_message.decoded_payload.TempC_SHT,
-        humidity: jsonObj.uplink_message.decoded_payload.Hum_SHT,
+        //air
+        air_temperature: jsonObj.uplink_message.decoded_payload.TempC_SHT,
+        air_humidity: jsonObj.uplink_message.decoded_payload.Hum_SHT,
+        //soil
+        soil_temperature: jsonObj.uplink_message.decoded_payload.temp_SOIL,
+        soil_humidity: jsonObj.uplink_message.decoded_payload.water_SOIL,
+        //waterlevel
+        distance: jsonObj.uplink_message.decoded_payload.distance,
+        //
         time: jsonObj.received_at.toLocaleString('de-DE'),
         dev_eui: jsonObj.end_device_ids.dev_eui,
         rssi: jsonObj.uplink_message.rx_metadata[0].rssi,
@@ -90,4 +97,29 @@ app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     // relode page
     res.redirect('back');
 }));
+// wip
+/*
+function sendDownlink(){
+    let app1 = "kaspersa-hfu-bachelor-thesis";
+    let wh1 = "webapp";
+    let dev1 = "eui-70b3d57ed005c853";
+    fetch(`https://eu1.cloud.thethings.network/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`,{
+        method: "POST",
+        body: JSON.stringify({
+            downlinks:[{
+                // 01 -> D3 = on
+                // 10 -> D7 = off
+                frm_payload:"01",
+                f_port:15,
+                priority:"NORMAL"
+            }]
+        }),
+        headers: {
+            "Content-type":"application/json;",
+            "Authorization":"Bearer NNSXS.72OYCYYVWWBJ34RGKN4VGVXVM7LVRQRVEWAYP7Q.W2KBBVTF6KWNNEMTWD43XWOWSFQZ3IUU7BCGH24XZ7FEWZHYI5KQ",
+            "User-Agent":"webapp/1.0"
+        }
+    });
+}
+*/
 app.listen(8000);

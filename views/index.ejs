@@ -115,12 +115,32 @@
                             <!--Spacing-->
                             <tr><td><hr></td></tr>
 
-                            <!--Temperatur-->
+                            <!--LuftTemperatur-->
                             <%if(entrie.temperature){%>
                                 <tr>
                                     <td><strong>Temperatur:</strong></td>
                                     <td>
-                                        <%=entrie.temperature +"°C | Das ist "+entrie.tempStatus || "none" %>
+                                        <%=entrie.air_temperature +"°C | Das ist "+entrie.tempStatus || "none" %>
+                                    </td>
+                                </tr>
+                            <%}%>
+
+                            <!--Luftfeuchtigkeit-->
+                            <%if(entrie.humidity){%>
+                                <tr>
+                                    <td><strong>Luftfeuchtigkeit:</strong></td>
+                                    <td>
+                                        <%=entrie.air_humidity +"% | Bewässerung nötig: "+entrie.humStatus || "none" %>
+                                    </td>
+                                </tr>
+                            <%}%>
+
+                            <!--Bodentemperatur-->
+                            <%if(entrie.temperature){%>
+                                <tr>
+                                    <td><strong>Bodentemperatur:</strong></td>
+                                    <td>
+                                        <%=entrie.soil_temperature +" | Das ist "+entrie.tempStatus || "none" %>
                                     </td>
                                 </tr>
                             <%}%>
@@ -130,7 +150,7 @@
                                 <tr>
                                     <td><strong>Bodenfeuchtigkeit:</strong></td>
                                     <td>
-                                        <%=entrie.humidity +"% | Bewässerung nötig: "+entrie.humStatus || "none" %>
+                                        <%=entrie.soil_humidity +" | Bewässerung nötig: "+entrie.humStatus || "none" %>
                                     </td>
                                 </tr>
                             <%}%>
@@ -140,7 +160,7 @@
                                 <tr>
                                     <td><strong>Füllstand:</strong></td>
                                     <td>
-                                        <%=entrie.level || "none" %>
+                                        <%=entrie.distance || "none" %>
                                     </td>
                                 </tr>
                             <%}%>
