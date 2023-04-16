@@ -38,6 +38,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
 const db_1 = require("./db");
+const http_1 = __importDefault(require("http"));
 const app = (0, express_1.default)();
 app.use(express_1.default.static("views"));
 app.use(express_1.default.urlencoded({ extended: true }));
@@ -117,19 +118,47 @@ app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         watering_time: req.body.watering_time || "undefined",
         max_distance: req.body.max_distance || "undefined"
     };
-    sendDownlink(0);
+    //await sendDownlink(0);
     yield (0, db_1.updateDB)(id, entrie);
     // relode page
     res.redirect('back');
 }));
 // wip
 function sendDownlink(on_off) {
-    let app1 = "kaspersa-hfu-bachelor-thesis";
-    let wh1 = "webapp";
-    let dev1 = "eui-70b3d57ed005c853";
-    fetch(`https://eu1.cloud.thethings.network/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`, {
-        method: "POST",
-        body: JSON.stringify({
+    return __awaiter(this, void 0, void 0, function* () {
+        let app1 = "kaspersa-hfu-bachelor-thesis";
+        let wh1 = "webapp";
+        let dev1 = "eui-70b3d57ed005c853";
+        /*
+        await fetch(`https://eu1.cloud.thethings.network/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`,{
+            method: "POST",
+            body: JSON.stringify({
+                "downlinks":[{
+                    "decoded_payload":{
+                        "on_off": on_off // 0 for relais light on, 1 for relais light off
+                    },
+                    "f_port":15,
+                    "priority":"NORMAL"
+                    }]
+                }),
+            headers: {
+                "Content-type":"application/json;",
+                "Authorization": `${process.env.AUTH_TOKEN}`, // include Bearer Token
+                "User-Agent":"webapp/1.0"
+            }
+        });*/
+        // Tut irgendwie noch nix
+        let options = {
+            host: `eu1.cloud.thethings.network`,
+            path: `/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`,
+            method: "POST",
+            headers: {
+                "Content-type": "application/json;",
+                "Authorization": `${process.env.AUTH_TOKEN}`,
+                "User-Agent": "webapp/1.0"
+            }
+        };
+        let data = JSON.stringify({
             "downlinks": [{
                     "decoded_payload": {
                         "on_off": on_off // 0 for relais light on, 1 for relais light off
@@ -137,12 +166,10 @@ function sendDownlink(on_off) {
                     "f_port": 15,
                     "priority": "NORMAL"
                 }]
-        }),
-        headers: {
-            "Content-type": "application/json;",
-            "Authorization": `${process.env.AUTH_TOKEN}`,
-            "User-Agent": "webapp/1.0"
-        }
+        });
+        let req = http_1.default.request(options);
+        req.write(data);
+        req.end();
     });
 }
 app.listen(8000);

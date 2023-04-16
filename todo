@@ -2,8 +2,10 @@
 - Filter nach den Sensoreigenschaften (temperatur, feuchtigkeit, wasserspiegel) ermöglichen.
 - Bewässerungsmenge / Zeit auf Konzept anpassen. Macht so keinen Sinn mehr.
 - Downlink bei bestimmtem Bodenfeuchtigkeitswert
+- db keys in .env
 
 # Nice to have
 - Anzeige nach RSSI mit Angabe ob das Gut / Schlecht etc. ist
 - "Bewässerung nötig" - Anzeigen von den letzten drei Sensorwerten abhängig machen. Diese extra in db speichern
 - Alert wenn Ultraschallsensor distanz <20%
+- Status alive bei Seeeduino eintrag, da sonst keine Daten
