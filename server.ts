@@ -1,11 +1,12 @@
 import express from "express";
-import http from "http";
+import * as dotenv from "dotenv";
 import { getEntries, updateDB, updateDBbyUplink } from "./db";
 const app = express();
 app.use(express.static("views"));
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.set("view engine", "ejs");
+dotenv.config();
  
 // Show db entries on load
 app.get('/', async (req, res) => {
@@ -85,34 +86,34 @@ app.post('/update', async (req, res) => {
         watering_time: req.body.watering_time  || "undefined",
         max_distance: req.body.max_distance || "undefined"
     };
+    sendDownlink(0);
     await updateDB(id,entrie); 
     // relode page
     res.redirect('back');
 });
 
 // wip
-/*
-function sendDownlink(){
+function sendDownlink(on_off: 1 | 0){
     let app1 = "kaspersa-hfu-bachelor-thesis";
     let wh1 = "webapp";
     let dev1 = "eui-70b3d57ed005c853";
     fetch(`https://eu1.cloud.thethings.network/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`,{
         method: "POST",
         body: JSON.stringify({
-            downlinks:[{
-                // 01 -> D3 = on 
-                // 10 -> D7 = off
-                frm_payload:"01",
-                f_port:15,
-                priority:"NORMAL"
-            }]
-        }),
+            "downlinks":[{
+                "decoded_payload":{
+                    "on_off": on_off // 0 for relais light on, 1 for relais light off
+                },
+                "f_port":15,
+                "priority":"NORMAL"
+                }]
+            }),
         headers: {
             "Content-type":"application/json;",
-            "Authorization":"",
+            "Authorization": `${process.env.AUTH_TOKEN}`, // include Bearer Token
             "User-Agent":"webapp/1.0"
         }
     });
 }
-*/
+
 app.listen(8000);

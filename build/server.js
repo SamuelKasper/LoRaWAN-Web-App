@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13,12 +36,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const dotenv = __importStar(require("dotenv"));
 const db_1 = require("./db");
 const app = (0, express_1.default)();
 app.use(express_1.default.static("views"));
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 app.set("view engine", "ejs");
+dotenv.config();
 // Show db entries on load
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let entries = (yield (0, db_1.getEntries)()) || [];
@@ -92,33 +117,32 @@ app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         watering_time: req.body.watering_time || "undefined",
         max_distance: req.body.max_distance || "undefined"
     };
+    sendDownlink(0);
     yield (0, db_1.updateDB)(id, entrie);
     // relode page
     res.redirect('back');
 }));
 // wip
-/*
-function sendDownlink(){
+function sendDownlink(on_off) {
     let app1 = "kaspersa-hfu-bachelor-thesis";
     let wh1 = "webapp";
     let dev1 = "eui-70b3d57ed005c853";
-    fetch(`https://eu1.cloud.thethings.network/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`,{
+    fetch(`https://eu1.cloud.thethings.network/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`, {
         method: "POST",
         body: JSON.stringify({
-            downlinks:[{
-                // 01 -> D3 = on
-                // 10 -> D7 = off
-                frm_payload:"01",
-                f_port:15,
-                priority:"NORMAL"
-            }]
+            "downlinks": [{
+                    "decoded_payload": {
+                        "on_off": on_off // 0 for relais light on, 1 for relais light off
+                    },
+                    "f_port": 15,
+                    "priority": "NORMAL"
+                }]
         }),
         headers: {
-            "Content-type":"application/json;",
-            "Authorization":"",
-            "User-Agent":"webapp/1.0"
+            "Content-type": "application/json;",
+            "Authorization": `${process.env.AUTH_TOKEN}`,
+            "User-Agent": "webapp/1.0"
         }
     });
 }
-*/
 app.listen(8000);
