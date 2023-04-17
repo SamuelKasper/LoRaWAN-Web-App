@@ -1,39 +1,42 @@
 import express from "express";
-import * as dotenv from "dotenv"; 
+import * as dotenv from "dotenv";
 import { getEntries, updateDB, updateDBbyUplink } from "./db";
-import http from "http";
+import https from "https";
+import { send } from "process";
 const app = express();
 app.use(express.static("views"));
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.set("view engine", "ejs");
 dotenv.config();
- 
+
 // Show db entries on load
 app.get('/', async (req, res) => {
     let entries = await getEntries() || [];
-    // Reacting to data
-    for(let i=0;i<entries.length;i++){
-        //soil_humidity status
-        if(entries[i].soil_humidity != "undefined"){
-            let humStatus = ""
-            entries[i].soil_humidity=entries[i].soil_humidity.replace("%","");
-            if(parseInt(entries[i].soil_humidity) <50){
-                humStatus = "Ja";
-            }else if(parseInt(entries[i].soil_humidity) >=50){
-                humStatus = "Nein";        
+
+    // Check soil humidity and call sendDownlink() if needed
+    for (let i = 0; i < entries.length; i++) {
+        if (entries[i].soil_humidity != "undefined") {
+            entries[i].soil_humidity = entries[i].soil_humidity.replace("%", "");
+            if (parseInt(entries[i].soil_humidity) <= 30) {
+                console.log("downlink: water start");
+                entries[i].humStatus = "Watering right now";
+                sendDownlink(0);
+            } else if (parseInt(entries[i].soil_humidity) >= 80) {
+                console.log("downlink: water stop");
+                entries[i].humStatus = "Not watering right now";
+                sendDownlink(1);
             }
-            entries[i].humStatus = humStatus;
-            entries[i].soil_humidity=entries[i].soil_humidity+"%";
+            entries[i].soil_humidity = entries[i].soil_humidity + "%";
         }
 
-        //
-        if(entries[i].distance != "undefined"){
+        //calculate percentage for distance
+        if (entries[i].distance != "undefined") {
             let max = parseInt(entries[i].max_distance) * 10;
             let dist = parseInt(entries[i].distance);
-            let percent = parseInt(entries[i].distance)/max*100; 
+            let percent = parseInt(entries[i].distance) / max * 100;
             let percent_str = percent.toFixed(1);
-            entries[i].distance = percent_str+"% ("+ dist/10+"cm)";
+            entries[i].distance = percent_str + "% (" + dist / 10 + "cm)";
         }
     }
     // test end
@@ -47,9 +50,9 @@ app.post('/uplink', async (req, res) => {
     let jsonObj = JSON.parse(JSON.stringify(req.body));
     // use dev_eui as identifier to get the mongodb id later
     let dev_eui = jsonObj.end_device_ids.dev_eui;
- 
+
     let data = {
-        name: <String> jsonObj.end_device_ids.device_id,
+        name: <String>jsonObj.end_device_ids.device_id,
         gateway: jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
         //air
         air_temperature: jsonObj.uplink_message.decoded_payload.TempC_SHT,
@@ -68,80 +71,87 @@ app.post('/uplink', async (req, res) => {
         //fields that can be changed by the user. Only applied at first appearance in db. Later changed by /update.
         description: "Beschreibung...",
         watering_amount: "0",
-        watering_time:"08:00",
-        max_distance:"0"
+        watering_time: "08:00",
+        max_distance: "0"
     }
 
-    await updateDBbyUplink(dev_eui,data);
+    await updateDBbyUplink(dev_eui, data);
     // respond to ttn. Otherwise the uplink will fail.
     res.sendStatus(200);
 });
-  
+
 // updates the user input fields.
 app.post('/update', async (req, res) => {
-    let id = req.body.dbid; 
-    console.log(req.body);
+    let id = req.body.dbid;
     let entrie = {
         description: req.body.description || "undefined",
-        watering_amount: req.body.watering_amount  || "undefined",
-        watering_time: req.body.watering_time  || "undefined",
+        watering_amount: req.body.watering_amount || "undefined",
+        watering_time: req.body.watering_time || "undefined",
         max_distance: req.body.max_distance || "undefined"
     };
-    //await sendDownlink(0);
-    await updateDB(id,entrie); 
+    await sendDownlink(0);
+    await updateDB(id, entrie);
     // relode page
     res.redirect('back');
 });
 
-// wip
-async function sendDownlink(on_off: 1 | 0){
-    let app1 = "kaspersa-hfu-bachelor-thesis";
-    let wh1 = "webapp";
-    let dev1 = "eui-70b3d57ed005c853";
-    /*
-    await fetch(`https://eu1.cloud.thethings.network/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`,{
-        method: "POST",
-        body: JSON.stringify({
-            "downlinks":[{
-                "decoded_payload":{
-                    "on_off": on_off // 0 for relais light on, 1 for relais light off
+/* function for sending downlinks
+ 0 for relais light on
+ 1 for relais light off */
+async function sendDownlink(on_off: 1 | 0) {
+    // Only allow downlink while ENABLE_DOWNLINK is set to true
+    if (process.env.ENABLE_DOWNLINK == "true") {
+
+        let app1 = "kaspersa-hfu-bachelor-thesis";
+        let wh1 = "webapp";
+        let dev1 = "eui-70b3d57ed005c853";
+
+        //prepare payload
+        let data = JSON.stringify({
+            "downlinks": [{
+                "decoded_payload": {
+                    "on_off": on_off
                 },
-                "f_port":15,
-                "priority":"NORMAL"
-                }]
-            }),
-        headers: {
-            "Content-type":"application/json;",
-            "Authorization": `${process.env.AUTH_TOKEN}`, // include Bearer Token
-            "User-Agent":"webapp/1.0"
-        }
-    });*/
+                "f_port": 15,
+                "priority": "NORMAL"
+            }]
+        });
 
-    // Tut irgendwie noch nix
-    let options = {
-        host: `eu1.cloud.thethings.network`,
-        path: `/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`,
-        method: "POST",
-        headers: {
-            "Content-type":"application/json;",
-            "Authorization": `${process.env.AUTH_TOKEN}`, // include Bearer Token
-            "User-Agent":"webapp/1.0"
-        }
-    }
+        // preparing post options
+        let options = {
+            host: `eu1.cloud.thethings.network`,
+            path: `/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`,
+            method: "POST",
+            headers: {
+                "Authorization": `${process.env.AUTH_TOKEN}`, // include Bearer Token
+                "Content-type": "application/json;",
+                "User-Agent": "webapp/1.0",
+                "Connection": "keep-alive",
+                "Content-Length": Buffer.byteLength(data),
+                "accept": "*/*",
 
-    let data = JSON.stringify({
-        "downlinks":[{
-            "decoded_payload":{
-                "on_off": on_off // 0 for relais light on, 1 for relais light off
             },
-            "f_port":15,
-            "priority":"NORMAL"
-        }]
-    });
+        };
 
-    let req = http.request(options);
-    req.write(data);
-    req.end();    
+        let req = https.request(options, (res) => {
+            console.log(`Status: ${res.statusCode}`);
+            /*console.log(`Headers: ${JSON.stringify(res.headers)}`);
+            res.setEncoding("utf-8");
+            res.on("data",(chunk) =>{
+                console.log(`body: ${chunk}`);
+            });*/
+        });
+
+        req.on("error", (e) => {
+            console.log(`Error: ${e.message}`);
+        });
+
+        // write data to stream and close connection after
+        req.write(data);
+        req.end();
+    }else{
+        console.log("ENABLE_DOWNLINK is set to false! Change it in the enviroment variables.");
     }
+}
 
 app.listen(8000);
