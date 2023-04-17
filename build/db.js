@@ -99,8 +99,8 @@ function updateDBbyUplink(_dev_eui, item) {
                 let res = yield collection.insertOne({
                     gateway: `${obj.gateway}`, air_temperature: `${obj.air_temperature}`, air_humidity: `${obj.air_humidity}`,
                     soil_temperature: `${obj.soil_temperature}`, soil_humidity: `${obj.soil_humidity}`, distance: `${obj.distance}`,
-                    time: `${obj.time}`, dev_eui: `${obj.dev_eui}`, name: `${obj.name}`,
-                    hum_min: `${obj.hum_min}`, hum_max: `${obj.hum_max}`, watering_time: `${obj.watering_time}`, rssi: `${obj.rssi}`
+                    time: `${obj.time}`, dev_eui: `${obj.dev_eui}`, name: `${obj.name}`, max_distance: `${obj.max_distance}`,
+                    hum_min: `${obj.hum_min}`, hum_max: `${obj.hum_max}`, description: `${obj.description}`, watering_time: `${obj.watering_time}`, rssi: `${obj.rssi}`
                 });
                 console.log("Generated new entrie with id: " + res.insertedId);
             }

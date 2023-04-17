@@ -16,9 +16,10 @@ app.get('/', async (req, res) => {
     for (let i = 0; i < entries.length; i++) {
         // calculate percentage for distance
         if (entries[i].distance != "undefined") {
-            let max = parseInt(entries[i].max_distance) * 10;
-            let dist = parseInt(entries[i].distance);
-            let percent = parseInt(entries[i].distance) / max * 100;
+            let max = entries[i].max_distance * 10;
+            let dist = entries[i].distance;
+            let percent = entries[i].distance / max * 100;
+            console.log(dist, max);
             let percent_str = percent.toFixed(1);
             entries[i].distance = percent_str + "% (" + dist / 10 + "cm)";
 
@@ -46,13 +47,13 @@ app.post('/uplink', async (req, res) => {
         name: jsonObj.end_device_ids.device_id,
         gateway: jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
         //air
-        air_temperature: jsonObj.uplink_message.decoded_payload.TempC_SHT ? jsonObj.uplink_message.decoded_payload.TempC_SHT : undefined,
-        air_humidity: jsonObj.uplink_message.decoded_payload.Hum_SHT ? jsonObj.uplink_message.decoded_payload.Hum_SHT : undefined,
+        air_temperature: jsonObj.uplink_message.decoded_payload.TempC_SHT,
+        air_humidity: jsonObj.uplink_message.decoded_payload.Hum_SHT,
         //soil
-        soil_temperature: jsonObj.uplink_message.decoded_payload.temp_SOIL ? jsonObj.uplink_message.decoded_payload.temp_SOIL : undefined,
-        soil_humidity: jsonObj.uplink_message.decoded_payload.water_SOIL ? jsonObj.uplink_message.decoded_payload.water_SOIL : undefined,
+        soil_temperature: jsonObj.uplink_message.decoded_payload.temp_SOIL,
+        soil_humidity: jsonObj.uplink_message.decoded_payload.water_SOIL,
         //waterlevel
-        distance: jsonObj.uplink_message.decoded_payload.distance ? jsonObj.uplink_message.decoded_payload.distance : undefined,
+        distance: jsonObj.uplink_message.decoded_payload.distance,
         //
         time: jsonObj.received_at.toLocaleString('de-DE'),
         dev_eui: jsonObj.end_device_ids.dev_eui,
@@ -61,22 +62,32 @@ app.post('/uplink', async (req, res) => {
         //init values.
         //fields that can be changed by the user. Only applied at first appearance in db. Later changed by /update.
         description: "Beschreibung...",
-        hum_min: "30",
-        hum_max: "80",
+        hum_min: 30,
+        hum_max: 80,
         watering_time: "08:00",
-        max_distance: "0"
+        max_distance: 0 
     }
 
     //update db
     await updateDBbyUplink(dev_eui, data);
 
+    // Get humidity min and max from db
+    let entries = await getEntries() || [];
+    let hum_min: number = 30, hum_max: number = 80;
+    for (let i = 0; i < entries.length; i++) {
+        if(entries[i].dev_eui == dev_eui){
+            hum_min = parseInt(entries[i].hum_min);
+            hum_max = parseInt(entries[i].hum_max);
+        }
+    }
+
     // Check soil humidity and call sendDownlink() if needed
     if (data.soil_humidity != undefined) {
         data.soil_humidity = data.soil_humidity.replace("%", "");
-        if (parseInt(data.soil_humidity) <= 30) {
+        if (parseInt(data.soil_humidity) <= hum_min) {
             console.log("downlink: water start");
             sendDownlink(0);
-        } else if (parseInt(data.soil_humidity) >= 80) {
+        } else if (parseInt(data.soil_humidity) >= hum_max) {
             console.log("downlink: water stop");
             sendDownlink(1);
         } 
