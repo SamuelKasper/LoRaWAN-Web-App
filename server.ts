@@ -65,8 +65,6 @@ app.post('/uplink', async (req, res) => {
 
     //update db
     await updateDBbyUplink(dev_eui, data);
-    // respond to ttn. Otherwise the uplink will fail.
-    res.sendStatus(200);
 
     // Check soil humidity and call sendDownlink() if needed
     console.log("soil_test" + data.soil_humidity);
@@ -81,6 +79,11 @@ app.post('/uplink', async (req, res) => {
             sendDownlink(1);
         } 
     }
+
+    // respond to ttn. Otherwise the uplink will fail.
+    res.sendStatus(200);
+
+    
     /* Backup
     let entries = await getEntries() || [];
     for (let i = 0; i < entries.length; i++) {
@@ -118,7 +121,7 @@ app.post('/update', async (req, res) => {
 /* function for sending downlinks
  0 for relais light on
  1 for relais light off */
-async function sendDownlink(on_off: 1 | 0) {
+function sendDownlink(on_off: 1 | 0) {
     // Only allow downlink while ENABLE_DOWNLINK is set to true
     if (process.env.ENABLE_DOWNLINK == "true") {
 

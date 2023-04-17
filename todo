@@ -4,5 +4,3 @@
 
 # Nice to have
 - Anzeige nach RSSI mit Angabe ob das Gut / Schlecht etc. ist
-- "Bewässerung nötig" - Anzeigen von den letzten drei Sensorwerten abhängig machen. Diese extra in db speichern
-- Alert wenn Ultraschallsensor distanz <20%
