@@ -67,6 +67,8 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 // recieves uplink from webhook
 // to test this with postman, place .data after jsonObj. Must be removed bedore uploading to render!
 app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // respond to ttn. Otherwise the uplink will fail.
+    res.sendStatus(200);
     // parse request body into a jsonObj.
     let jsonObj = JSON.parse(JSON.stringify(req.body));
     // use dev_eui as identifier to get the mongodb id later
@@ -96,9 +98,7 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     //update db
     yield (0, db_1.updateDBbyUplink)(dev_eui, data);
     // Check soil humidity and call sendDownlink() if needed
-    console.log("soil_test" + data.soil_humidity);
     if (data.soil_humidity != undefined) {
-        console.log("soil_check: in");
         data.soil_humidity = data.soil_humidity.replace("%", "");
         if (parseInt(data.soil_humidity) <= 30) {
             console.log("downlink: water start");
@@ -109,25 +109,6 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             sendDownlink(1);
         }
     }
-    // respond to ttn. Otherwise the uplink will fail.
-    res.sendStatus(200);
-    /* Backup
-    let entries = await getEntries() || [];
-    for (let i = 0; i < entries.length; i++) {
-        if (entries[i].soil_humidity != "undefined") {
-            entries[i].soil_humidity = entries[i].soil_humidity.replace("%", "");
-            if (parseInt(entries[i].soil_humidity) <= 30) {
-                console.log("downlink: water start");
-                entries[i].humStatus = "Watering right now";
-                sendDownlink(0);
-            } else if (parseInt(entries[i].soil_humidity) >= 80) {
-                console.log("downlink: water stop");
-                entries[i].humStatus = "Not watering right now";
-                sendDownlink(1);
-            }
-            entries[i].soil_humidity = entries[i].soil_humidity + "%";
-        }
-    } */
 }));
 // updates the user input fields.
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

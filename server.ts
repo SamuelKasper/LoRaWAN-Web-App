@@ -34,13 +34,16 @@ app.get('/', async (req, res) => {
 // recieves uplink from webhook
 // to test this with postman, place .data after jsonObj. Must be removed bedore uploading to render!
 app.post('/uplink', async (req, res) => {
+    // respond to ttn. Otherwise the uplink will fail.
+    res.sendStatus(200);
+    
     // parse request body into a jsonObj.
     let jsonObj = JSON.parse(JSON.stringify(req.body));
     // use dev_eui as identifier to get the mongodb id later
     let dev_eui = jsonObj.end_device_ids.dev_eui;
 
     let data = {
-        name: <String>jsonObj.end_device_ids.device_id,
+        name: jsonObj.end_device_ids.device_id,
         gateway: jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
         //air
         air_temperature: jsonObj.uplink_message.decoded_payload.TempC_SHT,
@@ -67,9 +70,7 @@ app.post('/uplink', async (req, res) => {
     await updateDBbyUplink(dev_eui, data);
 
     // Check soil humidity and call sendDownlink() if needed
-    console.log("soil_test" + data.soil_humidity);
     if (data.soil_humidity != undefined) {
-        console.log("soil_check: in");
         data.soil_humidity = data.soil_humidity.replace("%", "");
         if (parseInt(data.soil_humidity) <= 30) {
             console.log("downlink: water start");
@@ -79,28 +80,6 @@ app.post('/uplink', async (req, res) => {
             sendDownlink(1);
         } 
     }
-
-    // respond to ttn. Otherwise the uplink will fail.
-    res.sendStatus(200);
-
-    
-    /* Backup
-    let entries = await getEntries() || [];
-    for (let i = 0; i < entries.length; i++) {
-        if (entries[i].soil_humidity != "undefined") {
-            entries[i].soil_humidity = entries[i].soil_humidity.replace("%", "");
-            if (parseInt(entries[i].soil_humidity) <= 30) {
-                console.log("downlink: water start");
-                entries[i].humStatus = "Watering right now";
-                sendDownlink(0);
-            } else if (parseInt(entries[i].soil_humidity) >= 80) {
-                console.log("downlink: water stop");
-                entries[i].humStatus = "Not watering right now";
-                sendDownlink(1);
-            }
-            entries[i].soil_humidity = entries[i].soil_humidity + "%";
-        }
-    } */
 });
 
 // updates the user input fields.
