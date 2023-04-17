@@ -19,7 +19,6 @@ app.get('/', async (req, res) => {
             let max = entries[i].max_distance * 10;
             let dist = entries[i].distance;
             let percent = entries[i].distance / max * 100;
-            console.log(dist, max);
             let percent_str = percent.toFixed(1);
             entries[i].distance = percent_str + "% (" + dist / 10 + "cm)";
 
@@ -47,13 +46,13 @@ app.post('/uplink', async (req, res) => {
         name: jsonObj.end_device_ids.device_id,
         gateway: jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
         //air
-        air_temperature: jsonObj.uplink_message.decoded_payload.TempC_SHT,
-        air_humidity: jsonObj.uplink_message.decoded_payload.Hum_SHT,
+        air_temperature: <string> jsonObj.uplink_message.decoded_payload.TempC_SHT,
+        air_humidity: <string> jsonObj.uplink_message.decoded_payload.Hum_SHT,
         //soil
         soil_temperature: jsonObj.uplink_message.decoded_payload.temp_SOIL,
         soil_humidity: jsonObj.uplink_message.decoded_payload.water_SOIL,
         //waterlevel
-        distance: jsonObj.uplink_message.decoded_payload.distance,
+        distance: <number> jsonObj.uplink_message.decoded_payload.distance,
         //
         time: jsonObj.received_at.toLocaleString('de-DE'),
         dev_eui: jsonObj.end_device_ids.dev_eui,
@@ -65,7 +64,7 @@ app.post('/uplink', async (req, res) => {
         hum_min: 30,
         hum_max: 80,
         watering_time: "08:00",
-        max_distance: 0 
+        max_distance: 200 
     }
 
     //update db

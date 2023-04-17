@@ -54,7 +54,6 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             let max = entries[i].max_distance * 10;
             let dist = entries[i].distance;
             let percent = entries[i].distance / max * 100;
-            console.log(dist, max);
             let percent_str = percent.toFixed(1);
             entries[i].distance = percent_str + "% (" + dist / 10 + "cm)";
             if (percent < 10) {
@@ -95,7 +94,7 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         hum_min: 30,
         hum_max: 80,
         watering_time: "08:00",
-        max_distance: 0
+        max_distance: 200
     };
     //update db
     yield (0, db_1.updateDBbyUplink)(dev_eui, data);
