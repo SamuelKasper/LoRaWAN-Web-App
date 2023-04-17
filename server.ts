@@ -14,8 +14,6 @@ app.get('/', async (req, res) => {
     let entries = await getEntries() || [];
 
     for (let i = 0; i < entries.length; i++) {
-        // set percentage for humidity
-        entries[i].soil_humidity = entries[i].soil_humidity + "%";
         // calculate percentage for distance
         if (entries[i].distance != "undefined") {
             let max = parseInt(entries[i].max_distance) * 10;
@@ -23,6 +21,10 @@ app.get('/', async (req, res) => {
             let percent = parseInt(entries[i].distance) / max * 100;
             let percent_str = percent.toFixed(1);
             entries[i].distance = percent_str + "% (" + dist / 10 + "cm)";
+
+            if(percent<10){
+                entries[i].distance += " | Achtung, das Wasser ist fast aufgebraucht!";
+            }
         }
     }
     // test end
@@ -67,8 +69,9 @@ app.post('/uplink', async (req, res) => {
     res.sendStatus(200);
 
     // Check soil humidity and call sendDownlink() if needed
-    if (data.soil_humidity != "undefined") {
-        console.log("soil_check");
+    console.log("soil_test" + data.soil_humidity);
+    if (data.soil_humidity != undefined) {
+        console.log("soil_check: in");
         data.soil_humidity = data.soil_humidity.replace("%", "");
         if (parseInt(data.soil_humidity) <= 30) {
             console.log("downlink: water start");
