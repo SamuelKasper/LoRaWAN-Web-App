@@ -1,8 +1,10 @@
 import {MongoClient, ObjectId} from "mongodb";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 // returns MongoClient
 async function getClient(){
-    return new MongoClient("mongodb+srv://samuelnoahkasper:T8Ugwdh9ZhFEe77v@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority");
+    return new MongoClient(`mongodb+srv://${process.env.DB_USER}:${process.env.PASSWORD}@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority`);
 }
 
 //Get DB enties and saves them in temp
@@ -17,7 +19,7 @@ export async function getEntries(){
         });
         return entries; 
     }catch(e){
-        console.error(e);
+        console.error(e); 
     } finally {
         await client.close();
     }    

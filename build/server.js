@@ -48,23 +48,10 @@ dotenv.config();
 // Show db entries on load
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let entries = (yield (0, db_1.getEntries)()) || [];
-    // Check soil humidity and call sendDownlink() if needed
     for (let i = 0; i < entries.length; i++) {
-        if (entries[i].soil_humidity != "undefined") {
-            entries[i].soil_humidity = entries[i].soil_humidity.replace("%", "");
-            if (parseInt(entries[i].soil_humidity) <= 30) {
-                console.log("downlink: water start");
-                entries[i].humStatus = "Watering right now";
-                sendDownlink(0);
-            }
-            else if (parseInt(entries[i].soil_humidity) >= 80) {
-                console.log("downlink: water stop");
-                entries[i].humStatus = "Not watering right now";
-                sendDownlink(1);
-            }
-            entries[i].soil_humidity = entries[i].soil_humidity + "%";
-        }
-        //calculate percentage for distance
+        // set percentage for humidity
+        entries[i].soil_humidity = entries[i].soil_humidity + "%";
+        // calculate percentage for distance
         if (entries[i].distance != "undefined") {
             let max = parseInt(entries[i].max_distance) * 10;
             let dist = parseInt(entries[i].distance);
@@ -105,9 +92,39 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         watering_time: "08:00",
         max_distance: "0"
     };
+    //update db
     yield (0, db_1.updateDBbyUplink)(dev_eui, data);
     // respond to ttn. Otherwise the uplink will fail.
     res.sendStatus(200);
+    // Check soil humidity and call sendDownlink() if needed
+    if (data.soil_humidity != "undefined") {
+        data.soil_humidity = data.soil_humidity.replace("%", "");
+        if (parseInt(data.soil_humidity) <= 30) {
+            console.log("downlink: water start");
+            sendDownlink(0);
+        }
+        else if (parseInt(data.soil_humidity) >= 80) {
+            console.log("downlink: water stop");
+            sendDownlink(1);
+        }
+    }
+    /* Backup
+    let entries = await getEntries() || [];
+    for (let i = 0; i < entries.length; i++) {
+        if (entries[i].soil_humidity != "undefined") {
+            entries[i].soil_humidity = entries[i].soil_humidity.replace("%", "");
+            if (parseInt(entries[i].soil_humidity) <= 30) {
+                console.log("downlink: water start");
+                entries[i].humStatus = "Watering right now";
+                sendDownlink(0);
+            } else if (parseInt(entries[i].soil_humidity) >= 80) {
+                console.log("downlink: water stop");
+                entries[i].humStatus = "Not watering right now";
+                sendDownlink(1);
+            }
+            entries[i].soil_humidity = entries[i].soil_humidity + "%";
+        }
+    } */
 }));
 // updates the user input fields.
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -173,7 +190,7 @@ function sendDownlink(on_off) {
             req.end();
         }
         else {
-            console.log("ENABLE_DOWNLINK is set to false! Change it in the enviroment variables.");
+            console.log("ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.");
         }
     });
 }

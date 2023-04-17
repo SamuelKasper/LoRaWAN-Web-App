@@ -2,7 +2,6 @@ import express from "express";
 import * as dotenv from "dotenv";
 import { getEntries, updateDB, updateDBbyUplink } from "./db";
 import https from "https";
-import { send } from "process";
 const app = express();
 app.use(express.static("views"));
 app.use(express.urlencoded({ extended: true }));
@@ -14,23 +13,10 @@ dotenv.config();
 app.get('/', async (req, res) => {
     let entries = await getEntries() || [];
 
-    // Check soil humidity and call sendDownlink() if needed
     for (let i = 0; i < entries.length; i++) {
-        if (entries[i].soil_humidity != "undefined") {
-            entries[i].soil_humidity = entries[i].soil_humidity.replace("%", "");
-            if (parseInt(entries[i].soil_humidity) <= 30) {
-                console.log("downlink: water start");
-                entries[i].humStatus = "Watering right now";
-                sendDownlink(0);
-            } else if (parseInt(entries[i].soil_humidity) >= 80) {
-                console.log("downlink: water stop");
-                entries[i].humStatus = "Not watering right now";
-                sendDownlink(1);
-            }
-            entries[i].soil_humidity = entries[i].soil_humidity + "%";
-        }
-
-        //calculate percentage for distance
+        // set percentage for humidity
+        entries[i].soil_humidity = entries[i].soil_humidity + "%";
+        // calculate percentage for distance
         if (entries[i].distance != "undefined") {
             let max = parseInt(entries[i].max_distance) * 10;
             let dist = parseInt(entries[i].distance);
@@ -75,9 +61,39 @@ app.post('/uplink', async (req, res) => {
         max_distance: "0"
     }
 
+    //update db
     await updateDBbyUplink(dev_eui, data);
     // respond to ttn. Otherwise the uplink will fail.
     res.sendStatus(200);
+
+    // Check soil humidity and call sendDownlink() if needed
+    if (data.soil_humidity != "undefined") {
+        data.soil_humidity = data.soil_humidity.replace("%", "");
+        if (parseInt(data.soil_humidity) <= 30) {
+            console.log("downlink: water start");
+            sendDownlink(0);
+        } else if (parseInt(data.soil_humidity) >= 80) {
+            console.log("downlink: water stop");
+            sendDownlink(1);
+        } 
+    }
+    /* Backup
+    let entries = await getEntries() || [];
+    for (let i = 0; i < entries.length; i++) {
+        if (entries[i].soil_humidity != "undefined") {
+            entries[i].soil_humidity = entries[i].soil_humidity.replace("%", "");
+            if (parseInt(entries[i].soil_humidity) <= 30) {
+                console.log("downlink: water start");
+                entries[i].humStatus = "Watering right now";
+                sendDownlink(0);
+            } else if (parseInt(entries[i].soil_humidity) >= 80) {
+                console.log("downlink: water stop");
+                entries[i].humStatus = "Not watering right now";
+                sendDownlink(1);
+            }
+            entries[i].soil_humidity = entries[i].soil_humidity + "%";
+        }
+    } */
 });
 
 // updates the user input fields.
@@ -150,7 +166,7 @@ async function sendDownlink(on_off: 1 | 0) {
         req.write(data);
         req.end();
     }else{
-        console.log("ENABLE_DOWNLINK is set to false! Change it in the enviroment variables.");
+        console.log("ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.");
     }
 }
 
