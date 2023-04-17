@@ -36,23 +36,23 @@ app.get('/', async (req, res) => {
 app.post('/uplink', async (req, res) => {
     // respond to ttn. Otherwise the uplink will fail.
     res.sendStatus(200);
-    
+
     // parse request body into a jsonObj.
     let jsonObj = JSON.parse(JSON.stringify(req.body));
     // use dev_eui as identifier to get the mongodb id later
     let dev_eui = jsonObj.end_device_ids.dev_eui;
-
+    
     let data = {
         name: jsonObj.end_device_ids.device_id,
         gateway: jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
         //air
-        air_temperature: jsonObj.uplink_message.decoded_payload.TempC_SHT,
-        air_humidity: jsonObj.uplink_message.decoded_payload.Hum_SHT,
+        air_temperature: jsonObj.uplink_message.decoded_payload.TempC_SHT ? jsonObj.uplink_message.decoded_payload.TempC_SHT : undefined,
+        air_humidity: jsonObj.uplink_message.decoded_payload.Hum_SHT ? jsonObj.uplink_message.decoded_payload.Hum_SHT : undefined,
         //soil
-        soil_temperature: jsonObj.uplink_message.decoded_payload.temp_SOIL,
-        soil_humidity: jsonObj.uplink_message.decoded_payload.water_SOIL,
+        soil_temperature: jsonObj.uplink_message.decoded_payload.temp_SOIL ? jsonObj.uplink_message.decoded_payload.temp_SOIL : undefined,
+        soil_humidity: jsonObj.uplink_message.decoded_payload.water_SOIL ? jsonObj.uplink_message.decoded_payload.water_SOIL : undefined,
         //waterlevel
-        distance: jsonObj.uplink_message.decoded_payload.distance,
+        distance: jsonObj.uplink_message.decoded_payload.distance ? jsonObj.uplink_message.decoded_payload.distance : undefined,
         //
         time: jsonObj.received_at.toLocaleString('de-DE'),
         dev_eui: jsonObj.end_device_ids.dev_eui,
