@@ -68,6 +68,7 @@ app.post('/uplink', async (req, res) => {
 
     // Check soil humidity and call sendDownlink() if needed
     if (data.soil_humidity != "undefined") {
+        console.log("soil_check");
         data.soil_humidity = data.soil_humidity.replace("%", "");
         if (parseInt(data.soil_humidity) <= 30) {
             console.log("downlink: water start");
