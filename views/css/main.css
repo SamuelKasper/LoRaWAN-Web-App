@@ -29,6 +29,19 @@
     width: 150px !important;
 }
 
+.w50px{
+    width: 50px !important;
+}
+
+.input-group{
+    align-items: center !important;
+}
+
+.pad_lr_15px{
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
 .align-center{
     align-items: center;
 }

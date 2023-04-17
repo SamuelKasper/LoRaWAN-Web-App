@@ -171,7 +171,7 @@
                             <!--Bewässerungszeit-->
                             <%if(entrie.soil_humidity!="undefined"){%>
                                 <tr>
-                                    <td><strong>Bewässerungszeit:</strong></td>
+                                    <td><strong>Start der Bewässerung:</strong></td>
                                     <td>
                                         <input id="watering_time" name="watering_time" type="time"
                                             class="input-group-text"
@@ -180,15 +180,21 @@
                                 </tr>
                             <%}%>
 
-                            <!--Bewässerungsmenge-->
+                            <!--Min Max Bodenfeuchtigkeit-->
                             <%if(entrie.soil_humidity!="undefined"){%>
                                 <tr>
-                                    <td><strong>Bewässerungsmenge:</strong></td>
+                                    <td><strong>Grenzwerte<br>Bodenfeuchtigkeit:</strong></td>
                                     <td>
-                                        <div class="input-group w150px">
-                                            <input id="watering_amount" name="watering_amount" type="text" class="form-control"
-                                                value="<%=entrie.watering_amount%>">
-                                            <span class="input-group-text">Liter</span>
+                                        <div class="input-group">
+                                            <input id="hum_min" name="hum_min" type="text" class="form-control w50px"
+                                                value="<%=entrie.hum_min%>">
+                                            <span class="input-group-text">%</span>
+                                            
+                                            <span class="pad_lr_15px"> bis </span>
+
+                                            <input id="hum_max" name="hum_max" type="text" class="form-control w50px"
+                                                value="<%=entrie.hum_max%>">
+                                            <span class="input-group-text">%</span>
                                         </div>
                                     </td>
                                 </tr>

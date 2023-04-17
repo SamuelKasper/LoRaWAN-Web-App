@@ -61,7 +61,8 @@ app.post('/uplink', async (req, res) => {
         //init values.
         //fields that can be changed by the user. Only applied at first appearance in db. Later changed by /update.
         description: "Beschreibung...",
-        watering_amount: "0",
+        hum_min: "30",
+        hum_max: "80",
         watering_time: "08:00",
         max_distance: "0"
     }
@@ -88,10 +89,10 @@ app.post('/update', async (req, res) => {
     let entrie = {
         description: req.body.description || "undefined",
         watering_amount: req.body.watering_amount || "undefined",
-        watering_time: req.body.watering_time || "undefined",
+        hum_min: req.body.hum_min || "undefined",
+        hum_max: req.body.hum_max || "undefined",
         max_distance: req.body.max_distance || "undefined"
     };
-    await sendDownlink(0);
     await updateDB(id, entrie);
     // relode page
     res.redirect('back');

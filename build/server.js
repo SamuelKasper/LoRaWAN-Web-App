@@ -91,7 +91,8 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         //init values.
         //fields that can be changed by the user. Only applied at first appearance in db. Later changed by /update.
         description: "Beschreibung...",
-        watering_amount: "0",
+        hum_min: "30",
+        hum_max: "80",
         watering_time: "08:00",
         max_distance: "0"
     };
@@ -116,10 +117,10 @@ app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     let entrie = {
         description: req.body.description || "undefined",
         watering_amount: req.body.watering_amount || "undefined",
-        watering_time: req.body.watering_time || "undefined",
+        hum_min: req.body.hum_min || "undefined",
+        hum_max: req.body.hum_max || "undefined",
         max_distance: req.body.max_distance || "undefined"
     };
-    yield sendDownlink(0);
     yield (0, db_1.updateDB)(id, entrie);
     // relode page
     res.redirect('back');

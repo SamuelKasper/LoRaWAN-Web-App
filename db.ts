@@ -58,7 +58,7 @@ export async function updateDBbyUplink(_dev_eui: string,item: {}){
                 gateway:`${obj.gateway}`,air_temperature:`${obj.air_temperature}`,air_humidity:`${obj.air_humidity}`,
                 soil_temperature:`${obj.soil_temperature}`,soil_humidity:`${obj.soil_humidity}`,distance:`${obj.distance}`,
                 time:`${obj.time}`,dev_eui:`${obj.dev_eui}`,name:`${obj.name}`,
-                watering_amount:`${obj.watering_amount}`,watering_time:`${obj.watering_time}`,rssi:`${obj.rssi}`});
+                hum_min:`${obj.hum_min}`,hum_max:`${obj.hum_max}`,watering_time:`${obj.watering_time}`,rssi:`${obj.rssi}`});
             
                 console.log("Generated new entrie with id: " +res.insertedId);
         }else{
