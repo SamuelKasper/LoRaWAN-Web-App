@@ -43,13 +43,14 @@ app.post('/uplink', async (req, res) => {
     let dev_eui = jsonObj.end_device_ids.dev_eui;
     let sensorData = jsonObj.uplink_message.decoded_payload;
 
-    let data = {
+    let data: DbEntrie = {
         // Other
         name: <string>jsonObj.end_device_ids.device_id,
         gateway: <string>jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
         time: jsonObj.received_at.toLocaleString('de-DE'),
         dev_eui: <string>jsonObj.end_device_ids.dev_eui,
         rssi: <number>jsonObj.uplink_message.rx_metadata[0].rssi,
+        description: "Beschreibung...",
         // Air, just sends the Data without °C and %
         air_temperature: <number> sensorData.TempC_SHT,
         air_humidity: <number> sensorData.Hum_SHT,
@@ -59,28 +60,33 @@ app.post('/uplink', async (req, res) => {
         // Waterlevel, measured by distance
         distance: <number> sensorData.distance,
 
-        // Init values for editable fields
+        // Init values for optional editable fields
         // Only applied at first appearance in db. Later changed by /update route.
-        description: "Beschreibung...",
-        hum_min: 30,
+        /*hum_min: 30,
         hum_max: 80,
         watering_time: "08:00",
-        max_distance: 200 
+        max_distance: 200 */
     }
 
-    //test
-    //let str = "{"
+    // Delete entries with value undefined 
     for(const[key,val] of Object.entries(data)){
         if(val == undefined){
-            //str += `\"${key}\":\"${val}\",`;
             delete data[key as keyof typeof data];
         }
     }
+
+    // Add editable fields for soil if data is from soil sensor
+    if(data.soil_humidity){
+        data.hum_min = 30;
+        data.hum_max = 80;
+        data.watering_time = "08:00";
+    }
+    // Add editable fields for distance if data is from distance sensor
+    if(data.distance){
+        data.max_distance = 200;
+    }
+   
     console.log(data);
-    /*str += "}";
-    str = str.replace(",}","}");
-    let newData = JSON.parse(str);
-    console.log(newData);*/
     //test
 
     // Update db

@@ -81,6 +81,7 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         time: jsonObj.received_at.toLocaleString('de-DE'),
         dev_eui: jsonObj.end_device_ids.dev_eui,
         rssi: jsonObj.uplink_message.rx_metadata[0].rssi,
+        description: "Beschreibung...",
         // Air, just sends the Data without °C and %
         air_temperature: sensorData.TempC_SHT,
         air_humidity: sensorData.Hum_SHT,
@@ -89,27 +90,30 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         soil_humidity: sensorData.water_SOIL,
         // Waterlevel, measured by distance
         distance: sensorData.distance,
-        // Init values for editable fields
+        // Init values for optional editable fields
         // Only applied at first appearance in db. Later changed by /update route.
-        description: "Beschreibung...",
-        hum_min: 30,
+        /*hum_min: 30,
         hum_max: 80,
         watering_time: "08:00",
-        max_distance: 200
+        max_distance: 200 */
     };
-    //test
-    //let str = "{"
+    // Delete entries with value undefined 
     for (const [key, val] of Object.entries(data)) {
         if (val == undefined) {
-            //str += `\"${key}\":\"${val}\",`;
             delete data[key];
         }
     }
+    // Add editable fields for soil if data is from soil sensor
+    if (data.soil_humidity) {
+        data.hum_min = 30;
+        data.hum_max = 80;
+        data.watering_time = "08:00";
+    }
+    // Add editable fields for distance if data is from distance sensor
+    if (data.distance) {
+        data.max_distance = 200;
+    }
     console.log(data);
-    /*str += "}";
-    str = str.replace(",}","}");
-    let newData = JSON.parse(str);
-    console.log(newData);*/
     //test
     // Update db
     yield (0, db_1.db_updateDBbyUplink)(dev_eui, data);
