@@ -73,66 +73,69 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     let jsonObj = JSON.parse(JSON.stringify(req.body));
     // Use dev_eui as identifier to get the mongodb id later
     let dev_eui = jsonObj.end_device_ids.dev_eui;
-    // Add all data to their specific fields. Some fields will be undefined.
-    let sensorData = jsonObj.uplink_message.decoded_payload;
-    let data = {
-        // Data other than enviroment data
-        name: jsonObj.end_device_ids.device_id,
-        gateway: jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
-        time: jsonObj.received_at.toLocaleString('de-DE'),
-        dev_eui: jsonObj.end_device_ids.dev_eui,
-        rssi: jsonObj.uplink_message.rx_metadata[0].rssi,
-        description: "Beschreibung...",
-        // Air, just sends the Data without °C and %
-        air_temperature: sensorData.TempC_SHT,
-        air_humidity: sensorData.Hum_SHT,
-        // Soil, sensor sends also °C and %!
-        soil_temperature: sensorData.temp_SOIL,
-        soil_humidity: sensorData.water_SOIL,
-        // Waterlevel, measured by distance
-        distance: sensorData.distance,
-    };
-    // Delete entries with value undefined 
-    for (const [key, val] of Object.entries(data)) {
-        if (val == undefined) {
-            delete data[key];
+    // Only process uplinks with a decoded payload
+    if (jsonObj.uplink_message.decoded_payload) {
+        // Add all data to their specific fields. Some fields will be undefined.
+        let sensorData = jsonObj.uplink_message.decoded_payload;
+        let data = {
+            // Data other than enviroment data
+            name: jsonObj.end_device_ids.device_id,
+            gateway: jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
+            time: jsonObj.received_at.toLocaleString('de-DE'),
+            dev_eui: jsonObj.end_device_ids.dev_eui,
+            rssi: jsonObj.uplink_message.rx_metadata[0].rssi,
+            description: "Beschreibung...",
+            // Air, just sends the Data without °C and %
+            air_temperature: sensorData.TempC_SHT,
+            air_humidity: sensorData.Hum_SHT,
+            // Soil, sensor sends also °C and %!
+            soil_temperature: sensorData.temp_SOIL,
+            soil_humidity: sensorData.water_SOIL,
+            // Waterlevel, measured by distance
+            distance: sensorData.distance,
+        };
+        // Delete entries with value undefined 
+        for (const [key, val] of Object.entries(data)) {
+            if (val == undefined) {
+                delete data[key];
+            }
         }
-    }
-    // No added fields like hum_min, hum_max, watering_time, max_distance
-    let base_data = data;
-    // Add editable fields for soil if data is from soil sensor
-    if (data.soil_humidity) {
-        data.hum_min = 30;
-        data.hum_max = 80;
-        data.watering_time = "08:00";
-    }
-    // Add editable fields for distance if data is from distance sensor
-    if (data.distance) {
-        data.max_distance = 200;
-    }
-    console.log(data);
-    // Update db 
-    yield (0, db_1.db_updateDBbyUplink)(dev_eui, data, base_data);
-    // Get humidity min and max from db
-    let entries = (yield (0, db_1.db_getEntries)()) || [];
-    let hum_min = 30;
-    let hum_max = 80;
-    for (let i = 0; i < entries.length; i++) {
-        if (entries[i].dev_eui == dev_eui) {
-            hum_min = parseInt(entries[i].hum_min);
-            hum_max = parseInt(entries[i].hum_max);
+        // No added fields like hum_min, hum_max, watering_time, max_distance
+        let base_data = data;
+        // Add editable fields for soil if data is from soil sensor
+        if (data.soil_humidity) {
+            data.hum_min = 30;
+            data.hum_max = 80;
+            data.watering_time = "08:00";
         }
-    }
-    // Check soil humidity and call sendDownlink() if needed
-    if (data.soil_humidity != undefined) {
-        data.soil_humidity = data.soil_humidity.replace("%", "");
-        if (parseInt(data.soil_humidity) <= hum_min) {
-            console.log("Downlink: Pump start");
-            sendDownlink(0);
+        // Add editable fields for distance if data is from distance sensor
+        if (data.distance) {
+            data.max_distance = 200;
         }
-        else if (parseInt(data.soil_humidity) >= hum_max) {
-            console.log("Downlink: Pump stop");
-            sendDownlink(1);
+        console.log(data);
+        // Update db 
+        yield (0, db_1.db_updateDBbyUplink)(dev_eui, data, base_data);
+        // Get humidity min and max from db
+        let entries = (yield (0, db_1.db_getEntries)()) || [];
+        let hum_min = 30;
+        let hum_max = 80;
+        for (let i = 0; i < entries.length; i++) {
+            if (entries[i].dev_eui == dev_eui) {
+                hum_min = parseInt(entries[i].hum_min);
+                hum_max = parseInt(entries[i].hum_max);
+            }
+        }
+        // Check soil humidity and call sendDownlink() if needed
+        if (data.soil_humidity != undefined) {
+            data.soil_humidity = data.soil_humidity.replace("%", "");
+            if (parseInt(data.soil_humidity) <= hum_min) {
+                console.log("Downlink: Pump start");
+                sendDownlink(0);
+            }
+            else if (parseInt(data.soil_humidity) >= hum_max) {
+                console.log("Downlink: Pump stop");
+                sendDownlink(1);
+            }
         }
     }
 }));
