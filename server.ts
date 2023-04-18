@@ -76,7 +76,9 @@ app.post('/uplink', async (req, res) => {
         }
     }
     str += "}";
-    console.log(str);
+    str = str.replace(",}","}");
+    let newData = JSON.parse(str);
+    console.log(newData);
     //test
 
     // Update db

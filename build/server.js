@@ -105,7 +105,9 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     str += "}";
-    console.log(str);
+    str = str.replace(",}", "}");
+    let newData = JSON.parse(str);
+    console.log(newData);
     //test
     // Update db
     yield (0, db_1.db_updateDBbyUplink)(dev_eui, data);
