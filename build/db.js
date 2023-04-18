@@ -32,18 +32,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateDBbyUplink = exports.updateDB = exports.getEntries = void 0;
+exports.db_updateDBbyUplink = exports.db_updateEditableFields = exports.db_getEntries = void 0;
 const mongodb_1 = require("mongodb");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
-// returns MongoClient
+// Returns MongoClient
 function getClient() {
     return __awaiter(this, void 0, void 0, function* () {
         return new mongodb_1.MongoClient(`mongodb+srv://${process.env.DB_USER}:${process.env.PASSWORD}@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority`);
     });
 }
-//Get DB enties and saves them in temp
-function getEntries() {
+// Get DB enties and saves them in temp
+function db_getEntries() {
     return __awaiter(this, void 0, void 0, function* () {
         let client = yield getClient();
         try {
@@ -63,15 +63,14 @@ function getEntries() {
         }
     });
 }
-exports.getEntries = getEntries;
-// Updates a db entrie
-function updateDB(_id, item) {
+exports.db_getEntries = db_getEntries;
+// Updates the editable fields 
+function db_updateEditableFields(_id, item) {
     return __awaiter(this, void 0, void 0, function* () {
         let client = yield getClient();
         try {
             yield client.connect();
             const collection = client.db("lorawan_data").collection("sensor_data");
-            // der hier drunter geht nicht
             yield collection.updateOne({ "_id": new mongodb_1.ObjectId(_id) }, { $set: item });
         }
         catch (e) {
@@ -82,37 +81,77 @@ function updateDB(_id, item) {
         }
     });
 }
-exports.updateDB = updateDB;
-// Updates a db entrie or adds a new one. Called by ttn uplink.
-function updateDBbyUplink(_dev_eui, item) {
+exports.db_updateEditableFields = db_updateEditableFields;
+// Updates a db entrie or add a new one. Triggert by TTN Uplink
+function db_updateDBbyUplink(_devEUI, item) {
     return __awaiter(this, void 0, void 0, function* () {
         let client = yield getClient();
         try {
-            // connect to db and get collection object
+            // Get db entrie by given dev_eui and save it in result
             yield client.connect();
             const collection = client.db("lorawan_data").collection("sensor_data");
-            // get the db entrie by looking at the dev_eui
-            let result = yield collection.find({ "dev_eui": _dev_eui }).toArray();
-            // if theres no db entrie, make a new one
+            let result = yield collection.find({ "dev_eui": _devEUI }).toArray();
+            // No db entrie was found
             if (result.length == 0) {
                 let obj = JSON.parse(JSON.stringify(item));
                 let res = yield collection.insertOne({
-                    gateway: `${obj.gateway}`, air_temperature: `${obj.air_temperature}`, air_humidity: `${obj.air_humidity}`,
-                    soil_temperature: `${obj.soil_temperature}`, soil_humidity: `${obj.soil_humidity}`, distance: `${obj.distance}`,
-                    time: `${obj.time}`, dev_eui: `${obj.dev_eui}`, name: `${obj.name}`, max_distance: `${obj.max_distance}`,
-                    hum_min: `${obj.hum_min}`, hum_max: `${obj.hum_max}`, description: `${obj.description}`, watering_time: `${obj.watering_time}`, rssi: `${obj.rssi}`
+                    /*
+                    // Always there
+                    time: <string> obj.time,
+                    dev_eui: <string> obj.dev_eui,
+                    name: <string> obj.name,
+                    gateway: <string> obj.gateway,
+                    rssi: <number> obj.rssi,
+                    // Sensor data
+                    air_temperature: <number> obj.air_temperature,
+                    air_humidity: <number> obj.air_humidity,
+                    soil_temperature: <string> obj.soil_temperature,
+                    soil_humidity: <string> obj.soil_humidity,
+                    distance: <number> obj.distance,
+                    // Editable fields
+                    max_distance: <number> obj.max_distance,
+                    hum_min: <number> obj.hum_min,
+                    hum_max: <number> obj.hum_max,
+                    description: <string> obj.description,
+                    watering_time: <string> obj.watering_time,*/
+                    // Always there
+                    time: `${obj.time}`,
+                    dev_eui: `${obj.dev_eui}`,
+                    name: `${obj.name}`,
+                    gateway: `${obj.gateway}`,
+                    rssi: `${obj.rssi}`,
+                    // Sensor data
+                    air_temperature: `${obj.air_temperature}`,
+                    air_humidity: `${obj.air_humidity}`,
+                    soil_temperature: `${obj.soil_temperature}`,
+                    soil_humidity: `${obj.soil_humidity}`,
+                    distance: `${obj.distance}`,
+                    // Editable fields
+                    max_distance: `${obj.max_distance}`,
+                    hum_min: `${obj.hum_min}`,
+                    hum_max: `${obj.hum_max}`,
+                    description: `${obj.description}`,
+                    watering_time: `${obj.watering_time}`
                 });
-                console.log("Generated new entrie with id: " + res.insertedId);
+                console.log("Generated new db entrie with id: " + res.insertedId);
             }
             else {
                 // if there is a db entry, get id from entrie and update
                 let res_obj = JSON.parse(JSON.stringify(result));
                 let obj = JSON.parse(JSON.stringify(item));
                 let res = yield collection.updateOne({ "_id": new mongodb_1.ObjectId(res_obj[0]._id) }, { $set: {
-                        gateway: `${obj.gateway}`, air_temperature: `${obj.air_temperature}`, air_humidity: `${obj.air_humidity}`,
-                        soil_temperature: `${obj.soil_temperature}`, soil_humidity: `${obj.soil_humidity}`, distance: `${obj.distance}`,
-                        time: `${obj.time}`, dev_eui: `${obj.dev_eui}`, rssi: `${obj.rssi}`
-                    } });
+                        gateway: `${obj.gateway}`,
+                        time: `${obj.time}`,
+                        dev_eui: `${obj.dev_eui}`,
+                        rssi: `${obj.rssi}`
+                    },
+                    // Sensor data
+                    air_temperature: `${obj.air_temperature}`,
+                    air_humidity: `${obj.air_humidity}`,
+                    soil_temperature: `${obj.soil_temperature}`,
+                    soil_humidity: `${obj.soil_humidity}`,
+                    distance: `${obj.distance}`
+                });
                 console.log("found: " + res.matchedCount + " entrie.", "\nupdated id: " + res_obj[0]._id);
             }
         }
@@ -124,4 +163,4 @@ function updateDBbyUplink(_dev_eui, item) {
         }
     });
 }
-exports.updateDBbyUplink = updateDBbyUplink;
+exports.db_updateDBbyUplink = db_updateDBbyUplink;

@@ -47,60 +47,72 @@ app.set("view engine", "ejs");
 dotenv.config();
 // Show db entries on load
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let entries = (yield (0, db_1.getEntries)()) || [];
+    let entries = (yield (0, db_1.db_getEntries)()) || [];
+    // Calculate percentage for distance
     for (let i = 0; i < entries.length; i++) {
-        // calculate percentage for distance
         if (entries[i].distance != "undefined") {
             let max = entries[i].max_distance * 10;
             let dist = entries[i].distance;
             let percent = entries[i].distance / max * 100;
             let percent_str = percent.toFixed(1);
             entries[i].distance = percent_str + "% (" + dist / 10 + "cm)";
+            // Add message if zistern water level is below 10%
             if (percent < 10) {
                 entries[i].distance += " | Achtung, das Wasser ist fast aufgebraucht!";
             }
         }
     }
-    // test end
+    // Render the page with given entries
     res.render("index", { entries });
 }));
-// recieves uplink from webhook
-// to test this with postman, place .data after jsonObj. Must be removed bedore uploading to render!
+// If recieved uplink from webhook
 app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // respond to ttn. Otherwise the uplink will fail.
+    // Respond to ttn. Otherwise the uplink will fail.
     res.sendStatus(200);
-    // parse request body into a jsonObj.
+    // Parse request body into a jsonObj.
     let jsonObj = JSON.parse(JSON.stringify(req.body));
-    // use dev_eui as identifier to get the mongodb id later
+    // Use dev_eui as identifier to get the mongodb id later
     let dev_eui = jsonObj.end_device_ids.dev_eui;
+    let sensorData = jsonObj.uplink_message.decoded_payload;
+    //test
+    let str = "{";
+    for (const [key, val] of Object.entries(jsonObj)) {
+        if (val != undefined) {
+            str += `${key}:${val},`;
+        }
+    }
+    str += "}";
+    console.log(str);
+    //test
     let data = {
+        // Other
         name: jsonObj.end_device_ids.device_id,
         gateway: jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
-        //air
-        air_temperature: jsonObj.uplink_message.decoded_payload.TempC_SHT,
-        air_humidity: jsonObj.uplink_message.decoded_payload.Hum_SHT,
-        //soil
-        soil_temperature: jsonObj.uplink_message.decoded_payload.temp_SOIL,
-        soil_humidity: jsonObj.uplink_message.decoded_payload.water_SOIL,
-        //waterlevel
-        distance: jsonObj.uplink_message.decoded_payload.distance,
-        //
         time: jsonObj.received_at.toLocaleString('de-DE'),
         dev_eui: jsonObj.end_device_ids.dev_eui,
         rssi: jsonObj.uplink_message.rx_metadata[0].rssi,
-        //init values.
-        //fields that can be changed by the user. Only applied at first appearance in db. Later changed by /update.
+        // Air, just sends the Data without °C and %
+        air_temperature: sensorData.TempC_SHT,
+        air_humidity: sensorData.Hum_SHT,
+        // Soil, sensor sends also °C and %!
+        soil_temperature: sensorData.temp_SOIL,
+        soil_humidity: sensorData.water_SOIL,
+        // Waterlevel, measured by distance
+        distance: sensorData.distance,
+        // Init values for editable fields
+        // Only applied at first appearance in db. Later changed by /update route.
         description: "Beschreibung...",
         hum_min: 30,
         hum_max: 80,
         watering_time: "08:00",
         max_distance: 200
     };
-    //update db
-    yield (0, db_1.updateDBbyUplink)(dev_eui, data);
+    // Update db
+    yield (0, db_1.db_updateDBbyUplink)(dev_eui, data);
     // Get humidity min and max from db
-    let entries = (yield (0, db_1.getEntries)()) || [];
-    let hum_min = 30, hum_max = 80;
+    let entries = (yield (0, db_1.db_getEntries)()) || [];
+    let hum_min = 30;
+    let hum_max = 80;
     for (let i = 0; i < entries.length; i++) {
         if (entries[i].dev_eui == dev_eui) {
             hum_min = parseInt(entries[i].hum_min);
@@ -111,30 +123,31 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     if (data.soil_humidity != undefined) {
         data.soil_humidity = data.soil_humidity.replace("%", "");
         if (parseInt(data.soil_humidity) <= hum_min) {
-            console.log("downlink: water start");
+            console.log("Downlink: Pump start");
             sendDownlink(0);
         }
         else if (parseInt(data.soil_humidity) >= hum_max) {
-            console.log("downlink: water stop");
+            console.log("Downlink: Pump stop");
             sendDownlink(1);
         }
     }
 }));
-// updates the user input fields.
+// Updates the user input fields.
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.body.dbid;
     let entrie = {
-        description: req.body.description || "undefined",
-        watering_amount: req.body.watering_amount || "undefined",
-        hum_min: req.body.hum_min || "undefined",
-        hum_max: req.body.hum_max || "undefined",
-        max_distance: req.body.max_distance || "undefined"
+        description: req.body.description ? req.body.description : "Beschreibung...",
+        watering_time: req.body.watering_time ? req.body.watering_time : "8:00",
+        hum_min: req.body.hum_min ? req.body.hum_min : 30,
+        hum_max: req.body.hum_max ? req.body.hum_max : 80,
+        max_distance: req.body.max_distance ? req.body.max_distance : 250,
     };
-    yield (0, db_1.updateDB)(id, entrie);
-    // relode page
+    // Update db
+    yield (0, db_1.db_updateEditableFields)(id, entrie);
+    // Reloade page
     res.redirect('back');
 }));
-/* function for sending downlinks
+/* Function for sending downlinks
  0 for relais light on
  1 for relais light off */
 function sendDownlink(on_off) {
@@ -143,7 +156,7 @@ function sendDownlink(on_off) {
         let app1 = "kaspersa-hfu-bachelor-thesis";
         let wh1 = "webapp";
         let dev1 = "eui-70b3d57ed005c853";
-        //prepare payload
+        // Prepare payload data
         let data = JSON.stringify({
             "downlinks": [{
                     "decoded_payload": {
@@ -153,7 +166,7 @@ function sendDownlink(on_off) {
                     "priority": "NORMAL"
                 }]
         });
-        // preparing post options
+        // Preparing POST options
         let options = {
             host: `eu1.cloud.thethings.network`,
             path: `/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`,
@@ -167,18 +180,14 @@ function sendDownlink(on_off) {
                 "accept": "*/*",
             },
         };
+        // Create request object
         let req = https_1.default.request(options, (res) => {
             console.log(`Status: ${res.statusCode}`);
-            /*console.log(`Headers: ${JSON.stringify(res.headers)}`);
-            res.setEncoding("utf-8");
-            res.on("data",(chunk) =>{
-                console.log(`body: ${chunk}`);
-            });*/
         });
         req.on("error", (e) => {
             console.log(`Error: ${e.message}`);
         });
-        // write data to stream and close connection after
+        // Write data to stream and close connection after
         req.write(data);
         req.end();
     }
