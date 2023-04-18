@@ -69,16 +69,18 @@ app.post('/uplink', async (req, res) => {
     }
 
     //test
-    let str = "{"
+    //let str = "{"
     for(const[key,val] of Object.entries(data)){
-        if(val != undefined){
-            str += `\"${key}\":\"${val}\",`;
+        if(val == undefined){
+            //str += `\"${key}\":\"${val}\",`;
+            delete data[key as keyof typeof data];
         }
     }
-    str += "}";
+    console.log(data);
+    /*str += "}";
     str = str.replace(",}","}");
     let newData = JSON.parse(str);
-    console.log(newData);
+    console.log(newData);*/
     //test
 
     // Update db
