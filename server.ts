@@ -42,17 +42,6 @@ app.post('/uplink', async (req, res) => {
     // Use dev_eui as identifier to get the mongodb id later
     let dev_eui = jsonObj.end_device_ids.dev_eui;
     let sensorData = jsonObj.uplink_message.decoded_payload;
-    
-    //test
-    let str = "{"
-    for(const[key,val] of Object.entries(jsonObj)){
-        if(val != undefined){
-            str += `${key}:${val},`;
-        }
-    }
-    str += "}";
-    console.log(str);
-    //test
 
     let data = {
         // Other
@@ -78,6 +67,17 @@ app.post('/uplink', async (req, res) => {
         watering_time: "08:00",
         max_distance: 200 
     }
+
+    //test
+    let str = "{"
+    for(const[key,val] of Object.entries(data)){
+        if(val != undefined){
+            str += `${key}:${val},`;
+        }
+    }
+    str += "}";
+    console.log(str);
+    //test
 
     // Update db
     await db_updateDBbyUplink(dev_eui, data);

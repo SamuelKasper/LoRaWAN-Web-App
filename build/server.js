@@ -74,16 +74,6 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     // Use dev_eui as identifier to get the mongodb id later
     let dev_eui = jsonObj.end_device_ids.dev_eui;
     let sensorData = jsonObj.uplink_message.decoded_payload;
-    //test
-    let str = "{";
-    for (const [key, val] of Object.entries(jsonObj)) {
-        if (val != undefined) {
-            str += `${key}:${val},`;
-        }
-    }
-    str += "}";
-    console.log(str);
-    //test
     let data = {
         // Other
         name: jsonObj.end_device_ids.device_id,
@@ -107,6 +97,16 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         watering_time: "08:00",
         max_distance: 200
     };
+    //test
+    let str = "{";
+    for (const [key, val] of Object.entries(data)) {
+        if (val != undefined) {
+            str += `${key}:${val},`;
+        }
+    }
+    str += "}";
+    console.log(str);
+    //test
     // Update db
     yield (0, db_1.db_updateDBbyUplink)(dev_eui, data);
     // Get humidity min and max from db
