@@ -101,7 +101,7 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     let str = "{";
     for (const [key, val] of Object.entries(data)) {
         if (val != undefined) {
-            str += `${key}:${val},`;
+            str += `\"${key}\":\"${val}\",`;
         }
     }
     str += "}";

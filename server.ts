@@ -72,7 +72,7 @@ app.post('/uplink', async (req, res) => {
     let str = "{"
     for(const[key,val] of Object.entries(data)){
         if(val != undefined){
-            str += `${key}:${val},`;
+            str += `\"${key}\":\"${val}\",`;
         }
     }
     str += "}";
