@@ -1,4 +1,4 @@
-import {MongoClient, ObjectId} from "mongodb";
+import {Document, MongoClient, ObjectId} from "mongodb";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -50,7 +50,7 @@ export async function db_updateDBbyUplink(_devEUI: string, data: {}, base_data:{
 
         // No db entrie was found
         if(result.length == 0){
-            let obj = JSON.parse(JSON.stringify(data));
+            let obj = (JSON.stringify(data));
             let res = await collection.insertOne({
                 obj
                 /*
@@ -96,7 +96,7 @@ export async function db_updateDBbyUplink(_devEUI: string, data: {}, base_data:{
         }else{
             // if there is a db entry, get id from entrie and update
             let res_obj = JSON.parse(JSON.stringify(result));
-            let obj = JSON.parse(JSON.stringify(base_data));
+            let obj = (JSON.stringify(base_data));
 
             let res = await collection.updateOne({"_id": new ObjectId(res_obj[0]._id)},{
                 obj

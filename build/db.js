@@ -93,7 +93,7 @@ function db_updateDBbyUplink(_devEUI, data, base_data) {
             let result = yield collection.find({ "dev_eui": _devEUI }).toArray();
             // No db entrie was found
             if (result.length == 0) {
-                let obj = JSON.parse(JSON.stringify(data));
+                let obj = (JSON.stringify(data));
                 let res = yield collection.insertOne({
                     obj
                     /*
@@ -139,7 +139,7 @@ function db_updateDBbyUplink(_devEUI, data, base_data) {
             else {
                 // if there is a db entry, get id from entrie and update
                 let res_obj = JSON.parse(JSON.stringify(result));
-                let obj = JSON.parse(JSON.stringify(base_data));
+                let obj = (JSON.stringify(base_data));
                 let res = yield collection.updateOne({ "_id": new mongodb_1.ObjectId(res_obj[0]._id) }, {
                     obj
                     /*$set:{
