@@ -40,7 +40,7 @@ export async function db_updateEditableFields(_id: string, item: {}){
 }
 
 // Updates a db entrie or add a new one. Triggert by TTN Uplink
-export async function db_updateDBbyUplink(_devEUI: string,item: {}){
+export async function db_updateDBbyUplink(_devEUI: string, data: {}, base_data:{}){
     let client = await getClient();
     try{
         // Get db entrie by given dev_eui and save it in result
@@ -50,8 +50,9 @@ export async function db_updateDBbyUplink(_devEUI: string,item: {}){
 
         // No db entrie was found
         if(result.length == 0){
-            let obj = JSON.parse(JSON.stringify(item));
+            let obj = JSON.parse(JSON.stringify(data));
             let res = await collection.insertOne({
+                obj
                 /*
                 // Always there
                 time: <string> obj.time,
@@ -72,8 +73,8 @@ export async function db_updateDBbyUplink(_devEUI: string,item: {}){
                 description: <string> obj.description,
                 watering_time: <string> obj.watering_time,*/
 
-                // Always there
-                time:`${obj.time}`,
+                // Always there 
+                /*time:`${obj.time}`,
                 dev_eui:`${obj.dev_eui}`,
                 name:`${obj.name}`,
                 gateway:`${obj.gateway}`,
@@ -89,15 +90,17 @@ export async function db_updateDBbyUplink(_devEUI: string,item: {}){
                 hum_min: `${obj.hum_min}`,
                 hum_max: `${obj.hum_max}`,
                 description:`${obj.description}`,
-                watering_time:`${obj.watering_time}`
+                watering_time:`${obj.watering_time}`*/
             });
                 console.log("Generated new db entrie with id: " +res.insertedId);
         }else{
             // if there is a db entry, get id from entrie and update
             let res_obj = JSON.parse(JSON.stringify(result));
-            let obj = JSON.parse(JSON.stringify(item));
+            let obj = JSON.parse(JSON.stringify(base_data));
 
-            let res = await collection.updateOne({"_id": new ObjectId(res_obj[0]._id)},{$set:{
+            let res = await collection.updateOne({"_id": new ObjectId(res_obj[0]._id)},{
+                obj
+                /*$set:{
                 gateway:`${obj.gateway}`,
                 time:`${obj.time}`,
                 dev_eui:`${obj.dev_eui}`,
@@ -107,7 +110,7 @@ export async function db_updateDBbyUplink(_devEUI: string,item: {}){
                 air_humidity:`${obj.air_humidity}`,
                 soil_temperature:`${obj.soil_temperature}`,
                 soil_humidity:`${obj.soil_humidity}`,
-                distance:`${obj.distance}`
+                distance:`${obj.distance}`*/
             });
             console.log("found: "+ res.matchedCount +" entrie.", "\nupdated id: " + res_obj[0]._id);
         }

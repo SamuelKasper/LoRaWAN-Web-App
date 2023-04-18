@@ -41,32 +41,29 @@ app.post('/uplink', async (req, res) => {
     let jsonObj = JSON.parse(JSON.stringify(req.body));
     // Use dev_eui as identifier to get the mongodb id later
     let dev_eui = jsonObj.end_device_ids.dev_eui;
+    
+    // Add all data to their specific fields. Some fields will be undefined.
     let sensorData = jsonObj.uplink_message.decoded_payload;
-
     let data: DbEntrie = {
-        // Other
+        // Data other than enviroment data
         name: <string>jsonObj.end_device_ids.device_id,
         gateway: <string>jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
         time: jsonObj.received_at.toLocaleString('de-DE'),
         dev_eui: <string>jsonObj.end_device_ids.dev_eui,
         rssi: <number>jsonObj.uplink_message.rx_metadata[0].rssi,
         description: "Beschreibung...",
+
         // Air, just sends the Data without °C and %
         air_temperature: <number> sensorData.TempC_SHT,
         air_humidity: <number> sensorData.Hum_SHT,
+
         // Soil, sensor sends also °C and %!
         soil_temperature: <string>sensorData.temp_SOIL,
         soil_humidity: <string>sensorData.water_SOIL,
+
         // Waterlevel, measured by distance
         distance: <number> sensorData.distance,
-
-        // Init values for optional editable fields
-        // Only applied at first appearance in db. Later changed by /update route.
-        /*hum_min: 30,
-        hum_max: 80,
-        watering_time: "08:00",
-        max_distance: 200 */
-    }
+    };
 
     // Delete entries with value undefined 
     for(const[key,val] of Object.entries(data)){
@@ -74,6 +71,9 @@ app.post('/uplink', async (req, res) => {
             delete data[key as keyof typeof data];
         }
     }
+
+    // No added fields like hum_min, hum_max, watering_time, max_distance
+    let base_data = data;
 
     // Add editable fields for soil if data is from soil sensor
     if(data.soil_humidity){
@@ -87,10 +87,9 @@ app.post('/uplink', async (req, res) => {
     }
    
     console.log(data);
-    //test
 
     // Update db
-    await db_updateDBbyUplink(dev_eui, data);
+    await db_updateDBbyUplink(dev_eui, data, base_data);
 
     // Get humidity min and max from db
     let entries = await db_getEntries() || [];
