@@ -116,7 +116,7 @@
                             <tr><td><hr></td></tr>
 
                             <!--Lufttemperatur-->
-                            <%if(entrie.air_temperature != "undefined"){%>
+                            <%if(entrie.air_temperature){%>
                                 <tr>
                                     <td><strong>Lufttemperatur:</strong></td>
                                     <td>
@@ -126,7 +126,7 @@
                             <%}%>
 
                             <!--Luftfeuchtigkeit-->
-                            <%if(entrie.air_humidity != "undefined"){%>
+                            <%if(entrie.air_humidity){%>
                                 <tr>
                                     <td><strong>Luftfeuchtigkeit:</strong></td>
                                     <td>
@@ -136,7 +136,7 @@
                             <%}%>
 
                             <!--Bodentemperatur-->
-                            <%if(entrie.soil_temperature != "undefined"){%>
+                            <%if(entrie.soil_temperature){%>
                                 <tr>
                                     <td><strong>Bodentemperatur:</strong></td>
                                     <td>
@@ -146,7 +146,7 @@
                             <%}%>
 
                             <!--Bodenfeuchtigkeit-->
-                            <%if(entrie.soil_humidity != "undefined"){%>
+                            <%if(entrie.soil_humidity){%>
                                 <tr>
                                     <td><strong>Bodenfeuchtigkeit:</strong></td>
                                     <td>
@@ -156,7 +156,7 @@
                             <%}%>
 
                             <!--Füllstand-->
-                            <%if(entrie.distance != "undefined"){%>
+                            <%if(entrie.distance){%>
                                 <tr>
                                     <td><strong>Füllstand:</strong></td>
                                     <td>
@@ -169,7 +169,7 @@
                             <tr><td><hr></td></tr>
 
                             <!--Bewässerungszeit-->
-                            <%if(entrie.soil_humidity!="undefined"){%>
+                            <%if(entrie.soil_humidity){%>
                                 <tr>
                                     <td><strong>Start der Bewässerung:</strong></td>
                                     <td>
@@ -181,7 +181,7 @@
                             <%}%>
 
                             <!--Min Max Bodenfeuchtigkeit-->
-                            <%if(entrie.soil_humidity!="undefined"){%>
+                            <%if(entrie.soil_humidity){%>
                                 <tr>
                                     <td><strong>Grenzwerte<br>Bodenfeuchtigkeit:</strong></td>
                                     <td>
@@ -201,7 +201,7 @@
                             <%}%>
 
                             <!--Maximaler Füllstand-->
-                            <%if(entrie.distance!="undefined"){%>
+                            <%if(entrie.distance){%>
                                 <tr>
                                     <td><strong>Maximale Distanz <br>zum Boden:</strong></td>
                                     <td>

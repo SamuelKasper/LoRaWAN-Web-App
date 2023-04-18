@@ -50,7 +50,7 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let entries = (yield (0, db_1.db_getEntries)()) || [];
     // Calculate percentage for distance
     for (let i = 0; i < entries.length; i++) {
-        if (entries[i].distance != "undefined") {
+        if (entries[i].distance) {
             let max = entries[i].max_distance * 10;
             let dist = entries[i].distance;
             let percent = entries[i].distance / max * 100;
@@ -111,7 +111,7 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         data.max_distance = 200;
     }
     console.log(data);
-    // Update db
+    // Update db 
     yield (0, db_1.db_updateDBbyUplink)(dev_eui, data, base_data);
     // Get humidity min and max from db
     let entries = (yield (0, db_1.db_getEntries)()) || [];

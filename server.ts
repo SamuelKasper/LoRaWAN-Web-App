@@ -16,7 +16,7 @@ app.get('/', async (req, res) => {
 
     // Calculate percentage for distance
     for (let i = 0; i < entries.length; i++) {
-        if (entries[i].distance != "undefined") {
+        if (entries[i].distance) {
             let max:number = entries[i].max_distance * 10;
             let dist:number = entries[i].distance;
             let percent:number = entries[i].distance / max * 100;
@@ -88,7 +88,7 @@ app.post('/uplink', async (req, res) => {
    
     console.log(data);
 
-    // Update db
+    // Update db 
     await db_updateDBbyUplink(dev_eui, data, base_data);
 
     // Get humidity min and max from db
