@@ -104,13 +104,13 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         let base_data = data;
         // Add editable fields for soil if data is from soil sensor
         if (data.soil_humidity) {
-            data.hum_min = 30;
-            data.hum_max = 80;
-            data.watering_time = "08:00";
+            data.hum_min ? data.hum_min : 30;
+            data.hum_max ? data.hum_max : 80;
+            data.watering_time ? data.watering_time : "08:00";
         }
         // Add editable fields for distance if data is from distance sensor
         if (data.distance) {
-            data.max_distance = 200;
+            data.max_distance ? data.max_distance : 200;
         }
         // Update db 
         yield (0, db_1.db_updateDBbyUplink)(dev_eui, data, base_data);

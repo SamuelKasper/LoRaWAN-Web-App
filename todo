@@ -1,7 +1,6 @@
 # Must have
 - Filter nach den Sensoreigenschaften (temperatur, feuchtigkeit, wasserspiegel) ermöglichen.
-- Bewässerungsmenge / Zeit auf Konzept anpassen. Macht so keinen Sinn mehr.
-- Gelegentlicher Error durch Data Rate Uplink von Milesight sensor, da der TempC_SHT nicht gelesen werden kann
+- Bewässerungsstart Uhrzeit einbauen
 
 # Nice to have
 - Anzeige nach RSSI mit Angabe ob das Gut / Schlecht etc. ist
