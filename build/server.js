@@ -112,7 +112,6 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         if (data.distance) {
             data.max_distance = 200;
         }
-        console.log(data);
         // Update db 
         yield (0, db_1.db_updateDBbyUplink)(dev_eui, data, base_data);
         // Get humidity min and max from db

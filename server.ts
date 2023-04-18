@@ -2,7 +2,6 @@ import express from "express";
 import * as dotenv from "dotenv";
 import { db_getEntries, db_updateDBbyUplink, db_updateEditableFields } from "./db";
 import https from "https";
-import { json } from "stream/consumers";
 const app = express();
 app.use(express.static("views"));
 app.use(express.urlencoded({ extended: true }));
@@ -88,8 +87,6 @@ app.post('/uplink', async (req, res) => {
             data.max_distance = 200;
         }
 
-        console.log(data);
-
         // Update db 
         await db_updateDBbyUplink(dev_eui, data, base_data);
 
@@ -115,7 +112,7 @@ app.post('/uplink', async (req, res) => {
             }
         }
     }
-});
+}); 
 
 // Updates the user input fields.
 app.post('/update', async (req, res) => {

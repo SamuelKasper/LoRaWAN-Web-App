@@ -113,7 +113,11 @@
                             </tr>
                             
                             <!--Spacing-->
-                            <tr><td><hr></td></tr>
+                            <%if(entrie.air_temperature || entrie.air_humidity || 
+                                entrie.soil_temperature || entrie.soil_humidity || 
+                                entrie.distance){%>
+                                <tr><td><hr></td></tr>
+                            <%}%>
 
                             <!--Lufttemperatur-->
                             <%if(entrie.air_temperature){%>

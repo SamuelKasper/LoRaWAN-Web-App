@@ -66,4 +66,3 @@ export async function db_updateDBbyUplink(_devEUI: string, data: {}, base_data:{
         await client.close();
     }    
 }
-
