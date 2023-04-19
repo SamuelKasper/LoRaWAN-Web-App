@@ -74,23 +74,26 @@ app.post('/uplink', async (req, res) => {
         // No added fields like hum_min, hum_max, watering_time, max_distance
         let base_data = data;
 
-        console.log(data);
-
-        // Add editable fields for soil if data is from soil sensor
-        if (data.soil_humidity) {
-            data.hum_min = data.hum_min ? data.hum_min : 30;
-            data.hum_max = data.hum_max ? data.hum_max : 80;
-            data.watering_time = data.watering_time ? data.watering_time : "08:00";
-        }
-        // Add editable fields for distance if data is from distance sensor
-        if (data.distance) {
-            console.log("former max distance: ", data.max_distance)
-            data.max_distance = data.max_distance ? data.max_distance : 200;
+        // Set db values or init values for the editable fields
+        let entries = await db_getEntries() || [];
+        for (let i = 0; i < entries.length; i++) {
+            if (entries[i].dev_eui == data.dev_eui) {
+                // Add editable fields for soil if data is from soil sensor
+                if (data.soil_humidity) {
+                    data.hum_min = entries[i].hum_min ? entries[i].hum_min : 30;
+                    data.hum_max = entries[i].hum_max ? entries[i].hum_max : 80;
+                    data.watering_time = entries[i].watering_time ? entries[i].watering_time : "08:00";
+                }
+                // Add editable fields for distance if data is from distance sensor
+                if (data.distance) {
+                    data.max_distance = entries[i].max_distance ? entries[i].max_distance : 200;
+                }
+            }
         }
 
         // Update db 
         await db_updateDBbyUplink(data.dev_eui, data, base_data);
-        
+
         // Check for necessary downlink if the sensor ist a soil sensor
         if (data.soil_humidity) {
             checkDownlink(data);
@@ -105,7 +108,7 @@ app.post('/update', async (req, res) => {
     // Update only data of soil sensor
     if (req.body.watering_time) {
         entrie = {
-            description: req.body.description ? <string> req.body.description : "Beschreibung...",
+            description: req.body.description ? <string>req.body.description : "Beschreibung...",
             watering_time: req.body.watering_time ? <string>req.body.watering_time : "8:00",
             hum_min: req.body.hum_min ? parseInt(req.body.hum_min) : 30,
             hum_max: req.body.hum_max ? parseInt(req.body.hum_max) : 80,
@@ -113,13 +116,13 @@ app.post('/update', async (req, res) => {
         // Update only data of distance sensor
     } else if (req.body.max_distance) {
         entrie = {
-            description: req.body.description ? <string> req.body.description : "Beschreibung...",
+            description: req.body.description ? <string>req.body.description : "Beschreibung...",
             max_distance: req.body.max_distance ? parseInt(req.body.max_distance) : 250,
         };
         // Update everything else
     } else {
         entrie = {
-            description: req.body.description ? <string> req.body.description : "Beschreibung...",
+            description: req.body.description ? <string>req.body.description : "Beschreibung...",
         };
     }
 

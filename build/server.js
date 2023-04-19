@@ -100,17 +100,21 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         // No added fields like hum_min, hum_max, watering_time, max_distance
         let base_data = data;
-        console.log(data);
-        // Add editable fields for soil if data is from soil sensor
-        if (data.soil_humidity) {
-            data.hum_min = data.hum_min ? data.hum_min : 30;
-            data.hum_max = data.hum_max ? data.hum_max : 80;
-            data.watering_time = data.watering_time ? data.watering_time : "08:00";
-        }
-        // Add editable fields for distance if data is from distance sensor
-        if (data.distance) {
-            console.log("former max distance: ", data.max_distance);
-            data.max_distance = data.max_distance ? data.max_distance : 200;
+        // Set db values or init values for the editable fields
+        let entries = (yield (0, db_1.db_getEntries)()) || [];
+        for (let i = 0; i < entries.length; i++) {
+            if (entries[i].dev_eui == data.dev_eui) {
+                // Add editable fields for soil if data is from soil sensor
+                if (data.soil_humidity) {
+                    data.hum_min = entries[i].hum_min ? entries[i].hum_min : 30;
+                    data.hum_max = entries[i].hum_max ? entries[i].hum_max : 80;
+                    data.watering_time = entries[i].watering_time ? entries[i].watering_time : "08:00";
+                }
+                // Add editable fields for distance if data is from distance sensor
+                if (data.distance) {
+                    data.max_distance = entries[i].max_distance ? entries[i].max_distance : 200;
+                }
+            }
         }
         // Update db 
         yield (0, db_1.db_updateDBbyUplink)(data.dev_eui, data, base_data);
