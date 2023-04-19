@@ -189,6 +189,7 @@ async function checkDownlink(data: DbEntrie) {
  0 for relais on
  1 for relais off */
 function sendDownlink(on_off: 1 | 0) {
+    console.log("just startet sendDownlink");
     // Only allow downlink while ENABLE_DOWNLINK is set to true
     if (process.env.ENABLE_DOWNLINK == "true") {
 
@@ -240,6 +241,7 @@ function sendDownlink(on_off: 1 | 0) {
     }
 
     // Reset called, so a new downlink can be sheduled
+    console.log("setting called to false");
     called = false;
 }
 

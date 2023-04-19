@@ -209,6 +209,7 @@ function checkDownlink(data) {
  0 for relais on
  1 for relais off */
 function sendDownlink(on_off) {
+    console.log("just startet sendDownlink");
     // Only allow downlink while ENABLE_DOWNLINK is set to true
     if (process.env.ENABLE_DOWNLINK == "true") {
         let app1 = "kaspersa-hfu-bachelor-thesis";
@@ -253,6 +254,7 @@ function sendDownlink(on_off) {
         console.log("ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.");
     }
     // Reset called, so a new downlink can be sheduled
+    console.log("setting called to false");
     called = false;
 }
 // Calculate and then wait for specific time
