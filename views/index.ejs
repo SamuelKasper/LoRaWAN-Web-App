@@ -34,7 +34,7 @@
                     </div>
                     <div class="col-2">
                         <input type="radio" id="io" name="filter_type" value="io">
-                        <label for="pump">I/O (wip)</label> 
+                        <label for="pump">I/O</label> 
                     </div>
                     <div class="col-2">
                         <input type="radio" id="all" name="filter_type" value="all">
@@ -49,7 +49,7 @@
                         let str = "";
                         entries.forEach(entrie=>{
                             //add parameters for search
-                            str = str + entrie._id+","+entrie.name+","+entrie.temperature+","+entrie.level+"|";
+                            str = str + entrie._id+","+entrie.name+","+entrie.soil_temperature+","+entrie.air_temperature+","+entrie.distance+"|";
                         });
                         %>
                         <button class="btn btn-primary" type="button" id="button-addon2" onclick="myFilter('<%=str%>')">Suche</button>
@@ -254,7 +254,7 @@
 <script>
 function myFilter(entrieString){
     //checked radio button
-    let radioBtn = document.querySelector('input[name="filter_type"]:checked'); //.id?
+    let radioBtn = document.querySelector('input[name="filter_type"]:checked');
     //search bar value
     let search = document.getElementById("filter_search").value;
     //akkordeon entries with id, type, name
@@ -264,7 +264,7 @@ function myFilter(entrieString){
         let option = entries[i].split(",");
 
         if(search!=""){
-            // option[2] is the entrie name. save in name to convert it to string to use include
+            // Option[2] is the entrie name. Save it to convert it to string to use include
             let name = option[1]+"";
             if(name.includes(search)){
                 document.getElementById(option[0]).style = "display: block";
@@ -272,7 +272,7 @@ function myFilter(entrieString){
                 document.getElementById(option[0]).style = "display: none";
             }
         }else{
-            // if button was checked
+            // if a button was checked
             if(radioBtn){
                 console.log(`radio button ${radioBtn.id} was checked`);
                 // if button all was checked
@@ -280,17 +280,23 @@ function myFilter(entrieString){
                     document.getElementById(option[0]).style = "display: block";
                 // if button temperature was checked
                 }else if(radioBtn.id=="temp"){
-                    if(option[2] == "undefined"){
+                    if(option[2] == "undefined" && option[3] == "undefined"){
                         document.getElementById(option[0]).style = "display: none";
                     }else{
                         document.getElementById(option[0]).style = "display: block";
                     }
                 //if button füllstand was checked
                 }else if(radioBtn.id=="level"){
-                    if(option[3] == "undefined"){
+                    if(option[4] == "undefined"){
                         document.getElementById(option[0]).style = "display: none";
                     }else{
                         document.getElementById(option[0]).style = "display: block";
+                    }
+                }else if(radioBtn.id=="io"){
+                    if(option[2] == "undefined" && option[3] == "undefined" && option[4] == "undefined"){
+                        document.getElementById(option[0]).style = "display: block";
+                    }else{
+                        document.getElementById(option[0]).style = "display: none";
                     }
                 }
             }else{

@@ -1,7 +1,5 @@
 # Must have
-- Filter nach den Sensoreigenschaften (temperatur, feuchtigkeit, wasserspiegel) ermöglichen.
-- Bewässerungsstart Uhrzeit einbauen
-- mehrfach auslösen von setTimeout verhindern
+- Mehrfach auslösen von setTimeout verhindern
 
 
 # Nice to have
