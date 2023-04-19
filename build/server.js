@@ -133,6 +133,7 @@ app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 // Check if downlink is necessary
 function checkDownlink(data) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log("entered checkDownlink()");
         // Get humidity min and max from db
         let entries = (yield (0, db_1.db_getEntries)()) || [];
         let hum_min = 30;
@@ -146,11 +147,13 @@ function checkDownlink(data) {
         }
         // Check soil humidity and call sendDownlink() if needed
         if (data.soil_humidity != undefined && data.watering_time != undefined) {
+            console.log("soil_humidity and watering_time are not undefined!");
             data.soil_humidity = data.soil_humidity.replace("%", "");
             // Get waiting time
             const waiting_time = calculateWaitingTime(data.watering_time);
             // Check if humidity is below min-value
             if (parseInt(data.soil_humidity) <= hum_min) {
+                console.log("Downlink necessary: on");
                 // Wait a specific time before running sendDownlink
                 setTimeout(function () {
                     sendDownlink(0), // 0 turns the relais on
@@ -160,6 +163,7 @@ function checkDownlink(data) {
                 //Check if humidity is above max-value
             }
             else if (parseInt(data.soil_humidity) >= hum_max) {
+                console.log("Downlink necessary: off");
                 // Wait a specific time before running sendDownlink
                 setTimeout(function () {
                     sendDownlink(1), // 1 turns the relais off
