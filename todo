@@ -2,7 +2,8 @@
 - Filter nach den Sensoreigenschaften (temperatur, feuchtigkeit, wasserspiegel) ermöglichen.
 - Bewässerungsstart Uhrzeit einbauen
 - mehrfach auslösen von setTimeout verhindern
-- Editable fields werden überschriebne?
+
 
 # Nice to have
 - Anzeige nach RSSI mit Angabe ob das Gut / Schlecht etc. ist
+- Anstatt in /uplink alle entries zu holen und nach der dev_eui durchzugehen einfach direkt mit findOne das richtige holen.

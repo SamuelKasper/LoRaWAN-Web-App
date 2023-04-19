@@ -45,6 +45,8 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 app.set("view engine", "ejs");
 dotenv.config();
+// Global: to check if a downlink is already scheduled by setTimeout
+let called = false;
 // Show db entries on load
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let entries = (yield (0, db_1.db_getEntries)()) || [];
@@ -158,40 +160,48 @@ app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 // Check if downlink is necessary
 function checkDownlink(data) {
     return __awaiter(this, void 0, void 0, function* () {
-        // Get humidity min and max from db
-        let entries = (yield (0, db_1.db_getEntries)()) || [];
-        let hum_min = 30;
-        let hum_max = 80;
-        // Overwrite hum-values if there are already hum-values in db
-        for (let i = 0; i < entries.length; i++) {
-            if (entries[i].dev_eui == data.dev_eui) {
-                hum_min = parseInt(entries[i].hum_min);
-                hum_max = parseInt(entries[i].hum_max);
+        // Only check for downlink if it wasn't already done
+        if (called == false) {
+            // Get humidity min and max from db
+            let entries = (yield (0, db_1.db_getEntries)()) || [];
+            let hum_min = 30;
+            let hum_max = 80;
+            // Overwrite hum-values if there are already hum-values in db
+            for (let i = 0; i < entries.length; i++) {
+                if (entries[i].dev_eui == data.dev_eui) {
+                    hum_min = parseInt(entries[i].hum_min);
+                    hum_max = parseInt(entries[i].hum_max);
+                }
+            }
+            // Check soil humidity and call sendDownlink() if needed
+            if (data.soil_humidity != undefined && data.watering_time != undefined) {
+                data.soil_humidity = data.soil_humidity.replace("%", "");
+                // Get waiting time
+                const waiting_time = calculateWaitingTime(data.watering_time);
+                // Check if humidity is below min-value
+                if (parseInt(data.soil_humidity) <= hum_min) {
+                    // Wait a specific time before running sendDownlink
+                    setTimeout(function () {
+                        sendDownlink(0), // 0 turns the relais on
+                            waiting_time;
+                    });
+                    called = true;
+                    console.log("Downlink to start pump", data.watering_time);
+                    //Check if humidity is above max-value
+                }
+                else if (parseInt(data.soil_humidity) >= hum_max) {
+                    // Wait a specific time before running sendDownlink
+                    setTimeout(function () {
+                        sendDownlink(1), // 1 turns the relais off
+                            waiting_time;
+                    });
+                    called = true;
+                    console.log("Downlink to stop pump. Starting at ", data.watering_time);
+                }
             }
         }
-        // Check soil humidity and call sendDownlink() if needed
-        if (data.soil_humidity != undefined && data.watering_time != undefined) {
-            data.soil_humidity = data.soil_humidity.replace("%", "");
-            // Get waiting time
-            const waiting_time = calculateWaitingTime(data.watering_time);
-            // Check if humidity is below min-value
-            if (parseInt(data.soil_humidity) <= hum_min) {
-                // Wait a specific time before running sendDownlink
-                setTimeout(function () {
-                    sendDownlink(0), // 0 turns the relais on
-                        waiting_time;
-                });
-                console.log("Downlink to start pump", data.watering_time);
-                //Check if humidity is above max-value
-            }
-            else if (parseInt(data.soil_humidity) >= hum_max) {
-                // Wait a specific time before running sendDownlink
-                setTimeout(function () {
-                    sendDownlink(1), // 1 turns the relais off
-                        waiting_time;
-                });
-                console.log("Downlink to stop pump. Starting at ", data.watering_time);
-            }
+        else {
+            console.log("Downlink alreasy sheduled!");
         }
     });
 }
@@ -242,6 +252,8 @@ function sendDownlink(on_off) {
     else {
         console.log("ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.");
     }
+    // Reset called, so a new downlink can be sheduled
+    called = false;
 }
 // Calculate and then wait for specific time
 // Returns in [0] a value for displaying the time left and in [1] the ms left
