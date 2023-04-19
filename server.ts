@@ -87,31 +87,34 @@ app.post('/uplink', async (req, res) => {
 
         // Update db 
         await db_updateDBbyUplink(data.dev_eui, data, base_data);
-
-        checkDownlink(data);
+        
+        // Check for necessary downlink if the sensor ist a soil sensor
+        if (data.soil_humidity) {
+            checkDownlink(data);
+        }
     }
-}); 
+});
 
 // Updates the user input fields.
 app.post('/update', async (req, res) => {
     let id = req.body.dbid;
     let entrie = {};
     // Update only data of soil sensor
-    if(req.body.watering_time){
+    if (req.body.watering_time) {
         entrie = {
             description: req.body.description ? req.body.description : "Beschreibung...",
             watering_time: req.body.watering_time ? req.body.watering_time : "8:00",
             hum_min: req.body.hum_min ? req.body.hum_min : 30,
             hum_max: req.body.hum_max ? req.body.hum_max : 80,
         };
-    // Update only data of distance sensor
-    }else if(req.body.max_distance){
+        // Update only data of distance sensor
+    } else if (req.body.max_distance) {
         entrie = {
             description: req.body.description ? req.body.description : "Beschreibung...",
             max_distance: req.body.max_distance ? req.body.max_distance : 250,
         };
-    // Update everything else
-    }else{
+        // Update everything else
+    } else {
         entrie = {
             description: req.body.description ? req.body.description : "Beschreibung...",
         };
@@ -125,7 +128,7 @@ app.post('/update', async (req, res) => {
 });
 
 // Check if downlink is necessary
-async function checkDownlink(data: DbEntrie){
+async function checkDownlink(data: DbEntrie) {
     console.log("entered checkDownlink()");
     // Get humidity min and max from db
     let entries = await db_getEntries() || [];
@@ -139,8 +142,8 @@ async function checkDownlink(data: DbEntrie){
         }
     }
     // Check soil humidity and call sendDownlink() if needed
-    console.log("Values:",data.soil_humidity, data.watering_time);
-    if (data.soil_humidity != undefined && data.watering_time!= undefined) {
+    console.log("Values:", data.soil_humidity, data.watering_time);
+    if (data.soil_humidity != undefined && data.watering_time != undefined) {
         console.log("soil_humidity and watering_time are not undefined!");
         data.soil_humidity = data.soil_humidity.replace("%", "");
 
@@ -151,19 +154,19 @@ async function checkDownlink(data: DbEntrie){
         if (parseInt(data.soil_humidity) <= hum_min) {
             console.log("Downlink necessary: on");
             // Wait a specific time before running sendDownlink
-            setTimeout(function(){
+            setTimeout(function () {
                 sendDownlink(0), // 0 turns the relais on
-                waiting_time
+                    waiting_time
             });
-            console.log("Downlink to start pump" , data.watering_time);
+            console.log("Downlink to start pump", data.watering_time);
 
-        //Check if humidity is above max-value
+            //Check if humidity is above max-value
         } else if (parseInt(data.soil_humidity) >= hum_max) {
             console.log("Downlink necessary: off");
             // Wait a specific time before running sendDownlink
-            setTimeout(function(){
+            setTimeout(function () {
                 sendDownlink(1), // 1 turns the relais off
-                waiting_time
+                    waiting_time
             });
             console.log("Downlink to stop pump. Starting at ", data.watering_time);
         }
@@ -227,7 +230,7 @@ function sendDownlink(on_off: 1 | 0) {
 
 // Calculate and then wait for specific time
 // Returns in [0] a value for displaying the time left and in [1] the ms left
-function calculateWaitingTime(_watering_time: string){
+function calculateWaitingTime(_watering_time: string) {
     // Split input into hours and minutes
     let splitted_time: string[] = _watering_time.split(":");
     let hours = parseInt(splitted_time[0]);
@@ -246,10 +249,10 @@ function calculateWaitingTime(_watering_time: string){
     let watering_time_millisecs = Date.parse(watering_time.toString());
     let time_left: number = 0;
     let ms_per_day = 86400000;
-    if(watering_time_millisecs>now_millisecs){
-        time_left = watering_time_millisecs-now_millisecs;
-    }else{
-        time_left = watering_time_millisecs-now_millisecs;
+    if (watering_time_millisecs > now_millisecs) {
+        time_left = watering_time_millisecs - now_millisecs;
+    } else {
+        time_left = watering_time_millisecs - now_millisecs;
         time_left = ms_per_day + time_left;
     }
     /*let seconds_left: number | string  = Math.floor((time_left / 1000) % 60);

@@ -112,7 +112,10 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         // Update db 
         yield (0, db_1.db_updateDBbyUplink)(data.dev_eui, data, base_data);
-        checkDownlink(data);
+        // Check for necessary downlink if the sensor ist a soil sensor
+        if (data.soil_humidity) {
+            checkDownlink(data);
+        }
     }
 }));
 // Updates the user input fields.
