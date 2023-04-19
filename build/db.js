@@ -65,13 +65,13 @@ function db_getEntries() {
 }
 exports.db_getEntries = db_getEntries;
 // Updates the editable fields 
-function db_updateEditableFields(_id, item) {
+function db_updateEditableFields(_id, data) {
     return __awaiter(this, void 0, void 0, function* () {
         let client = yield getClient();
         try {
             yield client.connect();
             const collection = client.db("lorawan_data").collection("sensor_data");
-            yield collection.updateOne({ "_id": new mongodb_1.ObjectId(_id) }, { $set: item });
+            yield collection.updateOne({ "_id": new mongodb_1.ObjectId(_id) }, { $set: data });
         }
         catch (e) {
             console.error(e);

@@ -108,6 +108,7 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         // Add editable fields for distance if data is from distance sensor
         if (data.distance) {
+            console.log("former max distance: ", data.max_distance);
             data.max_distance = data.max_distance ? data.max_distance : 200;
         }
         // Update db 
@@ -127,15 +128,15 @@ app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         entrie = {
             description: req.body.description ? req.body.description : "Beschreibung...",
             watering_time: req.body.watering_time ? req.body.watering_time : "8:00",
-            hum_min: req.body.hum_min ? req.body.hum_min : 30,
-            hum_max: req.body.hum_max ? req.body.hum_max : 80,
+            hum_min: req.body.hum_min ? parseInt(req.body.hum_min) : 30,
+            hum_max: req.body.hum_max ? parseInt(req.body.hum_max) : 80,
         };
         // Update only data of distance sensor
     }
     else if (req.body.max_distance) {
         entrie = {
             description: req.body.description ? req.body.description : "Beschreibung...",
-            max_distance: req.body.max_distance ? req.body.max_distance : 250,
+            max_distance: req.body.max_distance ? parseInt(req.body.max_distance) : 250,
         };
         // Update everything else
     }

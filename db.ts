@@ -26,12 +26,12 @@ export async function db_getEntries(){
 } 
 
 // Updates the editable fields 
-export async function db_updateEditableFields(_id: string, item: {}){
+export async function db_updateEditableFields(_id: string, data:{}){
     let client = await getClient();
     try{
         await client.connect();
         const collection = client.db("lorawan_data").collection("sensor_data");
-        await collection.updateOne({"_id": new ObjectId(_id)},{$set: item});
+        await collection.updateOne({"_id": new ObjectId(_id)},{$set: data});
     }catch(e){
         console.error(e);
     } finally {
