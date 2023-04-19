@@ -102,21 +102,21 @@ app.post('/update', async (req, res) => {
     // Update only data of soil sensor
     if (req.body.watering_time) {
         entrie = {
-            description: req.body.description ? req.body.description : "Beschreibung...",
-            watering_time: req.body.watering_time ? req.body.watering_time : "8:00",
-            hum_min: req.body.hum_min ? req.body.hum_min : 30,
-            hum_max: req.body.hum_max ? req.body.hum_max : 80,
+            description: req.body.description ? <string> req.body.description : "Beschreibung...",
+            watering_time: req.body.watering_time ? <string>req.body.watering_time : "8:00",
+            hum_min: req.body.hum_min ? <number> req.body.hum_min : 30,
+            hum_max: req.body.hum_max ? <number> req.body.hum_max : 80,
         };
         // Update only data of distance sensor
     } else if (req.body.max_distance) {
         entrie = {
-            description: req.body.description ? req.body.description : "Beschreibung...",
-            max_distance: req.body.max_distance ? req.body.max_distance : 250,
+            description: req.body.description ? <string> req.body.description : "Beschreibung...",
+            max_distance: req.body.max_distance ? <number> req.body.max_distance : 250,
         };
         // Update everything else
     } else {
         entrie = {
-            description: req.body.description ? req.body.description : "Beschreibung...",
+            description: req.body.description ? <string> req.body.description : "Beschreibung...",
         };
     }
 
