@@ -102,13 +102,13 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         let base_data = data;
         // Add editable fields for soil if data is from soil sensor
         if (data.soil_humidity) {
-            data.hum_min ? data.hum_min : 30;
-            data.hum_max ? data.hum_max : 80;
-            data.watering_time ? data.watering_time : "08:00";
+            data.hum_min = data.hum_min ? data.hum_min : 30;
+            data.hum_max = data.hum_max ? data.hum_max : 80;
+            data.watering_time = data.watering_time ? data.watering_time : "08:00";
         }
         // Add editable fields for distance if data is from distance sensor
         if (data.distance) {
-            data.max_distance ? data.max_distance : 200;
+            data.max_distance = data.max_distance ? data.max_distance : 200;
         }
         // Update db 
         yield (0, db_1.db_updateDBbyUplink)(data.dev_eui, data, base_data);
@@ -118,13 +118,29 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 // Updates the user input fields.
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.body.dbid;
-    let entrie = {
-        description: req.body.description ? req.body.description : "Beschreibung...",
-        watering_time: req.body.watering_time ? req.body.watering_time : "8:00",
-        hum_min: req.body.hum_min ? req.body.hum_min : 30,
-        hum_max: req.body.hum_max ? req.body.hum_max : 80,
-        max_distance: req.body.max_distance ? req.body.max_distance : 250,
-    };
+    let entrie = {};
+    // Update only data of soil sensor
+    if (req.body.watering_time) {
+        entrie = {
+            description: req.body.description ? req.body.description : "Beschreibung...",
+            watering_time: req.body.watering_time ? req.body.watering_time : "8:00",
+            hum_min: req.body.hum_min ? req.body.hum_min : 30,
+            hum_max: req.body.hum_max ? req.body.hum_max : 80,
+        };
+        // Update only data of distance sensor
+    }
+    else if (req.body.max_distance) {
+        entrie = {
+            description: req.body.description ? req.body.description : "Beschreibung...",
+            max_distance: req.body.max_distance ? req.body.max_distance : 250,
+        };
+        // Update everything else
+    }
+    else {
+        entrie = {
+            description: req.body.description ? req.body.description : "Beschreibung...",
+        };
+    }
     // Update db
     yield (0, db_1.db_updateEditableFields)(id, entrie);
     // Reloade page
