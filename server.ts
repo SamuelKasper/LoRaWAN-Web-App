@@ -166,8 +166,7 @@ async function checkDownlink(data: DbEntrie) {
                     sendDownlink(0), // 0 turns the relais on
                         waiting_time
                 });
-                called = true;
-                console.log("Downlink to start pump", data.watering_time);
+                console.log(called," - Downlink to start pump at: ", data.watering_time);
 
                 //Check if humidity is above max-value
             } else if (parseInt(data.soil_humidity) >= hum_max) {
@@ -176,9 +175,10 @@ async function checkDownlink(data: DbEntrie) {
                     sendDownlink(1), // 1 turns the relais off
                         waiting_time
                 });
-                called = true;
-                console.log("Downlink to stop pump. Starting at ", data.watering_time);
+                console.log(called," - Downlink to stop pump at: ", data.watering_time);
             }
+            called = true;
+            console.log("Called downlink: ", called);
         }
     }else{
         console.log("Downlink alreasy sheduled!");
