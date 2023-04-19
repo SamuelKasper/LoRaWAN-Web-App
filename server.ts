@@ -124,6 +124,7 @@ async function checkDownlink(data: DbEntrie){
         }
     }
     // Check soil humidity and call sendDownlink() if needed
+    console.log("Values:",data.soil_humidity, data.watering_time);
     if (data.soil_humidity != undefined && data.watering_time!= undefined) {
         console.log("soil_humidity and watering_time are not undefined!");
         data.soil_humidity = data.soil_humidity.replace("%", "");
