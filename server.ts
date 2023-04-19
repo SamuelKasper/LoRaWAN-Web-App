@@ -38,8 +38,6 @@ app.post('/uplink', async (req, res) => {
 
     // Parse request body into a jsonObj.
     let jsonObj = JSON.parse(JSON.stringify(req.body));
-    // Use dev_eui as identifier to get the mongodb id later
-    let dev_eui = jsonObj.end_device_ids.dev_eui;
 
     // Only process uplinks with a decoded payload
     if (jsonObj.uplink_message.decoded_payload) {
@@ -88,29 +86,9 @@ app.post('/uplink', async (req, res) => {
         }
 
         // Update db 
-        await db_updateDBbyUplink(dev_eui, data, base_data);
+        await db_updateDBbyUplink(data.dev_eui, data, base_data);
 
-        // Get humidity min and max from db
-        let entries = await db_getEntries() || [];
-        let hum_min: number = 30;
-        let hum_max: number = 80;
-        for (let i = 0; i < entries.length; i++) {
-            if (entries[i].dev_eui == dev_eui) {
-                hum_min = parseInt(entries[i].hum_min);
-                hum_max = parseInt(entries[i].hum_max);
-            }
-        }
-        // Check soil humidity and call sendDownlink() if needed
-        if (data.soil_humidity != undefined) {
-            data.soil_humidity = data.soil_humidity.replace("%", "");
-            if (parseInt(data.soil_humidity) <= hum_min) {
-                console.log("Downlink: Pump start");
-                sendDownlink(0);
-            } else if (parseInt(data.soil_humidity) >= hum_max) {
-                console.log("Downlink: Pump stop");
-                sendDownlink(1);
-            }
-        }
+        checkDownlink(data);
     }
 }); 
 
@@ -131,9 +109,50 @@ app.post('/update', async (req, res) => {
     res.redirect('back');
 });
 
+// Check if downlink is necessary
+async function checkDownlink(data: DbEntrie){
+    // Get humidity min and max from db
+    let entries = await db_getEntries() || [];
+    let hum_min: number = 30;
+    let hum_max: number = 80;
+    // Overwrite hum-values if there are already hum-values in db
+    for (let i = 0; i < entries.length; i++) {
+        if (entries[i].dev_eui == data.dev_eui) {
+            hum_min = parseInt(entries[i].hum_min);
+            hum_max = parseInt(entries[i].hum_max);
+        }
+    }
+    // Check soil humidity and call sendDownlink() if needed
+    if (data.soil_humidity != undefined && data.watering_time!= undefined) {
+        data.soil_humidity = data.soil_humidity.replace("%", "");
+
+        // Get waiting time
+        const waiting_time = calculateWaitingTime(data.watering_time);
+
+        // Check if humidity is below min-value
+        if (parseInt(data.soil_humidity) <= hum_min) {
+            // Wait a specific time before running sendDownlink
+            setTimeout(function(){
+                sendDownlink(0), // 0 turns the relais on
+                waiting_time
+            });
+            console.log("Downlink to start pump" , data.watering_time);
+
+        //Check if humidity is above max-value
+        } else if (parseInt(data.soil_humidity) >= hum_max) {
+            // Wait a specific time before running sendDownlink
+            setTimeout(function(){
+                sendDownlink(1), // 1 turns the relais off
+                waiting_time
+            });
+            console.log("Downlink to stop pump. Starting at ", data.watering_time);
+        }
+    }
+}
+
 /* Function for sending downlinks
- 0 for relais light on
- 1 for relais light off */
+ 0 for relais on
+ 1 for relais off */
 function sendDownlink(on_off: 1 | 0) {
     // Only allow downlink while ENABLE_DOWNLINK is set to true
     if (process.env.ENABLE_DOWNLINK == "true") {
@@ -184,6 +203,46 @@ function sendDownlink(on_off: 1 | 0) {
     } else {
         console.log("ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.");
     }
+}
+
+// Calculate and then wait for specific time
+// Returns in [0] a value for displaying the time left and in [1] the ms left
+function calculateWaitingTime(_watering_time: string){
+    // Split input into hours and minutes
+    let splitted_time: string[] = _watering_time.split(":");
+    let hours = parseInt(splitted_time[0]);
+    let minutes = parseInt(splitted_time[1]);
+
+    // Set watering time values
+    let watering_time = new Date();
+    watering_time.setHours(hours);
+    watering_time.setMinutes(minutes);
+    watering_time.setSeconds(0);
+    watering_time.setMilliseconds(0);
+
+    // Calculate hours, minutes and seconds
+    let now = new Date();
+    let now_millisecs = Date.parse(now.toString());
+    let watering_time_millisecs = Date.parse(watering_time.toString());
+    let time_left: number = 0;
+    let ms_per_day = 86400000;
+    if(watering_time_millisecs>now_millisecs){
+        time_left = watering_time_millisecs-now_millisecs;
+    }else{
+        time_left = watering_time_millisecs-now_millisecs;
+        time_left = ms_per_day + time_left;
+    }
+    /*let seconds_left: number | string  = Math.floor((time_left / 1000) % 60);
+    let minutes_left: number | string = Math.floor((time_left / (1000 * 60)) % 60);
+    let hours_left: number | string = Math.floor((time_left / (1000 * 60 * 60)) % 24);
+
+    // Preparing values for displaying
+    hours_left = (hours_left < 10) ? "0" + hours_left : hours_left;
+    minutes_left = (minutes_left < 10) ? "0" + minutes_left : minutes_left;
+    seconds_left = (seconds_left < 10) ? "0" + seconds_left : seconds_left;
+    let display_time_left: string = hours_left + ":" + minutes_left + ":" + seconds_left;*/
+
+    return time_left;
 }
 
 app.listen(8000);
