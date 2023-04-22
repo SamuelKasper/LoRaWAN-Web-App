@@ -6,7 +6,8 @@
     --border: #5d6065;
     --accordion-inner: #414448;
     --font: #c8ccd1;
-    --details: 0 0 0 0.15rem rgba(138, 255, 49, 0.25);;
+    --details: 0 0 0 0.15rem rgba(138, 255, 49, 0.20);
+    --details-border: #a6f4a6;
 }
 
 .accordion-button{
@@ -21,6 +22,7 @@
 .accordion-item{
     color: var(--button) !important;
     border-color: var(--border) !important;
+    background-color: var(--background) !important;
 }
 
 .accordion-button:not(.collapsed)::after {
@@ -42,6 +44,11 @@
 .form-control{
     color: var(--font) !important;
     background-color: var(--accordion-inner) !important;
+}
+
+.form-control:focus {
+    border-color: var(--details-border) !important;
+    box-shadow: var(--details) !important;
 }
 
 tbody{
@@ -82,6 +89,16 @@ body{
 }
 
 /*Sizes, boarders, alignments ---------------------------------------------------------*/
+table{
+    width: 100%;
+}
+
+#filter-left{
+    height: 100%;
+    width: 100%;
+    background-color: var(--accordion-inner);
+}
+
 .btn-filter-margin{
     margin: 10px;
     margin-right: 30px;
@@ -139,24 +156,41 @@ body{
     .filter-container{
         flex-direction: column;
     }
+
     .col-2{
         width: auto !important;
         margin-bottom: 10px;
     }
+
     tr{
         display: flex !important;
         flex-direction: column !important;
         margin-bottom: 10px;
     }
+
     table{
         margin: auto;
     }
+
     td{
         display: flex;
         justify-content: center;
         text-align: center;
     }
+
     hr{
         width: 100%;
+    }
+
+    .navbar {
+        justify-content: center !important;
+    }
+
+    .btn-filter-margin{
+        margin: 10px;
+    }
+
+    .navbar-heading {
+        margin: 10px;
     }
 }
