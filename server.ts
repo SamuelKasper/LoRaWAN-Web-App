@@ -12,7 +12,7 @@ dotenv.config();
 // Global: to check if a downlink is already scheduled by setTimeout
 let called: boolean = false;
 
-// Show db entries on load
+// Loading data from DB and displays it on default URL
 app.get('/', async (req, res) => {
     let entries = await db_getEntries() || [];
 
@@ -34,7 +34,7 @@ app.get('/', async (req, res) => {
     res.render("index", { entries });
 });
 
-// If recieved uplink from webhook
+// Receives the uplink data and processes it
 app.post('/uplink', async (req, res) => {
     // Respond to ttn. Otherwise the uplink will fail.
     res.sendStatus(200);
@@ -104,7 +104,7 @@ app.post('/uplink', async (req, res) => {
     }
 });
 
-// Updates the user input fields.
+// Receives and updates the user input fields
 app.post('/update', async (req, res) => {
     let id = req.body.dbid;
     let entrie = {};

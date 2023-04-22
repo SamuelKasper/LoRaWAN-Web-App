@@ -47,7 +47,7 @@ app.set("view engine", "ejs");
 dotenv.config();
 // Global: to check if a downlink is already scheduled by setTimeout
 let called = false;
-// Show db entries on load
+// Loading data from DB and displays it on default URL
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let entries = (yield (0, db_1.db_getEntries)()) || [];
     // Calculate percentage for distance
@@ -67,7 +67,7 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // Render the page with given entries
     res.render("index", { entries });
 }));
-// If recieved uplink from webhook
+// Receives the uplink data and processes it
 app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // Respond to ttn. Otherwise the uplink will fail.
     res.sendStatus(200);
@@ -126,7 +126,7 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
 }));
-// Updates the user input fields.
+// Receives and updates the user input fields
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.body.dbid;
     let entrie = {};
