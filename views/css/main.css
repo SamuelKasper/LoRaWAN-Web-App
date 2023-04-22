@@ -152,6 +152,20 @@ table{
     flex-direction: row;
 }
 
+.spacing-right{
+    margin-left: -2px;
+}
+
+.border-radius-right{
+    border-top-right-radius: 5px !important;
+    border-bottom-right-radius: 5px !important;
+}
+
+.border-radius-left{
+    border-top-left-radius: 5px !important;
+    border-bottom-left-radius: 5px !important;
+}
+
 @media (max-width: 565px) {
     .filter-container{
         flex-direction: column;
@@ -192,5 +206,9 @@ table{
 
     .navbar-heading {
         margin: 10px;
+    }
+
+    .spacing-right{
+        display: none;
     }
 }
