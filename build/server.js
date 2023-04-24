@@ -265,7 +265,7 @@ function calculateWaitingTime(_watering_time) {
     let minutes = parseInt(splitted_time[1]);
     // Set watering time values
     let watering_time = new Date();
-    watering_time.setHours(hours);
+    watering_time.setHours(hours - 2);
     watering_time.setMinutes(minutes);
     watering_time.setSeconds(0);
     watering_time.setMilliseconds(0);
