@@ -1,6 +1,10 @@
 # Must have
-- Mehrfach auslösen von setTimeout verhindern
 - Wenn ich in Uplink alle Logik zu den editable fields raus mache, sollte das nicht auch gehen?
+- Bewässerungszeit sollte nach Schedule aktualisiert werden können.
+- Anzeige wenn ein downlink geplant ist
+- Möglichkeit geplante downlinks zu löschen
+- Neuer downlink löscht den alten per id und erstellt einen neuen downlink
+- Pumpe schaltet auch nur zur angegebenen Zeit aus
 
 
 # Nice to have

@@ -47,11 +47,15 @@ app.set("view engine", "ejs");
 dotenv.config();
 // Global: to check if a downlink is already scheduled by setTimeout
 let called = false;
+let waiting = false;
+let downlinkInfo = "";
+let timeoutID;
+let lastTime = "";
 // Loading data from DB and displays it on default URL
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let entries = (yield (0, db_1.db_getEntries)()) || [];
-    // Calculate percentage for distance
     for (let i = 0; i < entries.length; i++) {
+        // Calculate percentage for distance
         if (entries[i].distance) {
             let max = entries[i].max_distance * 10;
             let dist = entries[i].distance;
@@ -63,6 +67,8 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 entries[i].distance += " | Achtung, das Wasser ist fast aufgebraucht!";
             }
         }
+        // Add downlink info to entries
+        entries[i].downlinkInfo = downlinkInfo;
     }
     // Render the page with given entries
     res.render("index", { entries });
@@ -122,7 +128,8 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         yield (0, db_1.db_updateDBbyUplink)(data.dev_eui, data, base_data);
         // Check for necessary downlink if the sensor ist a soil sensor
         if (data.soil_humidity) {
-            checkDownlink(data);
+            //checkDownlink(data);
+            prepareDownlink(data);
         }
     }
 }));
@@ -178,22 +185,20 @@ function checkDownlink(data) {
                 data.soil_humidity = data.soil_humidity.replace("%", "");
                 // Get waiting time
                 const waiting_time = calculateWaitingTime(data.watering_time);
-                console.log(waiting_time);
+                console.log(waiting_time + "ms");
                 // Check if humidity is below min-value
                 if (parseInt(data.soil_humidity) <= hum_min) {
                     // Wait a specific time before running sendDownlink
                     setTimeout(function () {
                         sendDownlink(0); // 0 turns the relais on
                     }, waiting_time);
-                    console.log(called, " - Downlink to start pump at: ", data.watering_time);
+                    console.log("Downlink to start pump at: ", data.watering_time);
+                    downlinkInfo = `Geplant für: ${data.watering_time}`;
                     //Check if humidity is above max-value
                 }
                 else if (parseInt(data.soil_humidity) >= hum_max) {
-                    // Wait a specific time before running sendDownlink
-                    setTimeout(function () {
-                        sendDownlink(1); // 1 turns the relais off
-                    }, waiting_time);
-                    console.log(called, " - Downlink to stop pump at: ", data.watering_time);
+                    sendDownlink(1); // 1 turns the relais off
+                    console.log("Downlink to stop pump at: ", data.watering_time);
                 }
                 called = true;
                 console.log("Called downlink: ", called);
@@ -203,6 +208,92 @@ function checkDownlink(data) {
             console.log("Downlink alreasy sheduled!");
         }
     });
+}
+// Checking if watering is needed
+function prepareDownlink(data) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Get humidity min and max from db
+        let entries = (yield (0, db_1.db_getEntries)()) || [];
+        let hum_min = 30;
+        let hum_max = 80;
+        // Overwrite hum-values if there are already hum-values in db
+        for (let i = 0; i < entries.length; i++) {
+            if (entries[i].dev_eui == data.dev_eui) {
+                hum_min = parseInt(entries[i].hum_min);
+                hum_max = parseInt(entries[i].hum_max);
+            }
+        }
+        // Check soil humidity and call sendDownlink() if needed
+        if (data.soil_humidity != undefined && data.watering_time != undefined) {
+            data.soil_humidity = data.soil_humidity.replace("%", "");
+            // Check if humidity is below min-value
+            if (parseInt(data.soil_humidity) <= hum_min) {
+                if (lastTime == data.watering_time) {
+                    // Check if downlink is already scheduled
+                    if (!waiting) {
+                        // Schedule downlink
+                        scheduleDownlink(data);
+                    }
+                }
+                else {
+                    // Delete former setTimeout
+                    clearTimeout(timeoutID);
+                    // Schedule downlink
+                    scheduleDownlink(data);
+                }
+                //Check if humidity is above max-value
+            }
+            else if (parseInt(data.soil_humidity) >= hum_max) {
+                sendDownlink(1); // Turns the relais off
+                console.log("Downlink to stop pump at: ", data.watering_time);
+            }
+            lastTime = data.watering_time;
+        }
+    });
+}
+// Scheduling a downlink
+function scheduleDownlink(data) {
+    console.log("entered scheduleDownlink");
+    // Get waiting time
+    if (data.watering_time) {
+        const waiting_time = calculateWaitingTime(data.watering_time);
+        console.log(waiting_time + "ms");
+        // Wait a specific time before running sendDownlink
+        timeoutID = setTimeout(function () {
+            sendDownlink(0); // Turns the relais on
+        }, waiting_time);
+        waiting = true;
+        console.log("Downlink planned at: ", data.watering_time);
+        downlinkInfo = `Geplant für: ${data.watering_time}`;
+    }
+}
+// Calculate and then wait for specific time
+// Returns in [0] a value for displaying the time left and in [1] the ms left
+function calculateWaitingTime(_watering_time) {
+    // Split input into hours and minutes
+    let splitted_time = _watering_time.split(":");
+    let hours = parseInt(splitted_time[0]);
+    let minutes = parseInt(splitted_time[1]);
+    // Set watering time values
+    let watering_time = new Date();
+    watering_time.setHours(hours - 2);
+    watering_time.setMinutes(minutes);
+    watering_time.setSeconds(0);
+    watering_time.setMilliseconds(0);
+    // Calculate hours, minutes and seconds
+    let now = new Date();
+    let now_millisecs = Date.parse(now.toString());
+    let watering_time_millisecs = Date.parse(watering_time.toString());
+    let time_left = 0;
+    let ms_per_day = 86400000;
+    if (watering_time_millisecs > now_millisecs) {
+        time_left = watering_time_millisecs - now_millisecs;
+    }
+    else {
+        time_left = watering_time_millisecs - now_millisecs;
+        time_left = ms_per_day + time_left;
+    }
+    return time_left;
 }
 /* Function for sending downlinks
  0 for relais on
@@ -254,43 +345,6 @@ function sendDownlink(on_off) {
     }
     // Reset called, so a new downlink can be sheduled
     console.log("setting called to false");
-    called = false;
-}
-// Calculate and then wait for specific time
-// Returns in [0] a value for displaying the time left and in [1] the ms left
-function calculateWaitingTime(_watering_time) {
-    // Split input into hours and minutes
-    let splitted_time = _watering_time.split(":");
-    let hours = parseInt(splitted_time[0]);
-    let minutes = parseInt(splitted_time[1]);
-    // Set watering time values
-    let watering_time = new Date();
-    watering_time.setHours(hours - 2);
-    watering_time.setMinutes(minutes);
-    watering_time.setSeconds(0);
-    watering_time.setMilliseconds(0);
-    // Calculate hours, minutes and seconds
-    let now = new Date();
-    let now_millisecs = Date.parse(now.toString());
-    let watering_time_millisecs = Date.parse(watering_time.toString());
-    let time_left = 0;
-    let ms_per_day = 86400000;
-    if (watering_time_millisecs > now_millisecs) {
-        time_left = watering_time_millisecs - now_millisecs;
-    }
-    else {
-        time_left = watering_time_millisecs - now_millisecs;
-        time_left = ms_per_day + time_left;
-    }
-    /*let seconds_left: number | string  = Math.floor((time_left / 1000) % 60);
-    let minutes_left: number | string = Math.floor((time_left / (1000 * 60)) % 60);
-    let hours_left: number | string = Math.floor((time_left / (1000 * 60 * 60)) % 24);
-
-    // Preparing values for displaying
-    hours_left = (hours_left < 10) ? "0" + hours_left : hours_left;
-    minutes_left = (minutes_left < 10) ? "0" + minutes_left : minutes_left;
-    seconds_left = (seconds_left < 10) ? "0" + seconds_left : seconds_left;
-    let display_time_left: string = hours_left + ":" + minutes_left + ":" + seconds_left;*/
-    return time_left;
+    waiting = false;
 }
 app.listen(8000);
