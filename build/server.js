@@ -40,17 +40,22 @@ const dotenv = __importStar(require("dotenv"));
 const db_1 = require("./db");
 const https_1 = __importDefault(require("https"));
 const app = (0, express_1.default)();
+// Middleware
 app.use(express_1.default.static("views"));
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 app.set("view engine", "ejs");
+// Use dotenv
 dotenv.config();
-// Global: to check if a downlink is already scheduled by setTimeout
+// Global variables
 let called = false;
 let waiting = false;
-let downlinkInfo = "";
 let timeoutID;
-let lastTime = "";
+let default_time = "08:00";
+let last_time = default_time;
+let default_min = 30;
+let default_max = 75;
+let default_max_distance = 200;
 // Loading data from DB and displays it on default URL
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let entries = (yield (0, db_1.db_getEntries)()) || [];
@@ -59,16 +64,14 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (entries[i].distance) {
             let max = entries[i].max_distance * 10;
             let dist = entries[i].distance;
-            let percent = entries[i].distance / max * 100;
+            let percent = dist / max * 100;
             let percent_str = percent.toFixed(1);
             entries[i].distance = percent_str + "% (" + dist / 10 + "cm)";
             // Add message if zistern water level is below 10%
             if (percent < 10) {
-                entries[i].distance += " | Achtung, das Wasser ist fast aufgebraucht!";
+                entries[i].distance += " | Wasserstand gering!";
             }
         }
-        // Add downlink info to entries
-        entries[i].downlinkInfo = downlinkInfo;
     }
     // Render the page with given entries
     res.render("index", { entries });
@@ -114,13 +117,13 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             if (entries[i].dev_eui == data.dev_eui) {
                 // Add editable fields for soil if data is from soil sensor
                 if (data.soil_humidity) {
-                    data.hum_min = entries[i].hum_min ? entries[i].hum_min : 30;
-                    data.hum_max = entries[i].hum_max ? entries[i].hum_max : 80;
-                    data.watering_time = entries[i].watering_time ? entries[i].watering_time : "08:00";
+                    data.hum_min = entries[i].hum_min ? entries[i].hum_min : default_min;
+                    data.hum_max = entries[i].hum_max ? entries[i].hum_max : default_max;
+                    data.watering_time = entries[i].watering_time ? entries[i].watering_time : default_time;
                 }
                 // Add editable fields for distance if data is from distance sensor
                 if (data.distance) {
-                    data.max_distance = entries[i].max_distance ? entries[i].max_distance : 200;
+                    data.max_distance = entries[i].max_distance ? entries[i].max_distance : default_max_distance;
                 }
             }
         }
@@ -135,32 +138,31 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 }));
 // Receives and updates the user input fields
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let id = req.body.dbid;
     let entrie = {};
-    // Update only data of soil sensor
+    // Update data of soil sensor
     if (req.body.watering_time) {
         entrie = {
-            description: req.body.description ? req.body.description : "Beschreibung...",
-            watering_time: req.body.watering_time ? req.body.watering_time : "8:00",
-            hum_min: req.body.hum_min ? parseInt(req.body.hum_min) : 30,
-            hum_max: req.body.hum_max ? parseInt(req.body.hum_max) : 80,
+            description: req.body.description.toString(),
+            watering_time: req.body.watering_time.toString(),
+            hum_min: parseInt(req.body.hum_min),
+            hum_max: parseInt(req.body.hum_max),
         };
-        // Update only data of distance sensor
+        // Update data of distance sensor
     }
     else if (req.body.max_distance) {
         entrie = {
-            description: req.body.description ? req.body.description : "Beschreibung...",
-            max_distance: req.body.max_distance ? parseInt(req.body.max_distance) : 250,
+            description: req.body.description.toString(),
+            max_distance: parseInt(req.body.max_distance),
         };
-        // Update everything else
+        // Update data of other sensors without special fields
     }
     else {
         entrie = {
-            description: req.body.description ? req.body.description : "Beschreibung...",
+            description: req.body.description.toString(),
         };
     }
     // Update db
-    yield (0, db_1.db_updateEditableFields)(id, entrie);
+    yield (0, db_1.db_updateEditableFields)(req.body.dbid, entrie);
     // Reloade page
     res.redirect('back');
 }));
@@ -171,8 +173,8 @@ function checkDownlink(data) {
         if (called == false) {
             // Get humidity min and max from db
             let entries = (yield (0, db_1.db_getEntries)()) || [];
-            let hum_min = 30;
-            let hum_max = 80;
+            let hum_min = default_min;
+            let hum_max = default_max;
             // Overwrite hum-values if there are already hum-values in db
             for (let i = 0; i < entries.length; i++) {
                 if (entries[i].dev_eui == data.dev_eui) {
@@ -193,7 +195,6 @@ function checkDownlink(data) {
                         sendDownlink(0); // 0 turns the relais on
                     }, waiting_time);
                     console.log("Downlink to start pump at: ", data.watering_time);
-                    downlinkInfo = `Geplant für: ${data.watering_time}`;
                     //Check if humidity is above max-value
                 }
                 else if (parseInt(data.soil_humidity) >= hum_max) {
@@ -214,8 +215,8 @@ function prepareDownlink(data) {
     return __awaiter(this, void 0, void 0, function* () {
         // Get humidity min and max from db
         let entries = (yield (0, db_1.db_getEntries)()) || [];
-        let hum_min = 30;
-        let hum_max = 80;
+        let hum_min = default_min;
+        let hum_max = default_max;
         // Overwrite hum-values if there are already hum-values in db
         for (let i = 0; i < entries.length; i++) {
             if (entries[i].dev_eui == data.dev_eui) {
@@ -228,7 +229,7 @@ function prepareDownlink(data) {
             data.soil_humidity = data.soil_humidity.replace("%", "");
             // Check if humidity is below min-value
             if (parseInt(data.soil_humidity) <= hum_min) {
-                if (lastTime == data.watering_time) {
+                if (last_time == data.watering_time) {
                     // Check if downlink is already scheduled
                     if (!waiting) {
                         // Schedule downlink
@@ -247,7 +248,7 @@ function prepareDownlink(data) {
                 sendDownlink(1); // Turns the relais off
                 console.log("Downlink to stop pump at: ", data.watering_time);
             }
-            lastTime = data.watering_time;
+            last_time = data.watering_time;
         }
     });
 }
@@ -264,7 +265,6 @@ function scheduleDownlink(data) {
         }, waiting_time);
         waiting = true;
         console.log("Downlink planned at: ", data.watering_time);
-        downlinkInfo = `Geplant für: ${data.watering_time}`;
     }
 }
 // Calculate and then wait for specific time
