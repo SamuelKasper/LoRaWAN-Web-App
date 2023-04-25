@@ -90,19 +90,19 @@ function db_updateDBbyUplink(_devEUI, data, base_data) {
             // Get db entrie by given dev_eui and save it in result
             yield client.connect();
             const collection = client.db("lorawan_data").collection("sensor_data");
-            let result = yield collection.find({ "dev_eui": _devEUI }).toArray();
+            const result = yield collection.find({ "dev_eui": _devEUI }).toArray();
             // No db entrie was found
             if (result.length == 0) {
-                let insert_data = JSON.parse(JSON.stringify(data));
-                let res = yield collection.insertOne(insert_data);
-                console.log("Generated new db entrie with id: " + res.insertedId);
+                const insert_data = JSON.parse(JSON.stringify(data));
+                const res = yield collection.insertOne(insert_data);
+                console.log(`Generated new entrie with ID: ${res.insertedId}`);
             }
             else {
                 // if there is a db entry, get id from entrie and update
-                let obj_id = JSON.parse(JSON.stringify(result));
-                let insert_data = JSON.parse(JSON.stringify(base_data));
-                let res = yield collection.updateOne({ "_id": new mongodb_1.ObjectId(obj_id[0]._id) }, { $set: insert_data });
-                console.log("found: " + res.matchedCount + " entrie.", "\nupdated id: " + obj_id[0]._id);
+                const obj_id = JSON.parse(JSON.stringify(result));
+                const insert_data = JSON.parse(JSON.stringify(base_data));
+                yield collection.updateOne({ "_id": new mongodb_1.ObjectId(obj_id[0]._id) }, { $set: insert_data });
+                console.log(`Updated entrie with ID: ${obj_id[0]._id}`);
             }
         }
         catch (e) {

@@ -13,10 +13,8 @@ app.set("view engine", "ejs");
 dotenv.config();
 
 // Global variables
-let called: boolean = false;
 let waiting: boolean = false;
 let timeoutID: NodeJS.Timeout;
-
 let default_time = "08:00";
 let last_time = default_time;
 let default_min = 30;
@@ -191,7 +189,7 @@ function scheduleDownlink(data: DB_entrie) {
         }, waiting_time);
         // Set waiting indicator to true
         waiting = true;
-        console.log(`Downlink planned at: ${data.watering_time}. ${waiting_time/1000/60} min left.`)
+        console.log(`Downlink planned at: ${data.watering_time}. ${(waiting_time/1000/60).toFixed(1)} min left.`)
     }
 }
 
@@ -280,8 +278,8 @@ function sendDownlink(on_off: 1 | 0) {
         console.log("ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.");
     }
 
-    // Reset called, so a new downlink can be sheduled
-    console.log("setting called to false");
+    // Reset waiting, so a new downlink can be sheduled
+    console.log("Set waiting to false.");
     waiting = false;
 }
 
