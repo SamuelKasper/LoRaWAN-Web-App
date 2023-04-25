@@ -1,4 +1,4 @@
-interface DbEntrie {
+interface DB_entrie {
     time: string,
     dev_eui: string,
     name: string,
