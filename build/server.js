@@ -82,8 +82,8 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     // Parse request body into a jsonObj.
     let jsonObj = JSON.parse(JSON.stringify(req.body));
     // Search for lowest RSSI 
-    let sortedArray = jsonObj.uplink_message.rx_metadata.sort((data_1, data_2) => data_1 - data_2);
-    console.log(sortedArray);
+    let sorted_gateways_by_rssi = jsonObj.uplink_message.rx_metadata.sort((data_1, data_2) => data_1.rssi - data_2.rssi);
+    console.log(sorted_gateways_by_rssi);
     // Only process uplinks with a decoded payload
     if (jsonObj.uplink_message.decoded_payload) {
         // Add all data to their specific fields. Some fields will be undefined.
@@ -91,7 +91,7 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         let data = {
             // Data other than enviroment data
             name: jsonObj.end_device_ids.device_id,
-            gateway: jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
+            gateway: sorted_gateways_by_rssi[0].gateway_ids.gateway_id,
             time: jsonObj.received_at.toLocaleString('de-DE'),
             dev_eui: jsonObj.end_device_ids.dev_eui,
             rssi: jsonObj.uplink_message.rx_metadata[0].rssi,

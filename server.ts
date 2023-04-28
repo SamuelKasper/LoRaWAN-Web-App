@@ -53,8 +53,9 @@ app.post('/uplink', async (req, res) => {
     let jsonObj = JSON.parse(JSON.stringify(req.body));
 
     // Search for lowest RSSI 
-    let sortedArray = jsonObj.uplink_message.rx_metadata.sort((data_1: any, data_2: any) => data_1 - data_2);
-    console.log(sortedArray);
+    let sorted_gateways_by_rssi = jsonObj.uplink_message.rx_metadata.sort(
+        (data_1: any, data_2: any) => data_1.rssi - data_2.rssi);
+    console.log(sorted_gateways_by_rssi);
 
     // Only process uplinks with a decoded payload
     if (jsonObj.uplink_message.decoded_payload) {
@@ -63,7 +64,7 @@ app.post('/uplink', async (req, res) => {
         let data: DB_entrie = {
             // Data other than enviroment data
             name: <string>jsonObj.end_device_ids.device_id,
-            gateway: <string>jsonObj.uplink_message.rx_metadata[0].gateway_ids.gateway_id,
+            gateway: <string>sorted_gateways_by_rssi[0].gateway_ids.gateway_id,
             time: jsonObj.received_at.toLocaleString('de-DE'),
             dev_eui: <string>jsonObj.end_device_ids.dev_eui,
             rssi: <number>jsonObj.uplink_message.rx_metadata[0].rssi,
