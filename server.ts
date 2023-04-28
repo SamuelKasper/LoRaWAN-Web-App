@@ -54,7 +54,7 @@ app.post('/uplink', async (req, res) => {
 
     // Search for lowest RSSI 
     let sorted_gateways_by_rssi = jsonObj.uplink_message.rx_metadata.sort(
-        (data_1: any, data_2: any) => data_1.rssi - data_2.rssi);
+        (data_1: any, data_2: any) => data_2.rssi - data_1.rssi);
     console.log(sorted_gateways_by_rssi);
 
     // Only process uplinks with a decoded payload
