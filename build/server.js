@@ -81,6 +81,9 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     res.sendStatus(200);
     // Parse request body into a jsonObj.
     let jsonObj = JSON.parse(JSON.stringify(req.body));
+    // Search for lowest RSSI 
+    let sortedArray = jsonObj.uplink_message.rx_metadata[0].sort((data_1, data_2) => data_1 - data_2);
+    console.log(sortedArray);
     // Only process uplinks with a decoded payload
     if (jsonObj.uplink_message.decoded_payload) {
         // Add all data to their specific fields. Some fields will be undefined.
