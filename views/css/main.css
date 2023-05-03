@@ -88,6 +88,21 @@ body{
     background-image: var(--bs-accordion-btn-icon) !important;
 }
 
+/*Alert ---------------------------------------------------------*/
+.alert{
+    color: white !important;
+    text-align: center;
+    background-color: red !important;
+    border: none !important;
+    border-radius: 0px !important;
+    padding: 5px !important;
+    display: none;
+}
+
+.alert-warning{
+    display: block;
+}
+
 /*Sizes, boarders, alignments ---------------------------------------------------------*/
 table{
     width: 100%;

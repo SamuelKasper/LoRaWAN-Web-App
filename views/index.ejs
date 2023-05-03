@@ -58,6 +58,10 @@
             </form>
         </div>
     </div>
+    <%entries.forEach(entrie=>{
+    if(entrie.alert){%>
+    <div class="alert alert-<%=entrie.alert%>">Wasserstand von <%=entrie.name%> niedrig!</div>
+    <%}})%>
 
     <!--Akkordeon-->
     <div class="container-fluid margin-top-20">

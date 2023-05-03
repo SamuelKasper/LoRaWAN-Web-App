@@ -35,11 +35,10 @@ app.get('/', async (req, res) => {
             entries[i].distance = percent_str + "% (" + dist / 10 + "cm)";
             // Add message if zistern water level is below 10%
             if (percent < 10) {
-                entries[i].distance += " | Wasserstand gering!";
+                entries[i].alert = "warning";
             }
         }
     }
-
     // Render the page with given entries
     res.render("index", { entries });
 });
@@ -52,10 +51,9 @@ app.post('/uplink', async (req, res) => {
     // Parse request body into a jsonObj.
     let jsonObj = JSON.parse(JSON.stringify(req.body));
 
-    // Search for lowest RSSI 
+    // Search for best RSSI 
     let sorted_gateways_by_rssi = jsonObj.uplink_message.rx_metadata.sort(
         (data_1: any, data_2: any) => data_2.rssi - data_1.rssi);
-    console.log(sorted_gateways_by_rssi);
 
     // Only process uplinks with a decoded payload
     if (jsonObj.uplink_message.decoded_payload) {
