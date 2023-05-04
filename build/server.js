@@ -63,7 +63,7 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (entries[i].distance) {
             let max = entries[i].max_distance * 10;
             let dist = entries[i].distance;
-            let percent = dist / max * 100;
+            let percent = 100 - (dist / max * 100);
             let percent_str = percent.toFixed(1);
             entries[i].distance = percent_str + "% (" + dist / 10 + "cm)";
             // Add message if zistern water level is below 10%
