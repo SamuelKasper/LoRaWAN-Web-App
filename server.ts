@@ -29,7 +29,7 @@ app.get('/', async (req, res) => {
         // Calculate percentage for distance
         if (entries[i].distance) {
             let max: number = entries[i].max_distance * 10;
-            let dist: number = entries[i].distance;
+            let dist: number = max - entries[i].distance;
             let percent: number = 100-(dist / max * 100);
             let percent_str: string = percent.toFixed(1);
             entries[i].distance = percent_str + "% (" + dist / 10 + "cm)";
