@@ -23,6 +23,7 @@ class Downlink {
     // Checking if watering is needed
     prepareDownlink(data) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(data);
             // Check if required data is available
             if (data.soil_humidity != undefined && data.watering_time != undefined
                 && data.hum_min != undefined && data.hum_max != undefined && data.time_control != undefined) {
@@ -78,6 +79,7 @@ class Downlink {
         // Get waiting time
         if (data.watering_time) {
             const waiting_time = this.calculateWaitingTime(data.watering_time);
+            console.log("sheduling process");
             // Wait a specific time before running sendDownlink
             this.timeoutID = setTimeout(() => {
                 this.sendDownlink(0); // Turns the relais on
