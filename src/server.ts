@@ -1,6 +1,6 @@
 import express from "express";
 import * as dotenv from "dotenv";
-import { Routes } from "./routes";
+import { Routes } from "./routes_";
 const app = express();
 
 // Middleware
