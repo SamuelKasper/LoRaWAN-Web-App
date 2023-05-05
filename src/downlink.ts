@@ -33,6 +33,7 @@ export class Downlink {
                 }
                 // If time control is disabled
             }else{
+                console.log("time_control is false,", data.time_control);
                 if(!this.running){
                     // Delete former timeout if existing
                     if(this.timeoutID){
