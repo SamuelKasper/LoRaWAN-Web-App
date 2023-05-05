@@ -183,12 +183,20 @@
                                 <td><hr class="spacing-right"></td>
                             </tr>
 
-                            <!--Bewässerungszeit-->
+                            <!--Zeitsteuerung-->
                             <%if(entrie.soil_humidity){%>
                                 <tr>
-                                    <td><strong>Bewässerung ab:</strong></td>
-                                    <td>
-                                        <input id="watering_time" name="watering_time" type="time"
+                                    <td><strong>Zeitsteuerung verwenden:</strong></td>
+                                    <td id="time_control_flex">
+                                        <%if(entrie.time_control == "true"){%>
+                                            <input id="time_control" name="time_control" type="checkbox" onclick="myCheckbox()"
+                                            class="input-group-text" value="<%=entrie.time_control%>" checked="true">
+                                        <%}else{%>
+                                            <input id="time_control" name="time_control" type="checkbox" onclick="myCheckbox()"
+                                            class="input-group-text" value="<%=entrie.time_control%>">
+                                        <%}%>
+                                        
+                                        <input id="watering_time" name="watering_time" type="time" 
                                             class="input-group-text"
                                             value="<%=entrie.watering_time%>">
                                     </td>
@@ -263,6 +271,15 @@
 </div>
 
 <script>
+function myCheckbox(){
+    let checkbox = document.getElementById("time_control");
+    if(checkbox.checked){
+        checkbox.value = "true";
+    }else{
+        checkbox.value = "false";
+    }
+}
+
 function myFilter(entrieString){
     //checked radio button
     let radioBtn = document.querySelector('input[name="filter_type"]:checked');

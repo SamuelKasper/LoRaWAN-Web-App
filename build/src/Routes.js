@@ -18,6 +18,7 @@ class Routes {
         this.default_max = 75;
         this.default_max_distance = 200;
         this.default_time = "08:00";
+        this.time_control = "true";
         this.downlink = new downlink_1.Downlink();
         this.db = new db_1.DB();
     }
@@ -90,6 +91,7 @@ class Routes {
                             data.hum_min = entries[i].hum_min ? entries[i].hum_min : this.default_min;
                             data.hum_max = entries[i].hum_max ? entries[i].hum_max : this.default_max;
                             data.watering_time = entries[i].watering_time ? entries[i].watering_time : this.default_time;
+                            data.time_control = entries[i].time_control ? entries[i].time_control : this.time_control;
                         }
                         // Add editable fields for distance if data is from distance sensor
                         if (data.distance) {
@@ -111,11 +113,13 @@ class Routes {
     update(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let entrie = {};
+            console.log(req.body);
             // Update data of soil sensor
             if (req.body.watering_time) {
                 entrie = {
                     description: req.body.description.toString(),
                     watering_time: req.body.watering_time.toString(),
+                    time_control: req.body.time_control ? req.body.time_control : "false",
                     hum_min: parseInt(req.body.hum_min),
                     hum_max: parseInt(req.body.hum_max),
                 };

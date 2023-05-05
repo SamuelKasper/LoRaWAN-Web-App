@@ -181,6 +181,17 @@ table{
     border-bottom-left-radius: 5px !important;
 }
 
+#time_control_flex{
+    display: flex;
+    align-items: center;
+}
+
+#time_control{
+    width: 25px;
+    height: 25px;
+    margin-right: 15px;
+}
+
 @media (max-width: 565px) {
     .filter-container{
         flex-direction: column;

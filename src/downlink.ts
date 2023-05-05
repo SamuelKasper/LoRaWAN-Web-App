@@ -4,17 +4,20 @@ export class Downlink {
     private waiting: boolean = false;
     private timeoutID?: NodeJS.Timeout;
     private last_time = "08:00";
+    private running: boolean = false;
 
     // Checking if watering is needed
     public async prepareDownlink(data: DB_entrie) {
-        // Check if needed data is available
+        // Check if required data is available
         if (data.soil_humidity != undefined && data.watering_time != undefined
-            && data.hum_min != undefined && data.hum_max != undefined) {
+            && data.hum_min != undefined && data.hum_max != undefined && data.time_control != undefined) {
 
             // Check soil humidity and call sendDownlink() if needed
             const humidity = parseInt(data.soil_humidity.replace("%", ""));
             // Check if humidity is below min-value
             if (humidity <= data.hum_min) {
+                // Time control is enabled
+                if(data.time_control == true){
                 // Check if watering time has changed
                 if (this.last_time == data.watering_time) {
                     // Check if downlink is already scheduled
@@ -27,9 +30,22 @@ export class Downlink {
                     // Schedule downlink
                     this.scheduleDownlink(data);
                 }
+                // If time control is disabled
+            }else{
+                if(!this.running){
+                    // Delete former timeout if existing
+                    if(this.timeoutID){
+                        clearTimeout(this.timeoutID);
+                    }
+                    // Shedule downlink
+                    this.sendDownlink(0);
+                    this.running = true;
+                }
+            }
                 //Check if humidity is above max-value
             } else if (humidity >= data.hum_max) {
                 this.sendDownlink(1); // Turns the relais off
+                this.running = false;
                 console.log("Downlink to stop pump");
             }
             // Set new value for the last watering time
