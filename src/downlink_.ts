@@ -17,7 +17,7 @@ export class Downlink {
             // Check if humidity is below min-value
             if (humidity <= data.hum_min) {
                 // Time control is enabled
-                if(data.time_control == true){
+                if(data.time_control == true){ 
                 // Check if watering time has changed
                 if (this.last_time == data.watering_time) {
                     // Check if downlink is already scheduled
@@ -25,7 +25,7 @@ export class Downlink {
                         this.scheduleDownlink(data);
                     } else { console.log("Downlink already scheduled"); }
                 } else {
-                    // Delete former Timeout
+                    // Delete former timeout
                     clearTimeout(this.timeoutID);
                     // Schedule downlink
                     this.scheduleDownlink(data);

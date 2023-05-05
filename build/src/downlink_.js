@@ -43,7 +43,7 @@ class Downlink {
                             }
                         }
                         else {
-                            // Delete former Timeout
+                            // Delete former timeout
                             clearTimeout(this.timeoutID);
                             // Schedule downlink
                             this.scheduleDownlink(data);
