@@ -37,7 +37,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
-const Routes_1 = require("./Routes");
+const routes_1 = require("./routes");
 const app = (0, express_1.default)();
 // Middleware
 app.use(express_1.default.static("views"));
@@ -47,7 +47,7 @@ app.set("view engine", "ejs");
 // Use enviroment variables
 dotenv.config();
 // Create class for Routes
-let routes = new Routes_1.Routes();
+let routes = new routes_1.Routes();
 // Express Routes
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     routes.default(res);
