@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Routes = void 0;
 const db_1 = require("./db");
-const downlink_1 = require("./downlink_");
+const downlink_1 = require("./downlink");
 class Routes {
     constructor() {
         this.default_min = 30;

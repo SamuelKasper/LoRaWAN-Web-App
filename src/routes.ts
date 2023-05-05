@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 import { DB } from "./db";
-import { Downlink } from "./downlink_";
+import { Downlink } from "./downlink";
 
 export class Routes {
     private default_min = 30;
