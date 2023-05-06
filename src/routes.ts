@@ -13,7 +13,7 @@ export class Routes {
 
     // Loading data from DB and displays it on default URL
     public async default(res: Response) {
-        let entries = await this.db.getEntries() || [];
+        let entries = await this.db.get_entries() || [];
 
         for (let i = 0; i < entries.length; i++) {
             // Calculate percentage for distance
@@ -81,7 +81,7 @@ export class Routes {
             let base_data = data;
 
             // Set db values or init values for the editable fields
-            let entries = await this.db.getEntries() || [];
+            let entries = await this.db.get_entries() || [];
             for (let i = 0; i < entries.length; i++) {
                 if (entries[i].dev_eui == data.dev_eui) {
                     // Add editable fields for soil if data is from soil sensor
@@ -99,7 +99,7 @@ export class Routes {
             }
 
             // Update db 
-            await this.db.updateDBbyUplink(data.dev_eui, data, base_data);
+            await this.db.update_db_by_uplink(data.dev_eui, data, base_data);
 
             // Check for necessary downlink if the sensor ist a soil sensor
             if (data.soil_humidity) {
@@ -112,7 +112,6 @@ export class Routes {
     // Receives and updates the user input fields
     public async update(req: Request, res: Response) {
         let entrie = {};
-        console.log(req.body);
         // Update data of soil sensor
         if (req.body.watering_time) {
             entrie = {
@@ -136,7 +135,7 @@ export class Routes {
         }
 
         // Update db
-        await this.db.updateEditableFields(req.body.dbid, entrie);
+        await this.db.update_editable_fields(req.body.dbid, entrie);
 
         // Reloade page
         res.redirect('back');

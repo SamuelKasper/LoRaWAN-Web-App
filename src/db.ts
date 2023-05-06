@@ -4,13 +4,13 @@ dotenv.config();
 
 export class DB {
     // Returns MongoClient
-    public async getClient() {
+    public async get_client() {
         return new MongoClient(`mongodb+srv://${process.env.DB_USER}:${process.env.PASSWORD}@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority`);
     }
 
     // Get DB enties and saves them in temp
-    public async getEntries() {
-        let client = await this.getClient();
+    public async get_entries() {
+        let client = await this.get_client();
         try {
             await client.connect();
             const db_entries = client.db("lorawan_data").collection("sensor_data");
@@ -27,8 +27,8 @@ export class DB {
     }
 
     // Updates the editable fields 
-    public async updateEditableFields(_id: string, data: {}) {
-        let client = await this.getClient();
+    public async update_editable_fields(_id: string, data: {}) {
+        let client = await this.get_client();
         try {
             await client.connect();
             const collection = client.db("lorawan_data").collection("sensor_data");
@@ -41,8 +41,8 @@ export class DB {
     }
 
     // Updates a db entrie or add a new one. Triggert by TTN Uplink
-    public async updateDBbyUplink(_devEUI: string, data: {}, base_data: {}) {
-        let client = await this.getClient();
+    public async update_db_by_uplink(_devEUI: string, data: {}, base_data: {}) {
+        let client = await this.get_client();
         try {
             // Get db entrie by given dev_eui and save it in result
             await client.connect();

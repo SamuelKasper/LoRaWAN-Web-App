@@ -4,7 +4,6 @@ export class Downlink {
     private waiting: boolean = false;
     private timeoutID?: NodeJS.Timeout;
     private last_time = "08:00";
-    private running: boolean = false;
     private last_soil_downlink: number = 1;
 
     // Checking if humidity is below or above the border values
@@ -58,14 +57,13 @@ export class Downlink {
     // Sending downlink to start watering
     private time_control_disabled(data: DB_entrie) {
         console.log(`Time control is set to: ${data.time_control}`);
-        if (!this.running) {
+        if (this.last_soil_downlink != 0) {
             // Delete former timeout if existing
             if (this.timeoutID) {
                 clearTimeout(this.timeoutID);
             }
             // Schedule downlink
             this.send_downlink(0);
-            this.running = true;
         }
     }
 
@@ -73,7 +71,6 @@ export class Downlink {
     private humidity_greater_than_bordervalue() {
         if (this.last_soil_downlink != 1) {
             this.send_downlink(1); // Turns the relais off
-            this.running = false;
             console.log(`Downlink to stop watering`);
         } else {
             console.log(`Downlink to stop watering has been already sent or watering has already been stopped`);

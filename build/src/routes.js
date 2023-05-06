@@ -25,7 +25,7 @@ class Routes {
     // Loading data from DB and displays it on default URL
     default(res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let entries = (yield this.db.getEntries()) || [];
+            let entries = (yield this.db.get_entries()) || [];
             for (let i = 0; i < entries.length; i++) {
                 // Calculate percentage for distance
                 if (entries[i].distance) {
@@ -83,7 +83,7 @@ class Routes {
                 // No added fields like hum_min, hum_max, watering_time, max_distance
                 let base_data = data;
                 // Set db values or init values for the editable fields
-                let entries = (yield this.db.getEntries()) || [];
+                let entries = (yield this.db.get_entries()) || [];
                 for (let i = 0; i < entries.length; i++) {
                     if (entries[i].dev_eui == data.dev_eui) {
                         // Add editable fields for soil if data is from soil sensor
@@ -100,7 +100,7 @@ class Routes {
                     }
                 }
                 // Update db 
-                yield this.db.updateDBbyUplink(data.dev_eui, data, base_data);
+                yield this.db.update_db_by_uplink(data.dev_eui, data, base_data);
                 // Check for necessary downlink if the sensor ist a soil sensor
                 if (data.soil_humidity) {
                     //checkDownlink(data);
@@ -113,7 +113,6 @@ class Routes {
     update(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let entrie = {};
-            console.log(req.body);
             // Update data of soil sensor
             if (req.body.watering_time) {
                 entrie = {
@@ -138,7 +137,7 @@ class Routes {
                 };
             }
             // Update db
-            yield this.db.updateEditableFields(req.body.dbid, entrie);
+            yield this.db.update_editable_fields(req.body.dbid, entrie);
             // Reloade page
             res.redirect('back');
         });

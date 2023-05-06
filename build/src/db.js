@@ -38,15 +38,15 @@ const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 class DB {
     // Returns MongoClient
-    getClient() {
+    get_client() {
         return __awaiter(this, void 0, void 0, function* () {
             return new mongodb_1.MongoClient(`mongodb+srv://${process.env.DB_USER}:${process.env.PASSWORD}@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority`);
         });
     }
     // Get DB enties and saves them in temp
-    getEntries() {
+    get_entries() {
         return __awaiter(this, void 0, void 0, function* () {
-            let client = yield this.getClient();
+            let client = yield this.get_client();
             try {
                 yield client.connect();
                 const db_entries = client.db("lorawan_data").collection("sensor_data");
@@ -65,9 +65,9 @@ class DB {
         });
     }
     // Updates the editable fields 
-    updateEditableFields(_id, data) {
+    update_editable_fields(_id, data) {
         return __awaiter(this, void 0, void 0, function* () {
-            let client = yield this.getClient();
+            let client = yield this.get_client();
             try {
                 yield client.connect();
                 const collection = client.db("lorawan_data").collection("sensor_data");
@@ -82,9 +82,9 @@ class DB {
         });
     }
     // Updates a db entrie or add a new one. Triggert by TTN Uplink
-    updateDBbyUplink(_devEUI, data, base_data) {
+    update_db_by_uplink(_devEUI, data, base_data) {
         return __awaiter(this, void 0, void 0, function* () {
-            let client = yield this.getClient();
+            let client = yield this.get_client();
             try {
                 // Get db entrie by given dev_eui and save it in result
                 yield client.connect();

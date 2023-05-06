@@ -18,7 +18,6 @@ class Downlink {
     constructor() {
         this.waiting = false;
         this.last_time = "08:00";
-        this.running = false;
         this.last_soil_downlink = 1;
     }
     // Checking if humidity is below or above the border values
@@ -73,21 +72,19 @@ class Downlink {
     // Sending downlink to start watering
     time_control_disabled(data) {
         console.log(`Time control is set to: ${data.time_control}`);
-        if (!this.running) {
+        if (this.last_soil_downlink != 0) {
             // Delete former timeout if existing
             if (this.timeoutID) {
                 clearTimeout(this.timeoutID);
             }
             // Schedule downlink
             this.send_downlink(0);
-            this.running = true;
         }
     }
     // Called if humidity is greater then the upper border value
     humidity_greater_than_bordervalue() {
         if (this.last_soil_downlink != 1) {
             this.send_downlink(1); // Turns the relais off
-            this.running = false;
             console.log(`Downlink to stop watering`);
         }
         else {
