@@ -46,7 +46,7 @@ app.use(express_1.default.json());
 app.set("view engine", "ejs");
 // Use enviroment variables
 dotenv.config();
-// Create class for Routes
+// Create class for Routes 
 let routes = new routes_1.Routes();
 // Express Routes
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -57,5 +57,8 @@ app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 }));
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     routes.update(req, res);
+}));
+app.post('/directDownlink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    routes.direct_downlink(req, res);
 }));
 app.listen(8000);

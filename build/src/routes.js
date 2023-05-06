@@ -54,6 +54,15 @@ class Routes {
                         entries[i].rssi += " | Signalstärke: schlecht";
                         break;
                 }
+                // Add parameter to check watering status
+                if (entries[i].soil_humidity) {
+                    if (this.downlink.get_last_soil_downlink == 0) {
+                        entries[i].last_soil_downlink = "Bewässerung ist aktiv";
+                    }
+                    else {
+                        entries[i].last_soil_downlink = "Bewässerung ist inaktiv";
+                    }
+                }
             }
             // Render the page with given entries
             res.render("index", { entries });
@@ -153,6 +162,13 @@ class Routes {
             }
             // Update db
             yield this.db.update_editable_fields(req.body.dbid, entrie);
+            // Reloade page
+            res.redirect('back');
+        });
+    }
+    direct_downlink(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.downlink.direct_downlink();
             // Reloade page
             res.redirect('back');
         });

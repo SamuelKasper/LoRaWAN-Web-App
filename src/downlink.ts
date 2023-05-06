@@ -152,6 +152,11 @@ export class Downlink {
         this.last_soil_downlink = on_off;
     }
 
+    // Returns the value of the last downlink
+    public get get_last_soil_downlink() : number {
+        return this.last_soil_downlink;
+    }
+
     // Calculate waiting time
     private calculate_waiting_time(_watering_time: string) {
         // Split input into hours and minutes
@@ -179,5 +184,14 @@ export class Downlink {
             time_left = ms_per_day + time_left;
         }
         return time_left;
+    }
+
+    // Sending downlink with either 0 or 1
+    public direct_downlink(){
+        if(this.last_soil_downlink==0){
+            this.send_downlink(1);
+        }else if(this.last_soil_downlink==1){
+            this.send_downlink(0);
+        }
     }
 }

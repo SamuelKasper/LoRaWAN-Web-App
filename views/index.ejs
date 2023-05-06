@@ -83,6 +83,7 @@
                 <div id="<%=no_spaces_name%>" class="accordion-collapse collapse" aria-labelledby="headingOne"
                     data-bs-parent="#accordion">
                     <div class="accordion-body">
+                        <form id="direct-download-form" name="direct-download-form" action="/directDownlink" method="post"></form>
                         <form action="/update" method="post">
                         <table>
                             <!--Name-->
@@ -188,7 +189,7 @@
                                 <tr>
                                     <td><strong data-toggle="tooltip" data-placement="top" title="Checkbox aktivieren um die Zeitsteuerung zu verwenden. Andernfalls werden nur die angegebenen Grenzwerte verwendet.">Zeitsteuerung verwenden:</strong>
                                     </td>
-                                    <td id="time_control_flex">
+                                    <td class="display_flex">
                                         <%if(entrie.time_control == "true"){%>
                                             <input id="time_control" name="time_control" type="checkbox" onclick="myCheckbox()"
                                             class="input-group-text" value="<%=entrie.time_control%>" checked="true">
@@ -245,6 +246,23 @@
                                 <td>
                                     <div class="input-group">
                                         <textarea id="description" name="description" class="form-control" value="<%=entrie.description%>"><%=entrie.description%></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!--Spacing-->
+                            <tr>
+                                <td><hr></td>
+                                <td><hr class="spacing-right"></td>
+                            </tr>
+
+                            <!--Manuelle Steuerung-->
+                            <tr>
+                                <td><strong>Manuelle Steuerung:</strong></td>
+                                <td>
+                                    <div class="display_flex manual-ctrl">
+                                        <span id="last_soil_downlink"><%=entrie.last_soil_downlink%></span>
+                                        <input id="direct-downlink-btn" name="direct-downlink-btn" form="direct-download-form" type="submit" class="btn btn-primary form-control" value="Umschalten"></input>   
                                     </div>
                                 </td>
                             </tr>

@@ -157,6 +157,10 @@ class Downlink {
         this.waiting = false;
         this.last_soil_downlink = on_off;
     }
+    // Returns the value of the last downlink
+    get get_last_soil_downlink() {
+        return this.last_soil_downlink;
+    }
     // Calculate waiting time
     calculate_waiting_time(_watering_time) {
         // Split input into hours and minutes
@@ -183,6 +187,15 @@ class Downlink {
             time_left = ms_per_day + time_left;
         }
         return time_left;
+    }
+    // Sending downlink with either 0 or 1
+    direct_downlink() {
+        if (this.last_soil_downlink == 0) {
+            this.send_downlink(1);
+        }
+        else if (this.last_soil_downlink == 1) {
+            this.send_downlink(0);
+        }
     }
 }
 exports.Downlink = Downlink;
