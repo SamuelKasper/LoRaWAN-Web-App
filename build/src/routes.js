@@ -39,6 +39,21 @@ class Routes {
                         entries[i].alert = "warning";
                     }
                 }
+                // Add text for RSSI
+                switch (true) {
+                    case entries[i].rssi > -100:
+                        entries[i].rssi += " | Signalstärke: sehr gut";
+                        break;
+                    case entries[i].rssi > -105:
+                        entries[i].rssi += " | Signalstärke: gut";
+                        break;
+                    case entries[i].rssi > -115:
+                        entries[i].rssi += " | Signalstärke: ausreichend";
+                        break;
+                    case entries[i].rssi < -120:
+                        entries[i].rssi += " | Signalstärke: schlecht";
+                        break;
+                }
             }
             // Render the page with given entries
             res.render("index", { entries });
