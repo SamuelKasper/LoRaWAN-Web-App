@@ -19,11 +19,11 @@ class Downlink {
         this.waiting = false;
         this.last_time = "08:00";
         this.running = false;
+        this.last_soil_downlink = 1;
     }
     // Checking if watering is needed
     prepareDownlink(data) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(data);
             // Check if required data is available
             if (data.soil_humidity != undefined && data.watering_time != undefined
                 && data.hum_min != undefined && data.hum_max != undefined && data.time_control != undefined) {
@@ -40,7 +40,7 @@ class Downlink {
                                 this.scheduleDownlink(data);
                             }
                             else {
-                                console.log("Downlink already scheduled");
+                                console.log(`Downlink already scheduled for ${data.watering_time}`);
                             }
                         }
                         else {
@@ -52,7 +52,7 @@ class Downlink {
                         // If time control is disabled
                     }
                     else {
-                        console.log("time_control is false,", data.time_control);
+                        console.log(`Time control is set to: ${data.time_control}`);
                         if (!this.running) {
                             // Delete former timeout if existing
                             if (this.timeoutID) {
@@ -66,9 +66,14 @@ class Downlink {
                     //Check if humidity is above max-value
                 }
                 else if (humidity >= data.hum_max) {
-                    this.sendDownlink(1); // Turns the relais off
-                    this.running = false;
-                    console.log("Downlink to stop pump");
+                    if (this.last_soil_downlink != 1) {
+                        this.sendDownlink(1); // Turns the relais off
+                        this.running = false;
+                        console.log(`Downlink to stop watering`);
+                    }
+                    else {
+                        console.log(`Downlink to stop watering has been already sent or watering has already been stopped`);
+                    }
                 }
                 // Set new value for the last watering time
                 this.last_time = data.watering_time;
@@ -80,7 +85,6 @@ class Downlink {
         // Get waiting time
         if (data.watering_time) {
             const waiting_time = this.calculateWaitingTime(data.watering_time);
-            console.log("sheduling process");
             // Wait a specific time before running sendDownlink
             this.timeoutID = setTimeout(() => {
                 this.sendDownlink(0); // Turns the relais on
@@ -94,7 +98,7 @@ class Downlink {
      0 for relais on
      1 for relais off */
     sendDownlink(on_off) {
-        console.log("just startet sendDownlink");
+        console.log(`Sending Downlink...`);
         // Only allow downlink while ENABLE_DOWNLINK is set to true
         if (process.env.ENABLE_DOWNLINK == "true") {
             let app1 = "kaspersa-hfu-bachelor-thesis";
@@ -136,11 +140,12 @@ class Downlink {
             req.end();
         }
         else {
-            console.log("ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.");
+            console.log(`ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.`);
         }
         // Reset waiting, so a new downlink can be sheduled
-        console.log("Set waiting to false.");
+        console.log(`Waiting => false`);
         this.waiting = false;
+        this.last_soil_downlink = on_off;
     }
     // Calculate and then wait for specific time
     // Returns in [0] a value for displaying the time left and in [1] the ms left
