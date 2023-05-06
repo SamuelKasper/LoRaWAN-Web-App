@@ -250,6 +250,7 @@
                                 </td>
                             </tr>
 
+                            <%if(entrie.soil_humidity){%>
                             <!--Spacing-->
                             <tr>
                                 <td><hr></td>
@@ -258,7 +259,7 @@
 
                             <!--Manuelle Steuerung-->
                             <tr>
-                                <td><strong>Manuelle Steuerung:</strong></td>
+                                <td><strong data-toggle="tooltip" data-placement="top" title="Startet die Bewässerung, wenn sie inaktiv ist /  Beendet die Bewässerung, wenn sie aktiv ist.">Manuelle Steuerung:</strong></td>
                                 <td>
                                     <div class="display_flex manual-ctrl">
                                         <span id="last_soil_downlink"><%=entrie.last_soil_downlink%></span>
@@ -266,6 +267,7 @@
                                     </div>
                                 </td>
                             </tr>
+                            <%}%>
 
                             <!--ID-->   
                             <tr hidden>
