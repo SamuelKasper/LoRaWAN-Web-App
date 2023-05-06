@@ -104,7 +104,7 @@ class Routes {
                 // Check for necessary downlink if the sensor ist a soil sensor
                 if (data.soil_humidity) {
                     //checkDownlink(data);
-                    this.downlink.prepareDownlink(data);
+                    this.downlink.prepare_downlink(data);
                 }
             }
         });

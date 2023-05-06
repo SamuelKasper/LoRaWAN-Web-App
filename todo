@@ -1,6 +1,8 @@
 # Must have
 - Zeitsteuerung wird nicht beachtet..
 - Sendet immer wieder downlink 01 wenn zu nass, sollte aber nur einmal, z.21 iwo
+- running ersetzten mit last_soil_downlink
+- funktionsnahmen anpassen
 
 # Nice to have
 - Anzeige nach RSSI mit Angabe ob das Gut / Schlecht etc. ist
