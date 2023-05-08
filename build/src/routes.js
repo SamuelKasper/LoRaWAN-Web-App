@@ -21,6 +21,7 @@ class Routes {
         this.time_control = "true";
         this.downlink = new downlink_1.Downlink();
         this.db = new db_1.DB();
+        this.percent_to_switch = 10;
     }
     // Loading data from DB and displays it on default URL
     default(res) {
@@ -35,7 +36,7 @@ class Routes {
                     let percent_str = percent.toFixed(1);
                     entries[i].distance = `${percent_str} % (${(max - dist) / 10} cm)`;
                     // Add message if zistern water level is below 10%
-                    if (percent < 10) {
+                    if (percent < this.percent_to_switch) {
                         entries[i].alert = "warning";
                     }
                 }
@@ -128,7 +129,11 @@ class Routes {
                 // Check for necessary downlink if the sensor ist a soil sensor
                 if (data.soil_humidity) {
                     //checkDownlink(data);
-                    this.downlink.prepare_downlink(data);
+                    this.downlink.check_soil_downlink(data);
+                }
+                // Check waterlevel if sensor is a distance sensor 
+                if (data.distance) {
+                    this.downlink.check_waterlevel(data, this.percent_to_switch);
                 }
             }
         });

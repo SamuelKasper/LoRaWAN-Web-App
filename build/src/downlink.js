@@ -19,9 +19,10 @@ class Downlink {
         this.waiting = false;
         this.last_time = "08:00";
         this.last_soil_downlink = 1;
+        this.last_valve_downlink = 1;
     }
     // Checking if humidity is below or above the border values
-    prepare_downlink(data) {
+    check_soil_downlink(data) {
         return __awaiter(this, void 0, void 0, function* () {
             // Check if required data is available
             if (data.soil_humidity != undefined && data.watering_time != undefined
@@ -106,7 +107,8 @@ class Downlink {
         }
     }
     /* Function for sending downlinks
-     0 for relais on | 1 for relais off */
+     0 for relais on | 1 for relais off
+     2 for valve on  | 3 for valve off */
     send_downlink(on_off) {
         console.log(`Sending Downlink...`);
         // Only allow downlink while ENABLE_DOWNLINK is set to true
@@ -152,10 +154,17 @@ class Downlink {
         else {
             console.log(`ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.`);
         }
-        // Reset waiting, so a new downlink can be scheduled
-        console.log(`Waiting => false`);
-        this.waiting = false;
-        this.last_soil_downlink = on_off;
+        // 0 & 1 -> pump control
+        // Reset waiting, so a new downlink can be scheduled.
+        if (on_off == 0 || on_off == 1) {
+            console.log(`Waiting => false`);
+            this.waiting = false;
+            this.last_soil_downlink = on_off;
+        }
+        // 2 & 3 -> valve control
+        if (on_off == 2 || on_off == 3) {
+            this.last_valve_downlink = on_off;
+        }
     }
     // Returns the value of the last downlink
     get get_last_soil_downlink() {
@@ -188,13 +197,29 @@ class Downlink {
         }
         return time_left;
     }
-    // Sending downlink with either 0 or 1
+    // Sending dircet downlink for pump controll with either 0 or 1
     direct_downlink() {
         if (this.last_soil_downlink == 0) {
             this.send_downlink(1);
         }
         else if (this.last_soil_downlink == 1) {
             this.send_downlink(0);
+        }
+    }
+    // Checking the waterlevel and sending downlink to switch the water source
+    check_waterlevel(data, percent_to_switch) {
+        if (data.max_distance != undefined && data.distance != undefined) {
+            let waterlevel_percent = 100 - (data.distance / data.max_distance * 1000);
+            // Check is water level is below 10% and switch water source if so
+            if (waterlevel_percent <= percent_to_switch && this.last_valve_downlink == 3) {
+                console.log(`Waterlevel is is below 10%! Switching water source.`);
+                this.send_downlink(2);
+            }
+            // Check is water level is above 10% and switch water source if so
+            if (waterlevel_percent > percent_to_switch && this.last_valve_downlink == 2) {
+                console.log(`Waterlevel is is above 10%! Switching water source.`);
+                this.send_downlink(3);
+            }
         }
     }
 }
