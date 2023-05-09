@@ -81,6 +81,9 @@ class Downlink {
             // Schedule downlink
             this.send_downlink(0);
         }
+        else {
+            console.log(`Pump is already active.`);
+        }
     }
     // Called if humidity is greater then the upper border value
     humidity_greater_than_bordervalue() {
@@ -150,20 +153,20 @@ class Downlink {
             // Write data to stream and close connection after
             req.write(data);
             req.end();
+            // Set values for last_downlink vars
+            // 0 & 1 -> pump control | Reset waiting, so a new downlink can be scheduled.
+            if (on_off == 0 || on_off == 1) {
+                console.log(`Waiting => false`);
+                this.waiting = false;
+                this.last_soil_downlink = on_off;
+            }
+            // 2 & 3 -> valve control
+            if (on_off == 2 || on_off == 3) {
+                this.last_valve_downlink = on_off;
+            }
         }
         else {
             console.log(`ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.`);
-        }
-        // 0 & 1 -> pump control
-        // Reset waiting, so a new downlink can be scheduled.
-        if (on_off == 0 || on_off == 1) {
-            console.log(`Waiting => false`);
-            this.waiting = false;
-            this.last_soil_downlink = on_off;
-        }
-        // 2 & 3 -> valve control
-        if (on_off == 2 || on_off == 3) {
-            this.last_valve_downlink = on_off;
         }
     }
     // Returns the value of the last downlink
