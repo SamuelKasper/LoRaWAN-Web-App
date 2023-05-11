@@ -111,6 +111,9 @@ export class Routes {
             let entries = await this.db.get_entries() || [];
             for (let i = 0; i < entries.length; i++) {
                 if (entries[i].dev_eui == data.dev_eui) {
+                    // Overwrite description
+                    data.description = entries[i].desription; 
+
                     // Add editable fields for soil if data is from soil sensor
                     if (data.soil_humidity) {
                         data.hum_min = entries[i].hum_min ? entries[i].hum_min : this.default_min;
