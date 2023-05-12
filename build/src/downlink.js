@@ -19,7 +19,7 @@ class Downlink {
         this.waiting = false;
         this.last_time = "08:00";
         this.last_soil_downlink = 1;
-        this.last_valve_downlink = 1;
+        this.last_valve_downlink = 3;
         this.waterlevel_percent = 0;
     }
     // Checking if humidity is below or above the border values

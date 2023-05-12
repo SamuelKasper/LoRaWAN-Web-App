@@ -5,7 +5,7 @@ export class Downlink {
     private timeoutID?: NodeJS.Timeout;
     private last_time = "08:00";
     private last_soil_downlink: number = 1;
-    private last_valve_downlink: number = 1;
+    private last_valve_downlink: number = 3;
     private waterlevel_percent: number = 0;
 
     // Checking if humidity is below or above the border values
