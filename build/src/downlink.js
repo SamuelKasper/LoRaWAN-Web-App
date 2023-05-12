@@ -223,7 +223,6 @@ class Downlink {
     // Checking the waterlevel and sending downlink to switch the water source
     check_waterlevel(data, percent_to_switch) {
         if (data.max_distance != undefined && data.distance != undefined) {
-            data.max_distance = data.max_distance * 10;
             this.waterlevel_percent = 100 - ((data.distance / data.max_distance) * 100);
             console.log(`dist: ${data.distance}, max: ${data.max_distance}`);
             // Check is water level is below 10% and switch water source if so

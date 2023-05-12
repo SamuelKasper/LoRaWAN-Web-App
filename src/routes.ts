@@ -19,11 +19,11 @@ export class Routes {
         for (let i = 0; i < entries.length; i++) {
             // Calculate percentage for distance
             if (entries[i].distance) {
-                let max: number = entries[i].max_distance * 10;
+                let max: number = entries[i].max_distance;
                 let dist: number = entries[i].distance;
                 let percent: number = 100 - (dist / max * 100);
                 let percent_str: string = percent.toFixed(1);
-                entries[i].distance = `${percent_str} % (${(max - dist) / 10} cm)`;
+                entries[i].distance = `${percent_str} % (${(max - dist)} cm)`;
                 // Add message if zistern water level is below 10%
                 if (percent < this.percent_to_switch) {
                     entries[i].alert = "warning";
@@ -102,6 +102,11 @@ export class Routes {
                 if (val == undefined) {
                     delete data[key as keyof typeof data];
                 }
+            }
+
+            // Set distance to cm
+            if(data.distance){
+                data.distance = data.distance/10;
             }
 
             // No added fields like hum_min, hum_max, watering_time, max_distance
