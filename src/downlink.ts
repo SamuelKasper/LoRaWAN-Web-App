@@ -6,19 +6,25 @@ export class Downlink {
     private last_time = "08:00";
     private last_soil_downlink: number = 1;
     private last_valve_downlink: number = 1;
+    private waterlevel_percent: number = 0;
 
     // Checking if humidity is below or above the border values
     public async check_soil_downlink(data: DB_entrie) {
         // Check if required data is available
         if (data.soil_humidity != undefined && data.watering_time != undefined
             && data.hum_min != undefined && data.hum_max != undefined) {
-
-            // Check soil humidity and call sendDownlink() if needed
-            const humidity = parseInt(data.soil_humidity.replace("%", ""));
-            if (humidity <= data.hum_min) {
-                this.humidity_less_than_bordervalue(data);
-            } else if (humidity >= data.hum_max) {
-                this.humidity_greater_than_bordervalue();
+            
+            // Only start watering if the waterlevel is above 10%
+            if (this.waterlevel_percent <= 0) {
+                console.log(`Waterlevel below 10% or not measured yet. Don't starting watering.`);
+            } else {
+                // Check soil humidity and call sendDownlink() if needed
+                const humidity = parseInt(data.soil_humidity.replace("%", ""));
+                if (humidity <= data.hum_min) {
+                    this.humidity_less_than_bordervalue(data);
+                } else if (humidity >= data.hum_max) {
+                    this.humidity_greater_than_bordervalue();
+                }
             }
 
             // Set new value for the last watering time
@@ -209,16 +215,16 @@ export class Downlink {
     // Checking the waterlevel and sending downlink to switch the water source
     public check_waterlevel(data: DB_entrie, percent_to_switch: number) {
         if (data.max_distance != undefined && data.distance != undefined) {
-            let waterlevel_percent = 100 - (data.distance / data.max_distance * 1000);
+            this.waterlevel_percent = 100 - (data.distance / data.max_distance * 1000);
 
             // Check is water level is below 10% and switch water source if so
-            if (waterlevel_percent <= percent_to_switch && this.last_valve_downlink == 3) {
+            if (this.waterlevel_percent <= percent_to_switch && this.last_valve_downlink == 3) {
                 console.log(`Waterlevel is is below 10%! Switching water source.`);
                 this.send_downlink(2);
             }
 
             // Check is water level is above 10% and switch water source if so
-            if (waterlevel_percent > percent_to_switch && this.last_valve_downlink == 2) {
+            if (this.waterlevel_percent > percent_to_switch && this.last_valve_downlink == 2) {
                 console.log(`Waterlevel is is above 10%! Switching water source.`);
                 this.send_downlink(3);
             }
