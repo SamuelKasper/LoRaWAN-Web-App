@@ -30,7 +30,7 @@ class Downlink {
                 && data.hum_min != undefined && data.hum_max != undefined) {
                 // Only start watering if the waterlevel is above 10%
                 if (this.waterlevel_percent <= 0) {
-                    console.log(`Waterlevel below 10% (${this.waterlevel_percent})or not measured yet. Don't starting watering.`);
+                    console.log(`Waterlevel below 10% (${this.waterlevel_percent}) or not measured yet. Don't starting watering.`);
                 }
                 else {
                     // Check soil humidity and call sendDownlink() if needed
@@ -223,7 +223,7 @@ class Downlink {
     // Checking the waterlevel and sending downlink to switch the water source
     check_waterlevel(data, percent_to_switch) {
         if (data.max_distance != undefined && data.distance != undefined) {
-            this.waterlevel_percent = 100 - (data.distance / data.max_distance * 1000);
+            this.waterlevel_percent = 100 - ((data.distance / data.max_distance * 10) * 100);
             console.log(`Set waterlevel to: ${this.waterlevel_percent}`);
             // Check is water level is below 10% and switch water source if so
             if (this.waterlevel_percent <= percent_to_switch && this.last_valve_downlink == 3) {
