@@ -205,6 +205,11 @@ export class Downlink {
 
     // Sending dircet downlink for pump controll with either 0 or 1
     public direct_downlink() {
+        if(this.waterlevel_percent <= 0){
+            console.log(`Waterlevel below 10% or not measured yet. Don't starting watering.`);
+            return;
+        }
+
         if (this.last_soil_downlink == 0) {
             this.send_downlink(1);
         } else if (this.last_soil_downlink == 1) {
