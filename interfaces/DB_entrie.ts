@@ -4,6 +4,8 @@ interface DB_entrie {
     name: string,
     gateway: string,
     rssi: number,
+    latitude: number,
+    longitude: number,
     description: string,
     // Sensor data
     air_temperature?: number, 

@@ -90,7 +90,7 @@ class Routes {
     }
     /** Create an object of type DB_entrie with the sensor data. */
     build_data_object(sensor_data) {
-        // Search for best RSSI 
+        // Sort rx_metadata by rssi. Best rssi will be in first array entry.
         let sorted_gateways_by_rssi = sensor_data.uplink_message.rx_metadata.sort((data_1, data_2) => data_2.rssi - data_1.rssi);
         // Add all data to their specific fields. Some fields will be undefined.
         let decoded_payload = sensor_data.uplink_message.decoded_payload;
@@ -101,6 +101,8 @@ class Routes {
             time: sensor_data.received_at.toLocaleString('de-DE'),
             dev_eui: sensor_data.end_device_ids.dev_eui,
             rssi: sensor_data.uplink_message.rx_metadata[0].rssi,
+            latitude: sensor_data.uplink_message.rx_metadata[0].location.latitude.toFixed(2),
+            longitude: sensor_data.uplink_message.rx_metadata[0].location.longitude.toFixed(2),
             description: "Beschreibung...",
             // Air, just sends the Data without °C and %
             air_temperature: decoded_payload.TempC_SHT,
