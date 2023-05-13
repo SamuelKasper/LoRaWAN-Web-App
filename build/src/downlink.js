@@ -22,8 +22,8 @@ class Downlink {
         this.last_valve_downlink = 3;
         this.waterlevel_percent = 0;
     }
-    // Checking if humidity is below or above the border values
-    check_soil_downlink(data) {
+    /** Checking if humidity is below or above the border values. */
+    check_soil(data) {
         return __awaiter(this, void 0, void 0, function* () {
             // Check if required data is available
             if (data.soil_humidity != undefined && data.watering_time != undefined
@@ -47,7 +47,7 @@ class Downlink {
             }
         });
     }
-    // Checking if time control is enabled or disabled
+    /** Checking if time control is enabled or disabled. */
     humidity_less_than_bordervalue(data) {
         if (data.time_control != undefined) {
             if (data.time_control.toString() == "true") {
@@ -58,7 +58,7 @@ class Downlink {
             }
         }
     }
-    // Schedule downlink
+    /** Schedule downlink. */
     time_control_enabled(data) {
         // Check if watering time has changed
         if (this.last_time == data.watering_time) {
@@ -77,7 +77,7 @@ class Downlink {
             this.schedule_downlink(data);
         }
     }
-    // Sending downlink to start watering
+    /** Sending downlink to start watering. */
     time_control_disabled(data) {
         console.log(`Time control is set to: ${data.time_control}`);
         if (this.last_soil_downlink != 0) {
@@ -92,7 +92,7 @@ class Downlink {
             console.log(`Pump is already active.`);
         }
     }
-    // Called if humidity is greater then the upper border value
+    /** Called if humidity is greater then the upper border value. */
     humidity_greater_than_bordervalue() {
         if (this.last_soil_downlink != 1) {
             this.send_downlink(1); // Turns the relais off
@@ -102,7 +102,7 @@ class Downlink {
             console.log(`Downlink to stop watering has been already sent or watering has already been stopped`);
         }
     }
-    // Scheduling a downlink
+    /** Scheduling a downlink. */
     schedule_downlink(data) {
         // Get waiting time
         if (data.watering_time) {
@@ -116,9 +116,9 @@ class Downlink {
             console.log(`Downlink planned at: ${data.watering_time}. ${(waiting_time / 1000 / 60).toFixed(1)} min left.`);
         }
     }
-    /* Function for sending downlinks
-     0 for relais on | 1 for relais off
-     2 for valve on  | 3 for valve off */
+    /** Function for sending downlinks.
+     0 for relais on | 1 for relais off.
+     2 for valve on  | 3 for valve off. */
     send_downlink(on_off) {
         console.log(`Sending Downlink...`);
         // Only allow downlink while ENABLE_DOWNLINK is set to true
@@ -176,11 +176,11 @@ class Downlink {
             console.log(`ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.`);
         }
     }
-    // Returns the value of the last downlink
+    /** Returns the value of the last downlink. */
     get get_last_soil_downlink() {
         return this.last_soil_downlink;
     }
-    // Calculate waiting time
+    /** Calculate waiting time. */
     calculate_waiting_time(_watering_time) {
         // Split input into hours and minutes
         let splitted_time = _watering_time.split(":");
@@ -207,7 +207,7 @@ class Downlink {
         }
         return time_left;
     }
-    // Sending dircet downlink for pump controll with either 0 or 1
+    /** Sending dircet downlink for pump controll with either 0 or 1. */
     direct_downlink() {
         if (this.waterlevel_percent <= 0) {
             console.log(`Waterlevel below 10% or not measured yet. Don't starting watering.`);
@@ -220,7 +220,7 @@ class Downlink {
             this.send_downlink(0);
         }
     }
-    // Checking the waterlevel and sending downlink to switch the water source
+    /** Checking the waterlevel and sending downlink to switch the water source. */
     check_waterlevel(data, percent_to_switch) {
         if (data.max_distance != undefined && data.distance != undefined) {
             this.waterlevel_percent = 100 - ((data.distance / data.max_distance) * 100);

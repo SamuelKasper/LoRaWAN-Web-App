@@ -8,8 +8,8 @@ export class Downlink {
     private last_valve_downlink: number = 3;
     private waterlevel_percent: number = 0;
 
-    // Checking if humidity is below or above the border values
-    public async check_soil_downlink(data: DB_entrie) {
+    /** Checking if humidity is below or above the border values. */
+    public async check_soil(data: DB_entrie) {
         // Check if required data is available
         if (data.soil_humidity != undefined && data.watering_time != undefined
             && data.hum_min != undefined && data.hum_max != undefined) {
@@ -32,7 +32,7 @@ export class Downlink {
         }
     }
 
-    // Checking if time control is enabled or disabled
+    /** Checking if time control is enabled or disabled. */
     private humidity_less_than_bordervalue(data: DB_entrie) {
         if (data.time_control != undefined) {
             if (data.time_control.toString() == "true") {
@@ -43,7 +43,7 @@ export class Downlink {
         }
     }
 
-    // Schedule downlink
+    /** Schedule downlink. */
     private time_control_enabled(data: DB_entrie) {
         // Check if watering time has changed
         if (this.last_time == data.watering_time) {
@@ -61,7 +61,7 @@ export class Downlink {
         }
     }
 
-    // Sending downlink to start watering
+    /** Sending downlink to start watering. */
     private time_control_disabled(data: DB_entrie) {
         console.log(`Time control is set to: ${data.time_control}`);
         if (this.last_soil_downlink != 0) {
@@ -76,7 +76,7 @@ export class Downlink {
         }
     }
 
-    // Called if humidity is greater then the upper border value
+    /** Called if humidity is greater then the upper border value. */
     private humidity_greater_than_bordervalue() {
         if (this.last_soil_downlink != 1) {
             this.send_downlink(1); // Turns the relais off
@@ -86,7 +86,7 @@ export class Downlink {
         }
     }
 
-    // Scheduling a downlink
+    /** Scheduling a downlink. */
     private schedule_downlink(data: DB_entrie) {
         // Get waiting time
         if (data.watering_time) {
@@ -101,9 +101,9 @@ export class Downlink {
         }
     }
 
-    /* Function for sending downlinks
-     0 for relais on | 1 for relais off 
-     2 for valve on  | 3 for valve off */
+    /** Function for sending downlinks.
+     0 for relais on | 1 for relais off. 
+     2 for valve on  | 3 for valve off. */
     private send_downlink(on_off: 0 | 1 | 2 | 3) {
         console.log(`Sending Downlink...`);
         // Only allow downlink while ENABLE_DOWNLINK is set to true
@@ -169,12 +169,12 @@ export class Downlink {
         }
     }
 
-    // Returns the value of the last downlink
+    /** Returns the value of the last downlink. */
     public get get_last_soil_downlink(): number {
         return this.last_soil_downlink;
     }
 
-    // Calculate waiting time
+    /** Calculate waiting time. */
     private calculate_waiting_time(_watering_time: string) {
         // Split input into hours and minutes
         let splitted_time: string[] = _watering_time.split(":");
@@ -203,7 +203,7 @@ export class Downlink {
         return time_left;
     }
 
-    // Sending dircet downlink for pump controll with either 0 or 1
+    /** Sending dircet downlink for pump controll with either 0 or 1. */
     public direct_downlink() {
         if(this.waterlevel_percent <= 0){
             console.log(`Waterlevel below 10% or not measured yet. Don't starting watering.`);
@@ -217,7 +217,7 @@ export class Downlink {
         }
     }
 
-    // Checking the waterlevel and sending downlink to switch the water source
+    /** Checking the waterlevel and sending downlink to switch the water source. */
     public check_waterlevel(data: DB_entrie, percent_to_switch: number) {
         if (data.max_distance != undefined && data.distance != undefined) {
             this.waterlevel_percent = 100 - ((data.distance / data.max_distance) * 100);

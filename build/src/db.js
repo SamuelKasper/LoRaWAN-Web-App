@@ -37,13 +37,13 @@ const mongodb_1 = require("mongodb");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 class DB {
-    // Returns MongoClient
+    /** Returns a MongoClient Object. */
     get_client() {
         return __awaiter(this, void 0, void 0, function* () {
             return new mongodb_1.MongoClient(`mongodb+srv://${process.env.DB_USER}:${process.env.PASSWORD}@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority`);
         });
     }
-    // Get DB enties and saves them in temp
+    /** Returns the DB entries. */
     get_entries() {
         return __awaiter(this, void 0, void 0, function* () {
             let client = yield this.get_client();
@@ -64,7 +64,7 @@ class DB {
             }
         });
     }
-    // Updates the editable fields 
+    /** Updates the user input fields. */
     update_editable_fields(_id, data) {
         return __awaiter(this, void 0, void 0, function* () {
             let client = yield this.get_client();
@@ -81,7 +81,7 @@ class DB {
             }
         });
     }
-    // Updates a db entrie or add a new one. Triggert by TTN Uplink
+    /** Updates a db entry or add a new one. */
     update_db_by_uplink(_devEUI, data, base_data) {
         return __awaiter(this, void 0, void 0, function* () {
             let client = yield this.get_client();

@@ -3,16 +3,12 @@ import { DB } from "./db";
 import { Downlink } from "./downlink";
 
 export class Routes {
-    private default_min = 30;
-    private default_max = 75;
-    private default_max_distance = 200;
-    private default_time = "08:00";
     private time_control = "true";
+    private percent_to_switch = 10;
     private downlink = new Downlink();
     private db = new DB();
-    private percent_to_switch = 10;
 
-    // Loading data from DB and displays it on default URL
+    /** Loading data from DB and displays it on default URL. */
     public async default(res: Response) {
         let entries = await this.db.get_entries() || [];
 
@@ -47,109 +43,119 @@ export class Routes {
             }
 
             // Add parameter to check watering status
-            if(entries[i].soil_humidity){
-                if(this.downlink.get_last_soil_downlink==0){
+            if (entries[i].soil_humidity) {
+                if (this.downlink.get_last_soil_downlink == 0) {
                     entries[i].last_soil_downlink = "Bewässerung ist aktiv";
-                }else{
+                } else {
                     entries[i].last_soil_downlink = "Bewässerung ist inaktiv";
                 }
-                
+
             }
         }
         // Render the page with given entries
         res.render("index", { entries });
     }
 
-    // Receives the uplink data and processes it
+    /** Processing uplink data. */
     public async uplink(req: Request, res: Response) {
         // Respond to ttn. Otherwise the uplink will fail.
         res.sendStatus(200);
 
-        // Parse request body into a jsonObj.
-        let jsonObj = JSON.parse(JSON.stringify(req.body));
-
-        // Search for best RSSI 
-        let sorted_gateways_by_rssi = jsonObj.uplink_message.rx_metadata.sort(
-            (data_1: any, data_2: any) => data_2.rssi - data_1.rssi);
+        // Parse request body into a JSON object.
+        let sensor_data = JSON.parse(JSON.stringify(req.body));
 
         // Only process uplinks with a decoded payload
-        if (jsonObj.uplink_message.decoded_payload) {
-            // Add all data to their specific fields. Some fields will be undefined.
-            let sensorData = jsonObj.uplink_message.decoded_payload;
-            let data: DB_entrie = {
-                // Data other than enviroment data
-                name: <string>jsonObj.end_device_ids.device_id,
-                gateway: <string>sorted_gateways_by_rssi[0].gateway_ids.gateway_id,
-                time: jsonObj.received_at.toLocaleString('de-DE'),
-                dev_eui: <string>jsonObj.end_device_ids.dev_eui,
-                rssi: <number>jsonObj.uplink_message.rx_metadata[0].rssi,
-                description: "Beschreibung...",
+        if (sensor_data.uplink_message.decoded_payload) {
+            let base_data = this.build_data_object(sensor_data);
+            let extended_data = await this.replace_with_db_values(base_data);
+            await this.db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
 
-                // Air, just sends the Data without °C and %
-                air_temperature: <number>sensorData.TempC_SHT,
-                air_humidity: <number>sensorData.Hum_SHT,
-
-                // Soil, sensor sends also °C and %!
-                soil_temperature: <string>sensorData.temp_SOIL,
-                soil_humidity: <string>sensorData.water_SOIL,
-
-                // Waterlevel, measured by distance
-                distance: <number>sensorData.distance,
-            };
-
-            // Delete entries with value undefined 
-            for (const [key, val] of Object.entries(data)) {
-                if (val == undefined) {
-                    delete data[key as keyof typeof data];
-                }
+            // If uplink data comes from soil sensor, check if watering is necessary
+            if (extended_data.soil_humidity) {
+                this.downlink.check_soil(extended_data);
             }
 
-            // Set distance to cm
-            if(data.distance){
-                data.distance = data.distance/10;
-            }
-
-            // No added fields like hum_min, hum_max, watering_time, max_distance
-            let base_data = data;
-
-            // Set db values or init values for the editable fields
-            let entries = await this.db.get_entries() || [];
-            for (let i = 0; i < entries.length; i++) {
-                if (entries[i].dev_eui == data.dev_eui) {
-                    // Overwrite description
-                    data.description = entries[i].desription; 
-
-                    // Add editable fields for soil if data is from soil sensor
-                    if (data.soil_humidity) {
-                        data.hum_min = entries[i].hum_min ? entries[i].hum_min : this.default_min;
-                        data.hum_max = entries[i].hum_max ? entries[i].hum_max : this.default_max;
-                        data.watering_time = entries[i].watering_time ? entries[i].watering_time : this.default_time;
-                        data.time_control = entries[i].time_control ? entries[i].time_control : this.time_control;
-                    }
-                    // Add editable fields for distance if data is from distance sensor
-                    if (data.distance) {
-                        data.max_distance = entries[i].max_distance ? entries[i].max_distance : this.default_max_distance;
-                    }
-                }
-            }
-
-            // Update db 
-            await this.db.update_db_by_uplink(data.dev_eui, data, base_data);
-
-            // Check for necessary downlink if the sensor ist a soil sensor
-            if (data.soil_humidity) {
-                //checkDownlink(data);
-                this.downlink.check_soil_downlink(data);
-            }
-
-            // Check waterlevel if sensor is a distance sensor 
-            if(data.distance){
-                this.downlink.check_waterlevel(data, this.percent_to_switch);
+            // If uplink data comes from distance sensor, check if switching the valve is necessary
+            if (extended_data.distance) {
+                this.downlink.check_waterlevel(extended_data, this.percent_to_switch);
             }
         }
     }
 
-    // Receives and updates the user input fields
+    /** Create an object of type DB_entrie with the sensor data. */
+    private build_data_object(sensor_data: any): DB_entrie {
+        // Search for best RSSI 
+        let sorted_gateways_by_rssi = sensor_data.uplink_message.rx_metadata.sort(
+            (data_1: any, data_2: any) => data_2.rssi - data_1.rssi);
+
+        // Add all data to their specific fields. Some fields will be undefined.
+        let decoded_payload = sensor_data.uplink_message.decoded_payload;
+        let data: DB_entrie = {
+            // Data other than enviroment data
+            name: <string>sensor_data.end_device_ids.device_id,
+            gateway: <string>sorted_gateways_by_rssi[0].gateway_ids.gateway_id,
+            time: sensor_data.received_at.toLocaleString('de-DE'),
+            dev_eui: <string>sensor_data.end_device_ids.dev_eui,
+            rssi: <number>sensor_data.uplink_message.rx_metadata[0].rssi,
+            description: "Beschreibung...",
+
+            // Air, just sends the Data without °C and %
+            air_temperature: <number>decoded_payload.TempC_SHT,
+            air_humidity: <number>decoded_payload.Hum_SHT,
+
+            // Soil, sensor sends also °C and %!
+            soil_temperature: <string>decoded_payload.temp_SOIL,
+            soil_humidity: <string>decoded_payload.water_SOIL,
+
+            // Waterlevel, measured by distance
+            distance: <number>decoded_payload.distance,
+        };
+
+        // Delete entries with value undefined 
+        for (const [key, val] of Object.entries(data)) {
+            if (val == undefined) {
+                delete data[key as keyof typeof data];
+            }
+        }
+
+        // Set distance to cm
+        if (data.distance) {
+            data.distance = data.distance / 10;
+        }
+        return data;
+    }
+
+    /**Replace non sensor data (user inputs) with already existring db values. */
+    private async replace_with_db_values(data: DB_entrie): Promise<DB_entrie>{
+        // Default values
+        let default_min = 30;
+        let default_max = 75;
+        let default_max_distance = 200;
+        let default_time = "08:00";
+
+        let entries = await this.db.get_entries() || [];
+        for (let i = 0; i < entries.length; i++) {
+            if (entries[i].dev_eui == data.dev_eui) {
+                // Overwrite description
+                data.description = entries[i].desription;
+
+                // Add editable fields for soil if data is from soil sensor
+                if (data.soil_humidity) {
+                    data.hum_min = entries[i].hum_min ? entries[i].hum_min : default_min;
+                    data.hum_max = entries[i].hum_max ? entries[i].hum_max : default_max;
+                    data.watering_time = entries[i].watering_time ? entries[i].watering_time : default_time;
+                    data.time_control = entries[i].time_control ? entries[i].time_control : this.time_control;
+                }
+                // Add editable fields for distance if data is from distance sensor
+                if (data.distance) {
+                    data.max_distance = entries[i].max_distance ? entries[i].max_distance : default_max_distance;
+                }
+            }
+        }
+        return data;
+    }
+
+    /** Processing data from user input fields send by form submit. */
     public async update(req: Request, res: Response) {
         let entrie = {};
         // Update data of soil sensor
@@ -181,7 +187,8 @@ export class Routes {
         res.redirect('back');
     }
 
-    public async direct_downlink(req: Request, res: Response){
+    /** Calling direct downlink from class Downlink. */
+    public async direct_downlink(req: Request, res: Response) {
         this.downlink.direct_downlink();
         // Reloade page
         res.redirect('back');

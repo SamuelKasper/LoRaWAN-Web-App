@@ -3,12 +3,12 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 export class DB {
-    // Returns MongoClient
+    /** Returns a MongoClient Object. */
     public async get_client() {
         return new MongoClient(`mongodb+srv://${process.env.DB_USER}:${process.env.PASSWORD}@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority`);
     }
 
-    // Get DB enties and saves them in temp
+    /** Returns the DB entries. */
     public async get_entries() {
         let client = await this.get_client();
         try {
@@ -26,7 +26,7 @@ export class DB {
         }
     }
 
-    // Updates the editable fields 
+    /** Updates the user input fields. */
     public async update_editable_fields(_id: string, data: {}) {
         let client = await this.get_client();
         try {
@@ -40,7 +40,7 @@ export class DB {
         }
     }
 
-    // Updates a db entrie or add a new one. Triggert by TTN Uplink
+    /** Updates a db entry or add a new one. */
     public async update_db_by_uplink(_devEUI: string, data: {}, base_data: {}) {
         let client = await this.get_client();
         try {
