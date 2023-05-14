@@ -12,12 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Routes = void 0;
 const db_1 = require("./db");
 const downlink_1 = require("./downlink");
+const weather_1 = require("./weather");
 class Routes {
     constructor() {
         this.time_control = "true";
         this.percent_to_switch = 10;
         this.downlink = new downlink_1.Downlink();
         this.db = new db_1.DB();
+        this.weather = new weather_1.Weather();
     }
     /** Loading data from DB and displays it on default URL. */
     default(res) {
@@ -84,6 +86,10 @@ class Routes {
                 // If uplink data comes from distance sensor, check if switching the valve is necessary
                 if (extended_data.distance) {
                     this.downlink.check_waterlevel(extended_data, this.percent_to_switch);
+                }
+                // Fetch weather API
+                if (extended_data.latitude && extended_data.longitude) {
+                    this.weather.fetch_weather(extended_data.latitude, extended_data.longitude);
                 }
             }
         });

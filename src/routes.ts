@@ -1,12 +1,14 @@
 import { Response, Request } from "express";
 import { DB } from "./db";
 import { Downlink } from "./downlink";
+import { Weather } from "./weather";
 
 export class Routes {
     private time_control = "true";
     private percent_to_switch = 10;
     private downlink = new Downlink();
     private db = new DB();
+    private weather = new Weather();
 
     /** Loading data from DB and displays it on default URL. */
     public async default(res: Response) {
@@ -78,6 +80,11 @@ export class Routes {
             // If uplink data comes from distance sensor, check if switching the valve is necessary
             if (extended_data.distance) {
                 this.downlink.check_waterlevel(extended_data, this.percent_to_switch);
+            }
+
+            // Fetch weather API
+            if(extended_data.latitude && extended_data.longitude){
+                this.weather.fetch_weather(extended_data.latitude, extended_data.longitude);
             }
         }
     }
