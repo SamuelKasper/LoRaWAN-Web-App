@@ -84,7 +84,7 @@ export class Routes {
 
             // Fetch weather API
             if(extended_data.latitude && extended_data.longitude){
-                this.weather.fetch_weather(extended_data.latitude, extended_data.longitude);
+                //this.weather.fetch_weather(extended_data.latitude, extended_data.longitude);
             }
         }
     }
