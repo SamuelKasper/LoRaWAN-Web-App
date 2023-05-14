@@ -88,8 +88,13 @@ class Routes {
                     this.downlink.check_waterlevel(extended_data, this.percent_to_switch);
                 }
                 // Fetch weather API
-                if (extended_data.latitude && extended_data.longitude) {
-                    //this.weather.fetch_weather(extended_data.latitude, extended_data.longitude);
+                if (process.env.FETCH_WEATHER == "true") {
+                    if (extended_data.latitude && extended_data.longitude) {
+                        this.weather.fetch_weather(extended_data.latitude, extended_data.longitude);
+                    }
+                }
+                else {
+                    console.log("FETCH_WEATHER is disabled");
                 }
             }
         });

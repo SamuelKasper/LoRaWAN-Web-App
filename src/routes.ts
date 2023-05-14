@@ -83,8 +83,12 @@ export class Routes {
             }
 
             // Fetch weather API
-            if(extended_data.latitude && extended_data.longitude){
-                //this.weather.fetch_weather(extended_data.latitude, extended_data.longitude);
+            if (process.env.FETCH_WEATHER == "true") {
+                if (extended_data.latitude && extended_data.longitude) {
+                    this.weather.fetch_weather(extended_data.latitude, extended_data.longitude);
+                }
+            } else {
+                console.log("FETCH_WEATHER is disabled");
             }
         }
     }
@@ -135,7 +139,7 @@ export class Routes {
     }
 
     /**Replace non sensor data (user inputs) with already existring db values. */
-    private async replace_with_db_values(data: DB_entrie): Promise<DB_entrie>{
+    private async replace_with_db_values(data: DB_entrie): Promise<DB_entrie> {
         // Default values
         let default_min = 30;
         let default_max = 75;
