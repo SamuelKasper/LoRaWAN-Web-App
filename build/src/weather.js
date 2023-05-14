@@ -8,6 +8,7 @@ class Weather {
             let lang = "de";
             let unit = "metric";
             let url = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${process.env.WEATHER_API_KEY}&units=${unit}&lang=${lang}`;
+            console.log(url);
             fetch(url)
                 .then((resp) => {
                 if (!resp.ok) {
