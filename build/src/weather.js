@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Weather = void 0;
+const fetch = require("node-fetch");
 class Weather {
     fetch_weather(lat, lon) {
         if (process.env.FETCH_WEATHER) {
@@ -8,13 +9,13 @@ class Weather {
             let unit = "metric";
             let url = `http://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${process.env.WEATHER_API_KEY}&units=${unit}&lang=${lang}`;
             fetch(url)
-                .then(resp => {
+                .then((resp) => {
                 if (!resp.ok) {
                     throw new Error(resp.statusText);
                 }
                 return resp.json();
             })
-                .then(data => {
+                .then((data) => {
                 this.show_weather(data);
             })
                 .catch(console.error);

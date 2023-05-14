@@ -1,3 +1,4 @@
+const fetch = require("node-fetch") ;
 export class Weather {
     public fetch_weather(lat: number, lon: number) {
         if (process.env.FETCH_WEATHER) {
@@ -5,13 +6,13 @@ export class Weather {
             let unit = "metric";
             let url = `http://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${process.env.WEATHER_API_KEY}&units=${unit}&lang=${lang}`;
             fetch(url)
-                .then(resp => {
+                .then((resp: { ok: any; statusText: string | undefined; json: () => any; }) => {
                     if (!resp.ok) {
                         throw new Error(resp.statusText);
                     }
                     return resp.json();
                 })
-                .then(data => {
+                .then((data: any) => {
                     this.show_weather(data);
                 })
                 .catch(console.error);
