@@ -4,7 +4,7 @@ exports.Weather = void 0;
 const fetch = require("node-fetch");
 class Weather {
     fetch_weather(lat, lon) {
-        if (process.env.FETCH_WEATHER) {
+        if (process.env.FETCH_WEATHER == "false") {
             let lang = "de";
             let unit = "metric";
             let url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${process.env.WEATHER_API_KEY}&units=${unit}&lang=${lang}`;
