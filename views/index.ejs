@@ -26,15 +26,15 @@
                 <div class="filter-container align-center">
                     <div class="col-2">
                         <input type="radio" id="temp" name="filter_type" value="temp">
-                        <label for="sensor">Temperatur</label>
+                        <label for="temp">Temperatur</label>
                     </div>
                     <div class="col-2">
                         <input type="radio" id="level" name="filter_type" value="level">
-                        <label for="zistern">Füllstand</label>
+                        <label for="level">Füllstand</label>
                     </div>
                     <div class="col-2">
                         <input type="radio" id="io" name="filter_type" value="io">
-                        <label for="pump">I/O</label> 
+                        <label for="io">I/O</label> 
                     </div>
                     <div class="col-2">
                         <input type="radio" id="all" name="filter_type" value="all">
@@ -66,6 +66,7 @@
     <!--Akkordeon-->
     <div class="container-fluid margin-top-20">
     <div class="row">
+    <form id="direct-download-form" name="direct-download-form" action="/directDownlink" method="post"></form>
     <div class="col-sm-1 col-md-2 col-lg-3"></div>
     <div class="accordion col-sm-10 col-md-8 col-lg-6" id="accordion">
         <!--Item-->
@@ -82,7 +83,6 @@
                 <div id="<%=no_spaces_name%>" class="accordion-collapse collapse" aria-labelledby="headingOne"
                     data-bs-parent="#accordion">
                     <div class="accordion-body">
-                        <form id="direct-download-form" name="direct-download-form" action="/directDownlink" method="post"></form>
                         <form action="/update" method="post">
                         <table>
                             <!--Name-->
@@ -190,14 +190,14 @@
                                     </td>
                                     <td class="display_flex">
                                         <%if(entrie.time_control == "true"){%>
-                                            <input id="time_control" name="time_control" type="checkbox" onclick="myCheckbox()"
-                                            class="input-group-text" value="<%=entrie.time_control%>" checked="true">
+                                            <input id="time_control_<%=index%>" name="time_control" type="checkbox" onclick="myCheckbox('time_control_<%=index%>')"
+                                            class="input-group-text time_control" value="<%=entrie.time_control%>" checked="true">
                                         <%}else{%>
-                                            <input id="time_control" name="time_control" type="checkbox" onclick="myCheckbox()"
-                                            class="input-group-text" value="<%=entrie.time_control%>">
+                                            <input id="time_control_<%=index%>" name="time_control" type="checkbox" onclick="myCheckbox('time_control_<%=index%>')"
+                                            class="input-group-text time_control" value="<%=entrie.time_control%>">
                                         <%}%>
                                         
-                                        <input id="watering_time" name="watering_time" type="time" 
+                                        <input id="watering_time_<%=index%>" name="watering_time" type="time" 
                                             class="input-group-text"
                                             value="<%=entrie.watering_time%>">
                                     </td>
@@ -211,13 +211,13 @@
                                     </td>
                                     <td>
                                         <div class="input-group">
-                                            <input id="hum_min" name="hum_min" type="text" class="form-control w50px"
+                                            <input id="hum_min_<%=index%>" name="hum_min" type="text" class="form-control w50px"
                                                 value="<%=entrie.hum_min%>">
                                             <span class="input-group-text border-radius-right">%</span>
                                             
                                             <span class="pad_lr_15px"> bis </span>
 
-                                            <input id="hum_max" name="hum_max" type="text" class="form-control w50px border-radius-left"
+                                            <input id="hum_max_<%=index%>" name="hum_max" type="text" class="form-control w50px border-radius-left"
                                                 value="<%=entrie.hum_max%>">
                                             <span class="input-group-text">%</span>
                                         </div>
@@ -231,7 +231,7 @@
                                     <td><strong data-toggle="tooltip" data-placement="top" title="Distanz vom Sensor bis zum Boden des leeren Wasserbehälters angeben.">Maximale Distanz <br>zum Boden:</strong></td>
                                     <td>
                                         <div class="input-group w150px">
-                                            <input id="max_distance" name="max_distance" type="text" class="form-control"
+                                            <input id="max_distance_<%=index%>" name="max_distance" type="text" class="form-control"
                                                 value="<%=entrie.max_distance%>">
                                             <span class="input-group-text">cm</span>
                                         </div>
@@ -244,7 +244,7 @@
                                 <td><strong>Beschreibung:</strong></td>
                                 <td>
                                     <div class="input-group">
-                                        <textarea id="description" name="description" class="form-control" value="<%=entrie.description%>"><%=entrie.description%></textarea>
+                                        <textarea id="description_<%=index%>" name="description" class="form-control" value="<%=entrie.description%>"><%=entrie.description%></textarea>
                                     </div>
                                 </td>
                             </tr>
@@ -261,8 +261,8 @@
                                 <td><strong data-toggle="tooltip" data-placement="top" title="Startet die Bewässerung, wenn sie inaktiv ist /  Beendet die Bewässerung, wenn sie aktiv ist.">Manuelle Steuerung:</strong></td>
                                 <td>
                                     <div class="display_flex manual-ctrl">
-                                        <span id="last_soil_downlink"><%=entrie.last_soil_downlink%></span>
-                                        <input id="direct-downlink-btn" name="direct-downlink-btn" form="direct-download-form" type="submit" class="btn btn-primary form-control" value="Umschalten"></input>   
+                                        <span id="last_soil_downlink_<%=index%>" class="last_soil_downlink"><%=entrie.last_soil_downlink%></span>
+                                        <input id="direct-downlink-btn_<%=index%>" name="direct-downlink-btn" form="direct-download-form" type="submit" class="btn btn-primary form-control direct-downlink-btn" value="Umschalten"></input>   
                                     </div>
                                 </td>
                             </tr>
@@ -271,7 +271,7 @@
                             <!--ID-->   
                             <tr hidden>
                                 <td><strong>Database ID</strong></td>
-                                <td><input id="dbid" name="dbid" readonly value="<%=entrie._id%>"></td>
+                                <td><input id="dbid_<%=index%>" name="dbid" readonly value="<%=entrie._id%>"></td>
                             </tr>        
 
                             <!--Submit Button-->
@@ -292,8 +292,8 @@
 </div>
 
 <script>
-function myCheckbox(){
-    let checkbox = document.getElementById("time_control");
+function myCheckbox(id){
+    let checkbox = document.getElementById(id);
     if(checkbox.checked){
         checkbox.value = "true";
     }else{

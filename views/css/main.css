@@ -192,19 +192,19 @@ table{
     align-items: center;
 }
 
-#time_control{
-    width: 25px;
-    height: 25px;
-    margin-right: 15px;
+.time_control{
+    width: 25px !important;
+    height: 25px !important;
+    margin-right: 15px !important;
 }
 
-#direct-downlink-btn{
-    margin-top: 5px;
-    width: 150px;
+.direct-downlink-btn{
+    margin-top: 5px !important;
+    width: 150px !important;
 }
 
-#last_soil_downlink{
-    margin-right: 5px;
+.last_soil_downlink{
+    margin-right: 5px !important;
 }
 
 .manual-ctrl{
