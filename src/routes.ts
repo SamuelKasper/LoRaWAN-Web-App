@@ -147,7 +147,7 @@ export class Routes {
         let entries = await this.db.get_entries() || [];
         for (let i = 0; i < entries.length; i++) {
             // Overwrite description
-            data.description = entries[i].desription;
+            data.description = entries[i].desription ? entries[i].desription : "Beschreibung...";
 
             // Add editable fields for soil if data is from soil sensor
             if (data.soil_humidity) {
@@ -158,6 +158,7 @@ export class Routes {
             }
             // Add editable fields for distance if data is from distance sensor
             if (data.distance) {
+                console.log("max: ",entries[i].max_distance);
                 data.max_distance = entries[i].max_distance ? entries[i].max_distance : default_max_distance;
             }
         }
