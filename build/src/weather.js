@@ -20,7 +20,16 @@ class Weather {
             .catch(console.error);
     }
     check_weather(data) {
-        console.log(data);
+        for (let i = 0; i <= 3; i++) {
+            let weather = data.list[i].weather;
+            let rain = data.list[i].rain;
+            let city = data.list[i].city.name;
+            console.log(weather);
+            console.log("-------------------------------");
+            console.log(rain);
+            console.log("-------------------------------");
+            console.log(city);
+        }
     }
 }
 exports.Weather = Weather;
