@@ -21,7 +21,7 @@ export class Weather {
         for (let i = 0; i <= 3; i++) {
             let weather = data.list[i].weather;
             let rain = data.list[i].rain;
-            let city = data.list[i].city.name;
+            let city = data.city.name;
             console.log(weather);
             console.log("-------------------------------");
             console.log(rain);

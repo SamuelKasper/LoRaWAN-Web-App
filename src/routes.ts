@@ -108,6 +108,7 @@ export class Routes {
             time: sensor_data.received_at.toLocaleString('de-DE'),
             dev_eui: <string>sensor_data.end_device_ids.dev_eui,
             rssi: <number>sensor_data.uplink_message.rx_metadata[0].rssi,
+            // Coords of gateways
             latitude: <number>sensor_data.uplink_message.rx_metadata[0].location.latitude.toFixed(2),
             longitude: <number>sensor_data.uplink_message.rx_metadata[0].location.longitude.toFixed(2),
             description: "Beschreibung...",
