@@ -209,7 +209,7 @@ export class Downlink {
 
     /** Sending dircet downlink for pump controll with either 0 or 1. */
     public direct_downlink() {
-        if (this.last_soil_downlink == 0) {
+        if (this.last_soil_downlink == 0 || this.last_soil_downlink == 2) {
             this.send_downlink(1);
         } else if (this.last_soil_downlink == 1) {
             this.send_downlink(0);
