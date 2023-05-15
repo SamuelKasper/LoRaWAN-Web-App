@@ -206,11 +206,11 @@ class Routes {
     check_for_rain(extended_data) {
         let rain_amount_arr = extended_data.weather_forecast_3h.split(":");
         let rain_amount = parseInt(rain_amount_arr[1].replace("mm", ""));
-        if (rain_amount > 1.5) {
+        if (rain_amount > 0.5) {
             console.log("Expecting rain.");
             return true;
         }
-        console.log("Rain amount below 1.5mm. Check if watering is needed.");
+        console.log("Rain amount below 0.5mm. Check if watering is needed.");
         return false;
     }
     /** Processing data from user input fields send by form submit. */
