@@ -26,13 +26,13 @@ export class DB {
         }
     }
 
-    /** Returns the DB entries. */
-    public async get_entrie_by_field(data: string) {
+    /** Return entry with specific dev_eui. */
+    public async get_entrie_by_field(_dev_eui: string) {
         let client = await this.get_client();
         try {
             await client.connect();
             const db_entries = client.db("lorawan_data").collection("sensor_data");
-            let entrie = await db_entries.findOne({dev_eui:`${data}`});
+            let entrie = await db_entries.findOne({dev_eui:`${_dev_eui}`});
             if (entrie) {
                 entrie.time = new Date(entrie.time).toLocaleString("de-DE", { timeZone: "Europe/Berlin" });
             }

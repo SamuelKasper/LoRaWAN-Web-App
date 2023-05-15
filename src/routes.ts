@@ -146,31 +146,9 @@ export class Routes {
         let default_max_distance = 200;
         let default_time = "08:00";
 
-        /*
-        let entries = await this.db.get_entries() || [];
-        for (let i = 0; i < entries.length; i++) {
-            if (entries[i].dev_eui == data.dev_eui) {
-                // Overwrite description
-                data.description = entries[i].desription;
-
-                // Add editable fields for soil if data is from soil sensor
-                if (data.soil_humidity) {
-                    data.hum_min = entries[i].hum_min ? entries[i].hum_min : default_min;
-                    data.hum_max = entries[i].hum_max ? entries[i].hum_max : default_max;
-                    data.watering_time = entries[i].watering_time ? entries[i].watering_time : default_time;
-                    data.time_control = entries[i].time_control ? entries[i].time_control : this.time_control;
-                }
-                // Add editable fields for distance if data is from distance sensor
-                if (data.distance) {
-                    data.max_distance = entries[i].max_distance ? entries[i].max_distance : default_max_distance;
-                }
-            }
-        }*/
-
         let db_entrie = await this.db.get_entrie_by_field(data.dev_eui);
-        console.log(db_entrie);
+        // If data is already in db
         if (db_entrie != null && db_entrie != undefined) {
-            console.log("Updating db entrie.");
             // Overwrite description
             data.description = db_entrie.desription;
             // Add editable fields for soil if data is from soil sensor
@@ -184,9 +162,9 @@ export class Routes {
             if (data.distance) {
                 data.max_distance = db_entrie.max_distance;
             }
+        // If there is no data in db
         } else {
-            console.log("New db entrie.");
-            // Overwrite description
+            // Set description
             data.description = "Beschreibung";
             // Add editable fields for soil if data is from soil sensor
             if (data.soil_humidity) {
@@ -209,7 +187,7 @@ export class Routes {
         let rain_amount_arr = extended_data.weather_forecast_3h.split(":");
         let rain_amount = parseInt(rain_amount_arr[1].replace("mm", ""));
         if(rain_amount>0.5){
-            console.log("Expecting rain.")
+            console.log("Expecting rain. Don't check if watering is needed.");
             return true;
         }
         console.log("Rain amount below 0.5mm. Check if watering is needed.");

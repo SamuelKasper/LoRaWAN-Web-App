@@ -64,14 +64,14 @@ class DB {
             }
         });
     }
-    /** Returns the DB entries. */
-    get_entrie_by_field(data) {
+    /** Return entry with specific dev_eui. */
+    get_entrie_by_field(_dev_eui) {
         return __awaiter(this, void 0, void 0, function* () {
             let client = yield this.get_client();
             try {
                 yield client.connect();
                 const db_entries = client.db("lorawan_data").collection("sensor_data");
-                let entrie = yield db_entries.findOne({ dev_eui: `${data}` });
+                let entrie = yield db_entries.findOne({ dev_eui: `${_dev_eui}` });
                 if (entrie) {
                     entrie.time = new Date(entrie.time).toLocaleString("de-DE", { timeZone: "Europe/Berlin" });
                 }
