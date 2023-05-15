@@ -155,6 +155,7 @@ class Routes {
                     data.time_control = entries[i].time_control ? entries[i].time_control : this.time_control;
                 }
                 // Add editable fields for distance if data is from distance sensor
+                console.log("dist: ", data.distance);
                 if (data.distance) {
                     console.log("max: ", entries[i].max_distance);
                     data.max_distance = entries[i].max_distance ? entries[i].max_distance : default_max_distance;
