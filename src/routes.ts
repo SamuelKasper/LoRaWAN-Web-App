@@ -91,8 +91,8 @@ export class Routes {
             (data_1: any, data_2: any) => data_2.rssi - data_1.rssi);
 
         // Get coords of gateway
-        let latitude_val = <number>sensor_data.uplink_message.sorted_gateways_by_rssi[0].location.latitude.toFixed(2);
-        let longitude_val = <number>sensor_data.uplink_message.sorted_gateways_by_rssi[0].location.longitude.toFixed(2);
+        let latitude_val = <number>sorted_gateways_by_rssi[0].location.latitude.toFixed(2);
+        let longitude_val = <number>sorted_gateways_by_rssi[0].location.longitude.toFixed(2);
 
         // Fetch weather API
         if (process.env.FETCH_WEATHER == "true") {
@@ -111,7 +111,7 @@ export class Routes {
             gateway: <string>sorted_gateways_by_rssi[0].gateway_ids.gateway_id,
             time: sensor_data.received_at.toLocaleString('de-DE'),
             dev_eui: <string>sensor_data.end_device_ids.dev_eui,
-            rssi: <number>sensor_data.uplink_message.sorted_gateways_by_rssi[0].rssi,
+            rssi: <number>sorted_gateways_by_rssi[0].rssi,
             // Coords of gateways
             latitude: latitude_val,
             longitude: longitude_val,

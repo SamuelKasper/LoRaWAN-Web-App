@@ -95,8 +95,8 @@ class Routes {
         // Sort rx_metadata by rssi. Best rssi will be in first array entry.
         let sorted_gateways_by_rssi = sensor_data.uplink_message.rx_metadata.sort((data_1, data_2) => data_2.rssi - data_1.rssi);
         // Get coords of gateway
-        let latitude_val = sensor_data.uplink_message.sorted_gateways_by_rssi[0].location.latitude.toFixed(2);
-        let longitude_val = sensor_data.uplink_message.sorted_gateways_by_rssi[0].location.longitude.toFixed(2);
+        let latitude_val = sorted_gateways_by_rssi[0].location.latitude.toFixed(2);
+        let longitude_val = sorted_gateways_by_rssi[0].location.longitude.toFixed(2);
         // Fetch weather API
         if (process.env.FETCH_WEATHER == "true") {
             if (latitude_val && longitude_val) {
@@ -114,7 +114,7 @@ class Routes {
             gateway: sorted_gateways_by_rssi[0].gateway_ids.gateway_id,
             time: sensor_data.received_at.toLocaleString('de-DE'),
             dev_eui: sensor_data.end_device_ids.dev_eui,
-            rssi: sensor_data.uplink_message.sorted_gateways_by_rssi[0].rssi,
+            rssi: sorted_gateways_by_rssi[0].rssi,
             // Coords of gateways
             latitude: latitude_val,
             longitude: longitude_val,
