@@ -146,21 +146,19 @@ export class Routes {
 
         let entries = await this.db.get_entries() || [];
         for (let i = 0; i < entries.length; i++) {
-            if (entries[i].dev_eui == data.dev_eui) {
-                // Overwrite description
-                data.description = entries[i].desription;
+            // Overwrite description
+            data.description = entries[i].desription;
 
-                // Add editable fields for soil if data is from soil sensor
-                if (data.soil_humidity) {
-                    data.hum_min = entries[i].hum_min ? entries[i].hum_min : default_min;
-                    data.hum_max = entries[i].hum_max ? entries[i].hum_max : default_max;
-                    data.watering_time = entries[i].watering_time ? entries[i].watering_time : default_time;
-                    data.time_control = entries[i].time_control ? entries[i].time_control : this.time_control;
-                }
-                // Add editable fields for distance if data is from distance sensor
-                if (data.distance) {
-                    data.max_distance = entries[i].max_distance ? entries[i].max_distance : default_max_distance;
-                }
+            // Add editable fields for soil if data is from soil sensor
+            if (data.soil_humidity) {
+                data.hum_min = entries[i].hum_min ? entries[i].hum_min : default_min;
+                data.hum_max = entries[i].hum_max ? entries[i].hum_max : default_max;
+                data.watering_time = entries[i].watering_time ? entries[i].watering_time : default_time;
+                data.time_control = entries[i].time_control ? entries[i].time_control : this.time_control;
+            }
+            // Add editable fields for distance if data is from distance sensor
+            if (data.distance) {
+                data.max_distance = entries[i].max_distance ? entries[i].max_distance : default_max_distance;
             }
         }
         return data;
