@@ -167,10 +167,10 @@ class Downlink {
             req.write(data);
             req.end();
             // Set values for last_downlink
-            if (on_off == 0) {
+            if (on_off == 0 || on_off == 2) {
                 console.log(`Waiting => false`);
                 this.waiting = false;
-                this.last_soil_downlink = 0;
+                this.last_soil_downlink = on_off;
             }
             else {
                 this.last_soil_downlink = 1;
