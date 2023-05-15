@@ -31,16 +31,16 @@ export class Routes {
             // Add text for RSSI
             switch (true) {
                 case entries[i].rssi > -100:
-                    entries[i].rssi += " | Signalstärke: sehr gut";
+                    entries[i].rssi = "Sehr gut";
                     break;
                 case entries[i].rssi > -105:
-                    entries[i].rssi += " | Signalstärke: gut";
+                    entries[i].rssi = "Gut";
                     break;
                 case entries[i].rssi > -115:
-                    entries[i].rssi += " | Signalstärke: ausreichend";
+                    entries[i].rssi = "Ausreichend";
                     break;
                 case entries[i].rssi < -120:
-                    entries[i].rssi += " | Signalstärke: schlecht";
+                    entries[i].rssi = "Schlecht";
                     break;
             }
 
