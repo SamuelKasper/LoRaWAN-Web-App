@@ -164,6 +164,7 @@ class Routes {
                 }
             }*/
             let db_entrie = yield this.db.get_entrie_by_field(data.dev_eui);
+            console.log(db_entrie);
             if (db_entrie != null && db_entrie != undefined) {
                 console.log("Updating db entrie.");
                 // Overwrite description
