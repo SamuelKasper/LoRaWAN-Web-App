@@ -64,6 +64,27 @@ class DB {
             }
         });
     }
+    /** Returns the DB entries. */
+    get_entrie_by_field(field) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let client = yield this.get_client();
+            try {
+                yield client.connect();
+                const db_entries = client.db("lorawan_data").collection("sensor_data");
+                let entrie = yield db_entries.findOne({ field });
+                if (entrie) {
+                    entrie.time = new Date(entrie.time).toLocaleString("de-DE", { timeZone: "Europe/Berlin" });
+                }
+                return entrie;
+            }
+            catch (e) {
+                console.error(e);
+            }
+            finally {
+                yield client.close();
+            }
+        });
+    }
     /** Updates the user input fields. */
     update_editable_fields(_id, data) {
         return __awaiter(this, void 0, void 0, function* () {

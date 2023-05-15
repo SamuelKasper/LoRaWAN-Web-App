@@ -26,6 +26,24 @@ export class DB {
         }
     }
 
+    /** Returns the DB entries. */
+    public async get_entrie_by_field(field: {}) {
+        let client = await this.get_client();
+        try {
+            await client.connect();
+            const db_entries = client.db("lorawan_data").collection("sensor_data");
+            let entrie = await db_entries.findOne({ field });
+            if (entrie) {
+                entrie.time = new Date(entrie.time).toLocaleString("de-DE", { timeZone: "Europe/Berlin" });
+            }
+            return entrie;
+        } catch (e) {
+            console.error(e);
+        } finally {
+            await client.close();
+        }
+    }
+
     /** Updates the user input fields. */
     public async update_editable_fields(_id: string, data: {}) {
         let client = await this.get_client();

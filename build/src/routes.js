@@ -15,7 +15,7 @@ const downlink_1 = require("./downlink");
 const weather_1 = require("./weather");
 class Routes {
     constructor() {
-        this.time_control = "true";
+        this.time_control = true;
         this.percent_to_switch = 10;
         this.downlink = new downlink_1.Downlink();
         this.db = new db_1.DB();
@@ -143,22 +143,57 @@ class Routes {
             let default_max = 75;
             let default_max_distance = 200;
             let default_time = "08:00";
-            let entries = (yield this.db.get_entries()) || [];
+            /*
+            let entries = await this.db.get_entries() || [];
             for (let i = 0; i < entries.length; i++) {
+                if (entries[i].dev_eui == data.dev_eui) {
+                    // Overwrite description
+                    data.description = entries[i].desription;
+    
+                    // Add editable fields for soil if data is from soil sensor
+                    if (data.soil_humidity) {
+                        data.hum_min = entries[i].hum_min ? entries[i].hum_min : default_min;
+                        data.hum_max = entries[i].hum_max ? entries[i].hum_max : default_max;
+                        data.watering_time = entries[i].watering_time ? entries[i].watering_time : default_time;
+                        data.time_control = entries[i].time_control ? entries[i].time_control : this.time_control;
+                    }
+                    // Add editable fields for distance if data is from distance sensor
+                    if (data.distance) {
+                        data.max_distance = entries[i].max_distance ? entries[i].max_distance : default_max_distance;
+                    }
+                }
+            }*/
+            let db_entrie = yield this.db.get_entrie_by_field(data.dev_eui);
+            if (db_entrie != null && db_entrie != undefined) {
+                console.log("Updating db entrie.");
                 // Overwrite description
-                data.description = entries[i].desription ? entries[i].desription : "Beschreibung...";
+                data.description = db_entrie.desription;
                 // Add editable fields for soil if data is from soil sensor
                 if (data.soil_humidity) {
-                    data.hum_min = entries[i].hum_min ? entries[i].hum_min : default_min;
-                    data.hum_max = entries[i].hum_max ? entries[i].hum_max : default_max;
-                    data.watering_time = entries[i].watering_time ? entries[i].watering_time : default_time;
-                    data.time_control = entries[i].time_control ? entries[i].time_control : this.time_control;
+                    data.hum_min = db_entrie.hum_min;
+                    data.hum_max = db_entrie.hum_max;
+                    data.watering_time = db_entrie.watering_time;
+                    data.time_control = db_entrie.time_control;
                 }
                 // Add editable fields for distance if data is from distance sensor
-                console.log("dist: ", data.distance);
                 if (data.distance) {
-                    console.log("max: ", entries[i].max_distance);
-                    data.max_distance = entries[i].max_distance ? entries[i].max_distance : default_max_distance;
+                    data.max_distance = db_entrie.max_distance;
+                }
+            }
+            else {
+                console.log("New db entrie.");
+                // Overwrite description
+                data.description = "Beschreibung";
+                // Add editable fields for soil if data is from soil sensor
+                if (data.soil_humidity) {
+                    data.hum_min = default_min;
+                    data.hum_max = default_max;
+                    data.watering_time = default_time;
+                    data.time_control = this.time_control;
+                }
+                // Add editable fields for distance if data is from distance sensor
+                if (data.distance) {
+                    data.max_distance = default_max_distance;
                 }
             }
             return data;
