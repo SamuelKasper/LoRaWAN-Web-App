@@ -242,7 +242,7 @@
                             <%}%>
 
                             <!--Maximaler Füllstand-->
-                            <%if(entrie.distance){%>
+                            <%if(entrie.distance || entrie.distance==0){%>
                                 <tr>
                                     <td><strong data-toggle="tooltip" data-placement="top" title="Distanz vom Sensor bis zum Boden des leeren Wasserbehälters angeben.">Maximale Distanz <br>zum Boden:</strong></td>
                                     <td>

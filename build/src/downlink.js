@@ -166,12 +166,14 @@ class Downlink {
             // Write data to stream and close connection after
             req.write(data);
             req.end();
-            // Set values for last_downlink vars
-            // 0 & 1 -> pump control | Reset waiting, so a new downlink can be scheduled.
-            if (on_off == 0 || on_off == 1) {
+            // Set values for last_downlink
+            if (on_off == 0) {
                 console.log(`Waiting => false`);
                 this.waiting = false;
-                this.last_soil_downlink = on_off;
+                this.last_soil_downlink = 0;
+            }
+            else {
+                this.last_soil_downlink = 1;
             }
         }
         else {
