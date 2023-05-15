@@ -71,8 +71,8 @@ class DB {
             try {
                 yield client.connect();
                 const db_entries = client.db("lorawan_data").collection("sensor_data");
-                console.log("findOne: ", { dev_eui: `\"${data}\"` });
-                let entrie = yield db_entries.findOne({ dev_eui: `\"${data}\"` });
+                console.log("findOne: ", { dev_eui: `${data}` });
+                let entrie = yield db_entries.findOne({ dev_eui: `${data}` });
                 if (entrie) {
                     entrie.time = new Date(entrie.time).toLocaleString("de-DE", { timeZone: "Europe/Berlin" });
                 }

@@ -73,7 +73,9 @@ export class Routes {
 
             // If uplink data comes from soil sensor, check if watering is necessary
             if (extended_data.soil_humidity) {
-                this.downlink.check_soil(extended_data);
+                if(!this.check_for_rain(extended_data)){
+                    this.downlink.check_soil(extended_data);
+                }
             }
 
             // If uplink data comes from distance sensor, check if switching the valve is necessary
@@ -182,7 +184,7 @@ export class Routes {
             if (data.distance) {
                 data.max_distance = db_entrie.max_distance;
             }
-        }else{
+        } else {
             console.log("New db entrie.");
             // Overwrite description
             data.description = "Beschreibung";
@@ -191,7 +193,7 @@ export class Routes {
                 data.hum_min = default_min;
                 data.hum_max = default_max;
                 data.watering_time = default_time;
-                data.time_control =  this.time_control;
+                data.time_control = this.time_control;
             }
             // Add editable fields for distance if data is from distance sensor
             if (data.distance) {
@@ -200,6 +202,18 @@ export class Routes {
         }
 
         return data;
+    }
+
+    /** Check if rain amount is above 1.5mm. */
+    private check_for_rain(extended_data: DB_entrie) {
+        let rain_amount_arr = extended_data.weather_forecast_3h.split(":");
+        let rain_amount = parseInt(rain_amount_arr[1].replace("mm", ""));
+        if(rain_amount>1.5){
+            console.log("Expecting rain.")
+            return true;
+        }
+        console.log("Rain amount below 1.5mm. Check if watering is needed.");
+        return false;
     }
 
     /** Processing data from user input fields send by form submit. */
