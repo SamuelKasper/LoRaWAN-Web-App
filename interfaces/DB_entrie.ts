@@ -18,5 +18,5 @@ interface DB_entrie {
     hum_min?: number, 
     hum_max?: number,
     watering_time?: string,
-    time_control?: boolean
+    time_control?: string
 }

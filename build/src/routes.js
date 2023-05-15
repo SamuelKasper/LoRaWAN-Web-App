@@ -15,7 +15,7 @@ const downlink_1 = require("./downlink");
 const weather_1 = require("./weather");
 class Routes {
     constructor() {
-        this.time_control = true;
+        this.time_control = "true";
         this.percent_to_switch = 10;
         this.downlink = new downlink_1.Downlink();
         this.db = new db_1.DB();
@@ -209,7 +209,7 @@ class Routes {
                 entrie = {
                     description: req.body.description.toString(),
                     watering_time: req.body.watering_time.toString(),
-                    time_control: req.body.time_control ? req.body.time_control : false,
+                    time_control: req.body.time_control ? req.body.time_control : "false",
                     hum_min: parseInt(req.body.hum_min),
                     hum_max: parseInt(req.body.hum_max),
                 };

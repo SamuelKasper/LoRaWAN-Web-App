@@ -4,7 +4,7 @@ import { Downlink } from "./downlink";
 import { Weather } from "./weather";
 
 export class Routes {
-    private time_control = true;
+    private time_control = "true";
     private percent_to_switch = 10;
     private downlink = new Downlink();
     private db = new DB();
@@ -210,7 +210,7 @@ export class Routes {
             entrie = {
                 description: req.body.description.toString(),
                 watering_time: req.body.watering_time.toString(),
-                time_control: <boolean> req.body.time_control ? req.body.time_control : false,
+                time_control: req.body.time_control ? req.body.time_control : "false",
                 hum_min: parseInt(req.body.hum_min),
                 hum_max: parseInt(req.body.hum_max),
             };

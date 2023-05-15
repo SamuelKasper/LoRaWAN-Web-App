@@ -205,7 +205,7 @@
                                     <td><strong data-toggle="tooltip" data-placement="top" title="Checkbox aktivieren um die Zeitsteuerung zu verwenden. Andernfalls werden nur die angegebenen Grenzwerte verwendet.">Zeitsteuerung verwenden:</strong>
                                     </td>
                                     <td class="display_flex">
-                                        <%if(entrie.time_control == true){%>
+                                        <%if(entrie.time_control == "true"){%>
                                             <input id="time_control_<%=index%>" name="time_control" type="checkbox" onclick="myCheckbox('time_control_<%=index%>')"
                                             class="input-group-text time_control" value="<%=entrie.time_control%>" checked="true">
                                         <%}else{%>
@@ -311,9 +311,9 @@
 function myCheckbox(id){
     let checkbox = document.getElementById(id);
     if(checkbox.checked){
-        checkbox.value = true;
+        checkbox.value = "true";
     }else{
-        checkbox.value = false;
+        checkbox.value = "false";
     }
 }
 
