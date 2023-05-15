@@ -16,7 +16,6 @@ const weather_1 = require("./weather");
 class Routes {
     constructor() {
         this.time_control = "true";
-        this.percent_to_switch = 10;
         this.downlink = new downlink_1.Downlink();
         this.db = new db_1.DB();
         this.weather = new weather_1.Weather();
@@ -34,7 +33,7 @@ class Routes {
                     let percent_str = percent.toFixed(1);
                     entries[i].distance = `${percent_str} % (${(max - dist)} cm)`;
                     // Add message if zistern water level is below 10%
-                    if (percent < this.percent_to_switch) {
+                    if (percent < 10) {
                         entries[i].alert = "warning";
                     }
                 }
@@ -87,7 +86,7 @@ class Routes {
                 }
                 // If uplink data comes from distance sensor, check if switching the valve is necessary
                 if (extended_data.distance) {
-                    this.downlink.check_waterlevel(extended_data, this.percent_to_switch);
+                    this.downlink.set_waterlevel(extended_data);
                 }
             }
         });
