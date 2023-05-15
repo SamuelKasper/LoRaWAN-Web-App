@@ -6,6 +6,8 @@ interface DB_entrie {
     rssi: number,
     latitude: number,
     longitude: number,
+    city: string,
+    weather_forecast_3h: string;
     description: string,
     // Sensor data
     air_temperature?: number, 

@@ -62,9 +62,6 @@ class Routes {
                         entries[i].last_soil_downlink = "Bewässerung ist inaktiv";
                     }
                 }
-                // Add paramters for weather
-                entries[i].city = this.weather.get_city;
-                entries[i].weather_forecast_3h = this.weather.get_weather;
             }
             // Render the page with given entries
             res.render("index", { entries });
@@ -90,15 +87,6 @@ class Routes {
                 if (extended_data.distance) {
                     this.downlink.check_waterlevel(extended_data, this.percent_to_switch);
                 }
-                // Fetch weather API
-                if (process.env.FETCH_WEATHER == "true") {
-                    if (extended_data.latitude && extended_data.longitude) {
-                        this.weather.fetch_weather(extended_data.latitude, extended_data.longitude);
-                    }
-                }
-                else {
-                    console.log("FETCH_WEATHER is disabled");
-                }
             }
         });
     }
@@ -106,6 +94,18 @@ class Routes {
     build_data_object(sensor_data) {
         // Sort rx_metadata by rssi. Best rssi will be in first array entry.
         let sorted_gateways_by_rssi = sensor_data.uplink_message.rx_metadata.sort((data_1, data_2) => data_2.rssi - data_1.rssi);
+        // Get coords of gateway
+        let latitude_val = sensor_data.uplink_message.sorted_gateways_by_rssi[0].location.latitude.toFixed(2);
+        let longitude_val = sensor_data.uplink_message.sorted_gateways_by_rssi[0].location.longitude.toFixed(2);
+        // Fetch weather API
+        if (process.env.FETCH_WEATHER == "true") {
+            if (latitude_val && longitude_val) {
+                this.weather.fetch_weather(latitude_val, longitude_val);
+            }
+        }
+        else {
+            console.log("FETCH_WEATHER is disabled");
+        }
         // Add all data to their specific fields. Some fields will be undefined.
         let decoded_payload = sensor_data.uplink_message.decoded_payload;
         let data = {
@@ -114,10 +114,12 @@ class Routes {
             gateway: sorted_gateways_by_rssi[0].gateway_ids.gateway_id,
             time: sensor_data.received_at.toLocaleString('de-DE'),
             dev_eui: sensor_data.end_device_ids.dev_eui,
-            rssi: sensor_data.uplink_message.rx_metadata[0].rssi,
+            rssi: sensor_data.uplink_message.sorted_gateways_by_rssi[0].rssi,
             // Coords of gateways
-            latitude: sensor_data.uplink_message.rx_metadata[0].location.latitude.toFixed(2),
-            longitude: sensor_data.uplink_message.rx_metadata[0].location.longitude.toFixed(2),
+            latitude: latitude_val,
+            longitude: longitude_val,
+            city: this.weather.get_city,
+            weather_forecast_3h: this.weather.get_weather,
             description: "Beschreibung...",
             // Air, just sends the Data without °C and %
             air_temperature: decoded_payload.TempC_SHT,
