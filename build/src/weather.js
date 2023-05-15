@@ -3,6 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Weather = void 0;
 const fetch = require("node-fetch");
 class Weather {
+    constructor() {
+        this.weather_forecast = "no data available";
+        this.city = "no data available";
+    }
+    /** Fetching weather data from open weather api. */
     fetch_weather(lat, lon) {
         let lang = "de";
         let unit = "metric";
@@ -19,17 +24,20 @@ class Weather {
         })
             .catch(console.error);
     }
+    /** Set city and weather data. */
     check_weather(data) {
-        for (let i = 0; i <= 3; i++) {
-            let weather = data.list[i].weather;
-            let rain = data.list[i].rain;
-            let city = data.city.name;
-            console.log(weather);
-            console.log("-------------------------------");
-            console.log(rain);
-            console.log("-------------------------------");
-            console.log(city);
-        }
+        let weather = data.list[0].weather.main;
+        let rain_amount = data.list[0].rain['3h'] ? data.list[0].rain['3h'] : 0;
+        this.city = data.city.name;
+        this.weather_forecast = `${weather}: ${rain_amount}mm`;
+    }
+    /** Returning the city. */
+    get get_city() {
+        return this.city;
+    }
+    /** Returning the weather */
+    get get_weather() {
+        return this.weather_forecast;
     }
 }
 exports.Weather = Weather;

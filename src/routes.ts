@@ -51,8 +51,11 @@ export class Routes {
                 } else {
                     entries[i].last_soil_downlink = "Bewässerung ist inaktiv";
                 }
-
             }
+
+            // Add paramters for weather
+            entries[i].city = this.weather.get_city;
+            entries[i].weather_forecast_3h = this.weather.get_weather;
         }
         // Render the page with given entries
         res.render("index", { entries });
