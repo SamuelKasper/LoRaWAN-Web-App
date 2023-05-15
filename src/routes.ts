@@ -67,7 +67,7 @@ export class Routes {
 
         // Only process uplinks with a decoded payload
         if (sensor_data.uplink_message.decoded_payload) {
-            let base_data = this.build_data_object(sensor_data);
+            let base_data = await this.build_data_object(sensor_data);
             let extended_data = await this.replace_with_db_values(base_data);
             await this.db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
 
@@ -84,23 +84,17 @@ export class Routes {
     }
 
     /** Create an object of type DB_entrie with the sensor data. */
-    private build_data_object(sensor_data: any): DB_entrie {
+    private async build_data_object(sensor_data: any): Promise<DB_entrie> {
 
         // Sort rx_metadata by rssi. Best rssi will be in first array entry.
         let sorted_gateways_by_rssi = sensor_data.uplink_message.rx_metadata.sort(
             (data_1: any, data_2: any) => data_2.rssi - data_1.rssi);
 
-        // Get coords of gateway
+        // Get coordinates of gateway and fetch weather API
         let latitude_val = <number>sorted_gateways_by_rssi[0].location.latitude.toFixed(2);
         let longitude_val = <number>sorted_gateways_by_rssi[0].location.longitude.toFixed(2);
-
-        // Fetch weather API
-        if (process.env.FETCH_WEATHER == "true") {
-            if (latitude_val && longitude_val) {
-                this.weather.fetch_weather(latitude_val, longitude_val);
-            }
-        } else {
-            console.log("FETCH_WEATHER is disabled");
+        if (latitude_val && longitude_val) {
+            await this.weather.fetch_weather(latitude_val, longitude_val);
         }
 
         // Add all data to their specific fields. Some fields will be undefined.
@@ -112,9 +106,6 @@ export class Routes {
             time: sensor_data.received_at.toLocaleString('de-DE'),
             dev_eui: <string>sensor_data.end_device_ids.dev_eui,
             rssi: <number>sorted_gateways_by_rssi[0].rssi,
-            // Coords of gateways
-            latitude: latitude_val,
-            longitude: longitude_val,
             city: this.weather.get_city,
             weather_forecast_3h: this.weather.get_weather,
             description: "Beschreibung...",

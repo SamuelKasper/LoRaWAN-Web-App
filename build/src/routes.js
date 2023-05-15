@@ -76,7 +76,7 @@ class Routes {
             let sensor_data = JSON.parse(JSON.stringify(req.body));
             // Only process uplinks with a decoded payload
             if (sensor_data.uplink_message.decoded_payload) {
-                let base_data = this.build_data_object(sensor_data);
+                let base_data = yield this.build_data_object(sensor_data);
                 let extended_data = yield this.replace_with_db_values(base_data);
                 yield this.db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
                 // If uplink data comes from soil sensor, check if watering is necessary
@@ -92,55 +92,48 @@ class Routes {
     }
     /** Create an object of type DB_entrie with the sensor data. */
     build_data_object(sensor_data) {
-        // Sort rx_metadata by rssi. Best rssi will be in first array entry.
-        let sorted_gateways_by_rssi = sensor_data.uplink_message.rx_metadata.sort((data_1, data_2) => data_2.rssi - data_1.rssi);
-        // Get coords of gateway
-        let latitude_val = sorted_gateways_by_rssi[0].location.latitude.toFixed(2);
-        let longitude_val = sorted_gateways_by_rssi[0].location.longitude.toFixed(2);
-        // Fetch weather API
-        if (process.env.FETCH_WEATHER == "true") {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Sort rx_metadata by rssi. Best rssi will be in first array entry.
+            let sorted_gateways_by_rssi = sensor_data.uplink_message.rx_metadata.sort((data_1, data_2) => data_2.rssi - data_1.rssi);
+            // Get coordinates of gateway and fetch weather API
+            let latitude_val = sorted_gateways_by_rssi[0].location.latitude.toFixed(2);
+            let longitude_val = sorted_gateways_by_rssi[0].location.longitude.toFixed(2);
             if (latitude_val && longitude_val) {
-                this.weather.fetch_weather(latitude_val, longitude_val);
+                yield this.weather.fetch_weather(latitude_val, longitude_val);
             }
-        }
-        else {
-            console.log("FETCH_WEATHER is disabled");
-        }
-        // Add all data to their specific fields. Some fields will be undefined.
-        let decoded_payload = sensor_data.uplink_message.decoded_payload;
-        let data = {
-            // Data other than enviroment data
-            name: sensor_data.end_device_ids.device_id,
-            gateway: sorted_gateways_by_rssi[0].gateway_ids.gateway_id,
-            time: sensor_data.received_at.toLocaleString('de-DE'),
-            dev_eui: sensor_data.end_device_ids.dev_eui,
-            rssi: sorted_gateways_by_rssi[0].rssi,
-            // Coords of gateways
-            latitude: latitude_val,
-            longitude: longitude_val,
-            city: this.weather.get_city,
-            weather_forecast_3h: this.weather.get_weather,
-            description: "Beschreibung...",
-            // Air, just sends the Data without °C and %
-            air_temperature: decoded_payload.TempC_SHT,
-            air_humidity: decoded_payload.Hum_SHT,
-            // Soil, sensor sends also °C and %!
-            soil_temperature: decoded_payload.temp_SOIL,
-            soil_humidity: decoded_payload.water_SOIL,
-            // Waterlevel, measured by distance
-            distance: decoded_payload.distance,
-        };
-        // Delete entries with value undefined 
-        for (const [key, val] of Object.entries(data)) {
-            if (val == undefined) {
-                delete data[key];
+            // Add all data to their specific fields. Some fields will be undefined.
+            let decoded_payload = sensor_data.uplink_message.decoded_payload;
+            let data = {
+                // Data other than enviroment data
+                name: sensor_data.end_device_ids.device_id,
+                gateway: sorted_gateways_by_rssi[0].gateway_ids.gateway_id,
+                time: sensor_data.received_at.toLocaleString('de-DE'),
+                dev_eui: sensor_data.end_device_ids.dev_eui,
+                rssi: sorted_gateways_by_rssi[0].rssi,
+                city: this.weather.get_city,
+                weather_forecast_3h: this.weather.get_weather,
+                description: "Beschreibung...",
+                // Air, just sends the Data without °C and %
+                air_temperature: decoded_payload.TempC_SHT,
+                air_humidity: decoded_payload.Hum_SHT,
+                // Soil, sensor sends also °C and %!
+                soil_temperature: decoded_payload.temp_SOIL,
+                soil_humidity: decoded_payload.water_SOIL,
+                // Waterlevel, measured by distance
+                distance: decoded_payload.distance,
+            };
+            // Delete entries with value undefined 
+            for (const [key, val] of Object.entries(data)) {
+                if (val == undefined) {
+                    delete data[key];
+                }
             }
-        }
-        // Set distance to cm
-        if (data.distance) {
-            data.distance = data.distance / 10;
-        }
-        return data;
+            // Set distance to cm
+            if (data.distance) {
+                data.distance = data.distance / 10;
+            }
+            return data;
+        });
     }
     /**Replace non sensor data (user inputs) with already existring db values. */
     replace_with_db_values(data) {

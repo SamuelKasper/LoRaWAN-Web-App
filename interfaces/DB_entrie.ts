@@ -4,8 +4,6 @@ interface DB_entrie {
     name: string,
     gateway: string,
     rssi: number,
-    latitude: number,
-    longitude: number,
     city: string,
     weather_forecast_3h: string;
     description: string,
