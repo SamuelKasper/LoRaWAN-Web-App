@@ -77,7 +77,7 @@ export class Downlink {
     /** Sending downlink to stop watering if not already done. */
     private stop_watering() {
         if (this.last_soil_downlink != 2) {
-            this.send_downlink(2); 
+            this.send_downlink(2);
             console.log(`Downlink to stop watering`);
         } else {
             console.log(`Downlink to stop watering has been already sent or watering has already been stopped`);
@@ -202,12 +202,12 @@ export class Downlink {
         return time_left;
     }
 
-    /** Sending dircet downlink for pump controll with either 0 or 1. */
+    /** Sending dircet downlink for pump controll with either 0 or 2. */
     public direct_downlink() {
-        if (this.last_soil_downlink == 0 || this.last_soil_downlink == 2) {
-            this.send_downlink(1);
-        } else if (this.last_soil_downlink == 1) {
+        if (this.last_soil_downlink == 2) {
             this.send_downlink(0);
+        } else {
+            this.send_downlink(2);
         }
     }
 

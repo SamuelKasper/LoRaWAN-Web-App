@@ -204,13 +204,13 @@ class Downlink {
         }
         return time_left;
     }
-    /** Sending dircet downlink for pump controll with either 0 or 1. */
+    /** Sending dircet downlink for pump controll with either 0 or 2. */
     direct_downlink() {
-        if (this.last_soil_downlink == 0 || this.last_soil_downlink == 2) {
-            this.send_downlink(1);
-        }
-        else if (this.last_soil_downlink == 1) {
+        if (this.last_soil_downlink == 2) {
             this.send_downlink(0);
+        }
+        else {
+            this.send_downlink(2);
         }
     }
     /** Setting value for waterlevel_percent. */
