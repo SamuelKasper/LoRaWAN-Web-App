@@ -1,7 +1,7 @@
 import https from "https";
 
 export class Downlink {
-    private waiting: boolean = false;
+    private waiting_for_timer: boolean = false;
     private timeoutID?: NodeJS.Timeout;
     private last_watering_time = "08:00";
     private last_soil_downlink: number = 1;
@@ -15,11 +15,12 @@ export class Downlink {
             return;
         }
 
+        // Check humidity
         const humidity = parseInt(data.soil_humidity.replace("%", ""));
         if (humidity <= data.hum_min) {
-            this.humidity_less_than_bordervalue(data);
+            this.start_watering(data);
         } else {
-            this.humidity_greater_than_bordervalue();
+            this.stop_watering();
         }
 
         // Set new value for the last watering time
@@ -27,24 +28,24 @@ export class Downlink {
     }
 
     /** Checking if time control is enabled or disabled. */
-    private humidity_less_than_bordervalue(data: DB_entrie) {
+    private start_watering(data: DB_entrie) {
         if (data.time_control == undefined) {
             return;
         }
 
         if (data.time_control.toString() == "true") {
-            this.time_control_enabled(data);
+            this.watering_by_time(data);
         } else {
-            this.time_control_disabled(data);
+            this.watering_by_boardervalue();
         }
     }
 
-    /** Schedule downlink. */
-    private time_control_enabled(data: DB_entrie) {
+    /** Check if downlink is already scheduled for specific time. */
+    private watering_by_time(data: DB_entrie) {
         // Check if watering time has changed
         if (this.last_watering_time == data.watering_time) {
             // Check if downlink is already scheduled
-            if (!this.waiting) {
+            if (!this.waiting_for_timer) {
                 this.schedule_downlink(data);
             } else {
                 console.log(`Downlink already scheduled for ${data.watering_time}`);
@@ -57,123 +58,114 @@ export class Downlink {
         }
     }
 
-    /** Sending downlink to start watering. */
-    private time_control_disabled(data: DB_entrie) {
-        console.log(`Time control is set to: ${data.time_control}`);
-        if (this.last_soil_downlink != 0) {
+    /** Sending downlink to start watering by boardervalues. */
+    private watering_by_boardervalue() {
+        console.log(`Time control is turned off.`);
+
+        // If watering is inactive
+        if (this.last_soil_downlink == 2) {
             // Delete former timeout if existing
             if (this.timeoutID) {
                 clearTimeout(this.timeoutID);
             }
-            // Schedule downlink
             this.send_downlink(0);
         } else {
-            console.log(`Pump is already active.`);
+            console.log(`Watering is already active.`);
         }
     }
 
-    /** Called if humidity is greater then the upper border value. */
-    private humidity_greater_than_bordervalue() {
-        if (this.last_soil_downlink != 1) {
-            this.send_downlink(1); // Turns the relais off
+    /** Sending downlink to stop watering if not already done. */
+    private stop_watering() {
+        if (this.last_soil_downlink != 2) {
+            this.send_downlink(1); 
             console.log(`Downlink to stop watering`);
         } else {
             console.log(`Downlink to stop watering has been already sent or watering has already been stopped`);
         }
     }
 
-    /** Scheduling a downlink. */
+    /** Scheduling a downlink for specific time. */
     private schedule_downlink(data: DB_entrie) {
         // Get waiting time
         if (data.watering_time) {
             const waiting_time = this.calculate_waiting_time(data.watering_time);
             // Wait a specific time before running sendDownlink
             this.timeoutID = setTimeout(() => {
-                this.send_downlink(0); // Turns the relais on
+                this.send_downlink(0);
             }, waiting_time);
             // Set waiting indicator to true
-            this.waiting = true;
+            this.waiting_for_timer = true;
             console.log(`Downlink planned at: ${data.watering_time}. ${(waiting_time / 1000 / 60).toFixed(1)} min left.`)
         }
     }
 
     /** Function for sending downlinks.
-     0 for relais on | 1 for relais off. 
-     2 for valve on  | 3 for valve off. */
-    private send_downlink(on_off: 0 | 1 | 2 | 3) {
-
-        // Check if theres enought water in zistern otherwise open / close valve.
-        if (this.waterlevel_percent <= this.min_waterlevel) {
-            console.log(`Waterlevel below 10% or not measured yet. Using valve for watering!`);
-            switch (on_off) {
-                case 0:
-                    on_off = 2;
-                    break;
-                case 1:
-                    on_off = 3;
-                    break;
-            }
-        }
-
-        console.log(`Sending Downlink...`);
+     0: pump on, valve off
+     1: valve on, pump off,
+     2: everything off*/
+    private send_downlink(downlink_payload: 0 | 1 | 2) {
         // Only allow downlink while ENABLE_DOWNLINK is set to true
-        if (process.env.ENABLE_DOWNLINK == "true") {
-
-            let app1 = "kaspersa-hfu-bachelor-thesis";
-            let wh1 = "webapp";
-            let dev1 = "eui-70b3d57ed005c853";
-
-            // Prepare payload data
-            let data = JSON.stringify({
-                "downlinks": [{
-                    "decoded_payload": {
-                        "on_off": on_off
-                    },
-                    "f_port": 15,
-                    "priority": "NORMAL"
-                }]
-            });
-
-            // Preparing POST options
-            let options = {
-                host: `eu1.cloud.thethings.network`,
-                path: `/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`,
-                method: "POST",
-                headers: {
-                    "Authorization": `${process.env.AUTH_TOKEN}`,
-                    "Content-type": "application/json;",
-                    "User-Agent": "webapp/1.0",
-                    "Connection": "keep-alive",
-                    "Content-Length": Buffer.byteLength(data),
-                    "accept": "*/*",
-
-                },
-            };
-
-            // Create request object
-            let req = https.request(options, (res) => {
-                console.log(`Status: ${res.statusCode}`);
-            });
-
-            req.on("error", (e) => {
-                console.log(`Error: ${e.message}`);
-            });
-
-            // Write data to stream and close connection after
-            req.write(data);
-            req.end();
-
-            // Set values for last_downlink
-            if (on_off == 0 || on_off == 2) {
-                console.log(`Waiting => false`);
-                this.waiting = false;
-                this.last_soil_downlink = on_off;
-            } else {
-                this.last_soil_downlink = 1;
-            }
-        } else {
+        if (process.env.ENABLE_DOWNLINK != "true") {
             console.log(`ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.`);
+            return;
+        } else { console.log(`Sending Downlink...`); }
+
+        // Check if theres enought water in zistern otherwise open valve for watering.
+        if (this.waterlevel_percent <= this.min_waterlevel) {
+            if (downlink_payload == 0) {
+                console.log(`Waterlevel below 10% or not measured yet. Using valve for watering!`);
+                downlink_payload = 1;
+            }
         }
+
+        let app1 = "kaspersa-hfu-bachelor-thesis";
+        let wh1 = "webapp";
+        let dev1 = "eui-70b3d57ed005c853";
+
+        // Prepare payload data
+        let data = JSON.stringify({
+            "downlinks": [{
+                "decoded_payload": {
+                    "on_off": downlink_payload
+                },
+                "f_port": 15,
+                "priority": "NORMAL"
+            }]
+        });
+
+        // Preparing POST options
+        let options = {
+            host: `eu1.cloud.thethings.network`,
+            path: `/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`,
+            method: "POST",
+            headers: {
+                "Authorization": `${process.env.AUTH_TOKEN}`,
+                "Content-type": "application/json;",
+                "User-Agent": "webapp/1.0",
+                "Connection": "keep-alive",
+                "Content-Length": Buffer.byteLength(data),
+                "accept": "*/*",
+
+            },
+        };
+
+        // Create request object
+        let req = https.request(options, (res) => {
+            console.log(`Status: ${res.statusCode}`);
+        });
+
+        req.on("error", (e) => {
+            console.log(`Error: ${e.message}`);
+        });
+
+        // Write data to stream and close connection after
+        req.write(data);
+        req.end();
+
+        // update controlling variables
+        console.log(`Waiting => false`);
+        this.waiting_for_timer = false;
+        this.last_soil_downlink = downlink_payload;
     }
 
     /** Returns the value of the last downlink. */
