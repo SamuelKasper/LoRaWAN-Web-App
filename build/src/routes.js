@@ -90,11 +90,8 @@ class Routes {
                 let base_data = yield this.build_data_object(sensor_data);
                 let extended_data = yield this.replace_with_db_values(base_data);
                 yield this.db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
-                console.log(base_data);
-                console.log(extended_data);
                 // If uplink data comes from soil sensor, check if watering is necessary
                 if (extended_data.soil_humidity) {
-                    console.log("weather_ctrl: ", extended_data.weather_control);
                     if (extended_data.weather_control == "true") {
                         if (!this.check_for_rain(extended_data)) {
                             this.downlink.prepare_downlink(extended_data);
