@@ -187,6 +187,7 @@ export class Routes {
     private check_for_rain(extended_data: DB_entrie) {
         let rain_amount_arr = extended_data.weather_forecast_3h.split(":");
         let rain_amount = parseInt(rain_amount_arr[1].replace("mm", ""));
+        console.log("Rain amount: ",rain_amount);
         if(rain_amount>0.5){
             console.log("Expecting rain. Don't check if watering is needed.");
             return true;
