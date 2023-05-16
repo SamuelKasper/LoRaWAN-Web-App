@@ -38,7 +38,7 @@ export class Routes {
                 case entries[i].rssi > -115:
                     entries[i].rssi = "Ausreichend";
                     break;
-                case entries[i].rssi < -120:
+                case entries[i].rssi <= -115:
                     entries[i].rssi = "Schlecht";
                     break;
             }
