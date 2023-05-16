@@ -22,6 +22,7 @@ class Routes {
         this.db = new db_1.DB();
         this.weather = new weather_1.Weather();
     }
+    /** Get instance of class by dev_eui of Sensor. */
     getInstance(id) {
         if (!this.downlinks[id]) {
             this.downlinks[id] = new downlink_1.Downlink;
@@ -255,7 +256,7 @@ class Routes {
         return __awaiter(this, void 0, void 0, function* () {
             // Get instance of class
             let sensor_data = JSON.parse(JSON.stringify(req.body));
-            let id = sensor_data.end_device_ids.dev_eui;
+            let id = sensor_data.dev_eui;
             let instance = this.getInstance(id);
             instance.direct_downlink();
             // Reloade page

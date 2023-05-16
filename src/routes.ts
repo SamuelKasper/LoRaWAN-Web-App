@@ -11,7 +11,7 @@ export class Routes {
     private db = new DB();
     private weather = new Weather();
 
-
+    /** Get instance of class by dev_eui of Sensor. */
     public getInstance(id: string): Downlink {
         if (!this.downlinks[id]) {
             this.downlinks[id] = new Downlink;
@@ -258,7 +258,7 @@ export class Routes {
     public async direct_downlink(req: Request, res: Response) {
         // Get instance of class
         let sensor_data = JSON.parse(JSON.stringify(req.body));
-        let id = sensor_data.end_device_ids.dev_eui;
+        let id = sensor_data.dev_eui;
         let instance = this.getInstance(id);
     
         instance.direct_downlink();

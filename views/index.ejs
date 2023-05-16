@@ -296,14 +296,15 @@
                                     <div class="display_flex manual-ctrl">
                                         <span id="last_soil_downlink_<%=index%>" class="last_soil_downlink"><%=entrie.last_soil_downlink%></span>
                                         <input id="direct-downlink-btn_<%=index%>" name="direct-downlink-btn" form="direct-download-form" type="submit" class="btn btn-primary form-control direct-downlink-btn" value="Umschalten"></input>   
-                                    </div>
+                                        <input hidden readonly form="direct-download-form" name="dev_eui" value="<%=entrie.dev_eui%>">
+                                        </div>
                                 </td>
                             </tr>
                             <%}%>
 
                             <!--ID-->   
                             <tr hidden>
-                                <td><strong>Database ID</strong></td>
+                                <td><strong>dev_eui</strong></td>
                                 <td><input id="dbid_<%=index%>" name="dbid" readonly value="<%=entrie._id%>"></td>
                             </tr>        
 
