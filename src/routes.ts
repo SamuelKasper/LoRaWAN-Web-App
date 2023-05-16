@@ -82,6 +82,9 @@ export class Routes {
             let extended_data = await this.replace_with_db_values(base_data);
             await this.db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
 
+            console.log(base_data);
+            console.log(extended_data);
+
             // If uplink data comes from soil sensor, check if watering is necessary
             if (extended_data.soil_humidity) {
                 console.log("weather_ctrl: ", this.weather_control);
@@ -92,7 +95,6 @@ export class Routes {
                 } else {
                     this.downlink.prepare_downlink(extended_data);
                 }
-
             }
 
             // If uplink data comes from distance sensor, check if switching the valve is necessary
