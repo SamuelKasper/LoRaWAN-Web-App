@@ -87,8 +87,8 @@ export class Routes {
 
             // If uplink data comes from soil sensor, check if watering is necessary
             if (extended_data.soil_humidity) {
-                console.log("weather_ctrl: ", this.weather_control);
-                if (this.weather_control == "true") {
+                console.log("weather_ctrl: ", extended_data.weather_control);
+                if (extended_data.weather_control == "true") {
                     if (!this.check_for_rain(extended_data)) {
                         this.downlink.prepare_downlink(extended_data);
                     }
