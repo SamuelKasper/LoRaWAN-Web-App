@@ -6,22 +6,24 @@ import { Weather } from "./weather";
 export class Routes {
     private time_control = "true";
     private weather_control = "true";
-    private downlink = new Downlink();
-    //private downlinks: { [id: string]: Downlink } = {};
+    //private downlink = new Downlink();
+    private downlinks: { [id: string]: Downlink } = {};
     private db = new DB();
     private weather = new Weather();
 
-    /*
-    public getInstance() {
+
+    public getInstance(id: string): Downlink {
         if (!this.downlinks[id]) {
             this.downlinks[id] = new Downlink;
         }
+        console.log(this.downlinks);
         return this.downlinks[id];
-    }*/
+    }
 
     /** Loading data from DB and displays it on default URL. */
     public async default(res: Response) {
         let entries = await this.db.get_entries() || [];
+
 
         for (let i = 0; i < entries.length; i++) {
             // Calculate percentage for distance
@@ -55,9 +57,13 @@ export class Routes {
 
             // Add parameter to check watering status
             if (entries[i].soil_humidity) {
-                if (this.downlink.get_last_soil_downlink == 0) {
+                // Get instance of class
+                let id = entries[i].dev_eui;
+                let instance = this.getInstance(id);
+
+                if (instance.get_last_soil_downlink == 0) {
                     entries[i].last_soil_downlink = "Bewässerung ist aktiv (Zisterne)";
-                } else if (this.downlink.get_last_soil_downlink == 1) {
+                } else if (instance.get_last_soil_downlink == 1) {
                     entries[i].last_soil_downlink = "Bewässerung ist aktiv (Grundwasser)";
                 } else {
                     entries[i].last_soil_downlink = "Bewässerung ist inaktiv";
@@ -82,20 +88,23 @@ export class Routes {
             let extended_data = await this.replace_with_db_values(base_data);
             await this.db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
 
+            // Get instance of class
+            let instance = this.getInstance(extended_data.dev_eui);
+
             // If uplink data comes from soil sensor, check if watering is necessary
             if (extended_data.soil_humidity) {
                 if (extended_data.weather_control == "true") {
                     if (!this.check_for_rain(extended_data)) {
-                        this.downlink.prepare_downlink(extended_data);
+                        instance.prepare_downlink(extended_data);
                     }
                 } else {
-                    this.downlink.prepare_downlink(extended_data);
+                    instance.prepare_downlink(extended_data);
                 }
             }
 
             // If uplink data comes from distance sensor, check if switching the valve is necessary
             if (extended_data.distance) {
-                this.downlink.set_waterlevel(extended_data);
+                instance.set_waterlevel(extended_data);
             }
         }
     }
@@ -247,7 +256,12 @@ export class Routes {
 
     /** Calling direct downlink from class Downlink. */
     public async direct_downlink(req: Request, res: Response) {
-        this.downlink.direct_downlink();
+        // Get instance of class
+        let sensor_data = JSON.parse(JSON.stringify(req.body));
+        let id = sensor_data.end_device_ids.dev_eui;
+        let instance = this.getInstance(id);
+    
+        instance.direct_downlink();
         // Reloade page
         res.redirect('back');
     }
