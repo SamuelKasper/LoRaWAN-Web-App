@@ -57,7 +57,7 @@ export class Routes {
             if (entries[i].soil_humidity) {
                 if (this.downlink.get_last_soil_downlink == 0) {
                     entries[i].last_soil_downlink = "Bewässerung ist aktiv (Zisterne)";
-                } else if (this.downlink.get_last_soil_downlink == 2) {
+                } else if (this.downlink.get_last_soil_downlink == 1) {
                     entries[i].last_soil_downlink = "Bewässerung ist aktiv (Grundwasser)";
                 } else {
                     entries[i].last_soil_downlink = "Bewässerung ist inaktiv";
