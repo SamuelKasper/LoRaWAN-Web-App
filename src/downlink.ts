@@ -4,7 +4,7 @@ export class Downlink {
     private waiting_for_timer: boolean = false;
     private timeoutID?: NodeJS.Timeout;
     private last_watering_time = "08:00";
-    private last_soil_downlink: number = 1;
+    private last_soil_downlink: number = 2;
     private waterlevel_percent: number = 0;
     private min_waterlevel: number = 10;
 

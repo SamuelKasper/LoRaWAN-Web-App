@@ -18,7 +18,7 @@ class Downlink {
     constructor() {
         this.waiting_for_timer = false;
         this.last_watering_time = "08:00";
-        this.last_soil_downlink = 1;
+        this.last_soil_downlink = 2;
         this.waterlevel_percent = 0;
         this.min_waterlevel = 10;
     }
