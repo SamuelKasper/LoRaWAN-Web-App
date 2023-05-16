@@ -16,7 +16,6 @@ export class Routes {
         if (!this.downlinks[id]) {
             this.downlinks[id] = new Downlink;
         }
-        console.log(this.downlinks);
         return this.downlinks[id];
     }
 
@@ -60,7 +59,7 @@ export class Routes {
                 // Get instance of class
                 let id = entries[i].dev_eui;
                 let instance = this.getInstance(id);
-
+                console.log("[Default Route] Class instance: ",instance);
                 if (instance.get_last_soil_downlink == 0) {
                     entries[i].last_soil_downlink = "Bewässerung ist aktiv (Zisterne)";
                 } else if (instance.get_last_soil_downlink == 1) {
@@ -90,6 +89,7 @@ export class Routes {
 
             // Get instance of class
             let instance = this.getInstance(extended_data.dev_eui);
+            console.log("[Uplink Route] Class instance: ",instance);
 
             // If uplink data comes from soil sensor, check if watering is necessary
             if (extended_data.soil_humidity) {
