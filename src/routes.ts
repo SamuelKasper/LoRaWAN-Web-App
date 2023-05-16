@@ -90,13 +90,7 @@ export class Routes {
 
             // If uplink data comes from soil sensor, check if watering is necessary
             if (extended_data.soil_humidity) {
-                if (extended_data.weather_control == "true") {
-                    if (!this.check_for_rain(extended_data)) {
-                        instance.prepare_downlink(extended_data);
-                    }
-                } else {
-                    instance.prepare_downlink(extended_data);
-                }
+                instance.prepare_downlink(extended_data);
             }
 
             // If uplink data comes from distance sensor, check if switching the valve is necessary
@@ -205,19 +199,6 @@ export class Routes {
         return data;
     }
 
-    /** Check if rain amount is above 0.5mm. */
-    private check_for_rain(extended_data: DB_entrie) {
-        let rain_amount_arr = extended_data.weather_forecast_3h.split(":");
-        let rain_amount = parseFloat(rain_amount_arr[1].replace("mm", ""));
-        console.log("Rain amount: ", rain_amount);
-        if (rain_amount > 0.5) {
-            console.log("Expecting rain. Don't check if watering is needed.");
-            return true;
-        }
-        console.log("Rain amount below 0.5mm. Check if watering is needed.");
-        return false;
-    }
-
     /** Processing data from user input fields send by form submit. */
     public async update(req: Request, res: Response) {
         let entrie = {};
@@ -257,7 +238,7 @@ export class Routes {
         let sensor_data = JSON.parse(JSON.stringify(req.body));
         let id = sensor_data.dev_eui;
         let instance = this.getInstance(id);
-    
+
         instance.direct_downlink();
         // Reloade page
         res.redirect('back');

@@ -15,6 +15,13 @@ export class Sensor {
             return;
         }
 
+        if (data.weather_control == "true") {
+            // Check if its raining. True = raining, no need for watering.
+            if (this.check_for_rain(data)) {
+               return;
+            }
+        } 
+
         // Check humidity
         const humidity = parseInt(data.soil_humidity.replace("%", ""));
         if (humidity <= data.hum_min) {
@@ -217,5 +224,17 @@ export class Sensor {
             this.waterlevel_percent = 100 - (data.distance / data.max_distance * 100);
             console.log("Set waterlevel to: ", this.waterlevel_percent);
         }
+    }
+
+    /** Check if rain amount is above 0.5mm. */
+    private check_for_rain(extended_data: DB_entrie) {
+        let rain_amount_arr = extended_data.weather_forecast_3h.split(":");
+        let rain_amount = parseFloat(rain_amount_arr[1].replace("mm", ""));
+        if (rain_amount > 0.5) {
+            console.log("Expecting rain. Don't check if watering is needed.");
+            return true;
+        }
+        console.log("Rain amount below 0.5mm. Check if watering is needed.");
+        return false;
     }
 }
