@@ -7,8 +7,17 @@ export class Routes {
     private time_control = "true";
     private weather_control = "true";
     private downlink = new Downlink();
+    //private downlinks: { [id: string]: Downlink } = {};
     private db = new DB();
     private weather = new Weather();
+
+    /*
+    public getInstance() {
+        if (!this.downlinks[id]) {
+            this.downlinks[id] = new Downlink;
+        }
+        return this.downlinks[id];
+    }*/
 
     /** Loading data from DB and displays it on default URL. */
     public async default(res: Response) {
@@ -75,6 +84,7 @@ export class Routes {
 
             // If uplink data comes from soil sensor, check if watering is necessary
             if (extended_data.soil_humidity) {
+                console.log("weather_ctrl: ", this.weather_control);
                 if (this.weather_control == "true") {
                     if (!this.check_for_rain(extended_data)) {
                         this.downlink.prepare_downlink(extended_data);

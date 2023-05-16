@@ -18,9 +18,17 @@ class Routes {
         this.time_control = "true";
         this.weather_control = "true";
         this.downlink = new downlink_1.Downlink();
+        //private downlinks: { [id: string]: Downlink } = {};
         this.db = new db_1.DB();
         this.weather = new weather_1.Weather();
     }
+    /*
+    public getInstance() {
+        if (!this.downlinks[id]) {
+            this.downlinks[id] = new Downlink;
+        }
+        return this.downlinks[id];
+    }*/
     /** Loading data from DB and displays it on default URL. */
     default(res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -84,6 +92,7 @@ class Routes {
                 yield this.db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
                 // If uplink data comes from soil sensor, check if watering is necessary
                 if (extended_data.soil_humidity) {
+                    console.log("weather_ctrl: ", this.weather_control);
                     if (this.weather_control == "true") {
                         if (!this.check_for_rain(extended_data)) {
                             this.downlink.prepare_downlink(extended_data);
