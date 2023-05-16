@@ -17,45 +17,45 @@ const https_1 = __importDefault(require("https"));
 class Downlink {
     constructor() {
         this.waiting = false;
-        this.last_time = "08:00";
+        this.last_watering_time = "08:00";
         this.last_soil_downlink = 1;
         this.waterlevel_percent = 0;
         this.min_waterlevel = 10;
     }
     /** Checking if humidity is below or above the border values. */
-    check_soil(data) {
+    prepare_downlink(data) {
         return __awaiter(this, void 0, void 0, function* () {
             // Check if required data is available
-            if (data.soil_humidity != undefined && data.watering_time != undefined
-                && data.hum_min != undefined && data.hum_max != undefined) {
-                // Check soil humidity and call sendDownlink() if needed
-                const humidity = parseInt(data.soil_humidity.replace("%", ""));
-                if (humidity <= data.hum_min) {
-                    this.humidity_less_than_bordervalue(data);
-                }
-                else if (humidity >= data.hum_max) {
-                    this.humidity_greater_than_bordervalue();
-                }
-                // Set new value for the last watering time
-                this.last_time = data.watering_time;
+            if (data.soil_humidity == undefined || data.watering_time == undefined || data.hum_min == undefined || data.hum_max == undefined) {
+                return;
             }
+            const humidity = parseInt(data.soil_humidity.replace("%", ""));
+            if (humidity <= data.hum_min) {
+                this.humidity_less_than_bordervalue(data);
+            }
+            else {
+                this.humidity_greater_than_bordervalue();
+            }
+            // Set new value for the last watering time
+            this.last_watering_time = data.watering_time;
         });
     }
     /** Checking if time control is enabled or disabled. */
     humidity_less_than_bordervalue(data) {
-        if (data.time_control != undefined) {
-            if (data.time_control.toString() == "true") {
-                this.time_control_enabled(data);
-            }
-            else {
-                this.time_control_disabled(data);
-            }
+        if (data.time_control == undefined) {
+            return;
+        }
+        if (data.time_control.toString() == "true") {
+            this.time_control_enabled(data);
+        }
+        else {
+            this.time_control_disabled(data);
         }
     }
     /** Schedule downlink. */
     time_control_enabled(data) {
         // Check if watering time has changed
-        if (this.last_time == data.watering_time) {
+        if (this.last_watering_time == data.watering_time) {
             // Check if downlink is already scheduled
             if (!this.waiting) {
                 this.schedule_downlink(data);

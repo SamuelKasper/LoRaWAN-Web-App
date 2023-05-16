@@ -75,7 +75,7 @@ export class Routes {
             // If uplink data comes from soil sensor, check if watering is necessary
             if (extended_data.soil_humidity) {
                 if(!this.check_for_rain(extended_data)){
-                    this.downlink.check_soil(extended_data);
+                    this.downlink.prepare_downlink(extended_data);
                 }
             }
 
@@ -183,7 +183,7 @@ export class Routes {
         return data;
     }
 
-    /** Check if rain amount is above 1.5mm. */
+    /** Check if rain amount is above 0.5mm. */
     private check_for_rain(extended_data: DB_entrie) {
         let rain_amount_arr = extended_data.weather_forecast_3h.split(":");
         let rain_amount = parseFloat(rain_amount_arr[1].replace("mm", ""));
