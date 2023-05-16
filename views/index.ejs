@@ -199,6 +199,23 @@
                                 <td><hr class="spacing-right"></td>
                             </tr>
 
+                            <!--Wettersteuerung-->
+                            <%if(entrie.soil_humidity){%>
+                                <tr>
+                                    <td><strong data-toggle="tooltip" data-placement="top" title="Checkbox aktivieren um die Wettervorhersage in die Bewässerungslogik miteinzubeziehen.">Wettervorhersage verwenden:</strong>
+                                    </td>
+                                    <td class="display_flex">
+                                        <%if(entrie.weather_control == "true"){%>
+                                            <input id="weather_control_<%=index%>" name="weather_control" type="checkbox" onclick="use_checkbox('weather_control_<%=index%>')"
+                                            class="input-group-text time_control" value="<%=entrie.weather_control%>" checked="true">
+                                        <%}else{%>
+                                            <input id="weather_control_<%=index%>" name="weather_control" type="checkbox" onclick="use_checkbox('weather_control_<%=index%>')"
+                                            class="input-group-text time_control" value="<%=entrie.weather_control%>">
+                                        <%}%>
+                                    </td>
+                                </tr>
+                            <%}%>
+
                             <!--Zeitsteuerung-->
                             <%if(entrie.soil_humidity){%>
                                 <tr>
@@ -206,10 +223,10 @@
                                     </td>
                                     <td class="display_flex">
                                         <%if(entrie.time_control == "true"){%>
-                                            <input id="time_control_<%=index%>" name="time_control" type="checkbox" onclick="myCheckbox('time_control_<%=index%>')"
+                                            <input id="time_control_<%=index%>" name="time_control" type="checkbox" onclick="use_checkbox('time_control_<%=index%>')"
                                             class="input-group-text time_control" value="<%=entrie.time_control%>" checked="true">
                                         <%}else{%>
-                                            <input id="time_control_<%=index%>" name="time_control" type="checkbox" onclick="myCheckbox('time_control_<%=index%>')"
+                                            <input id="time_control_<%=index%>" name="time_control" type="checkbox" onclick="use_checkbox('time_control_<%=index%>')"
                                             class="input-group-text time_control" value="<%=entrie.time_control%>">
                                         <%}%>
                                         
@@ -308,7 +325,7 @@
 </div>
 
 <script>
-function myCheckbox(id){
+function use_checkbox(id){
     let checkbox = document.getElementById(id);
     if(checkbox.checked){
         checkbox.value = "true";

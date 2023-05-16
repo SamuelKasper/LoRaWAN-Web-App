@@ -5,6 +5,7 @@ import { Weather } from "./weather";
 
 export class Routes {
     private time_control = "true";
+    private weather_control = "true";
     private downlink = new Downlink();
     private db = new DB();
     private weather = new Weather();
@@ -47,9 +48,9 @@ export class Routes {
             if (entries[i].soil_humidity) {
                 if (this.downlink.get_last_soil_downlink == 0) {
                     entries[i].last_soil_downlink = "Bewässerung ist aktiv (Zisterne)";
-                } else if(this.downlink.get_last_soil_downlink == 2) {
+                } else if (this.downlink.get_last_soil_downlink == 2) {
                     entries[i].last_soil_downlink = "Bewässerung ist aktiv (Grundwasser)";
-                }else{
+                } else {
                     entries[i].last_soil_downlink = "Bewässerung ist inaktiv";
                 }
             }
@@ -74,9 +75,14 @@ export class Routes {
 
             // If uplink data comes from soil sensor, check if watering is necessary
             if (extended_data.soil_humidity) {
-                if(!this.check_for_rain(extended_data)){
+                if (this.weather_control == "true") {
+                    if (!this.check_for_rain(extended_data)) {
+                        this.downlink.prepare_downlink(extended_data);
+                    }
+                } else {
                     this.downlink.prepare_downlink(extended_data);
                 }
+
             }
 
             // If uplink data comes from distance sensor, check if switching the valve is necessary
@@ -158,12 +164,13 @@ export class Routes {
                 data.hum_max = db_entrie.hum_max;
                 data.watering_time = db_entrie.watering_time;
                 data.time_control = db_entrie.time_control;
+                data.weather_control = db_entrie.weather_control;
             }
             // Add editable fields for distance if data is from distance sensor
             if (data.distance) {
                 data.max_distance = db_entrie.max_distance;
             }
-        // If there is no data in db
+            // If there is no data in db
         } else {
             // Set description
             data.description = "Beschreibung";
@@ -173,6 +180,7 @@ export class Routes {
                 data.hum_max = default_max;
                 data.watering_time = default_time;
                 data.time_control = this.time_control;
+                data.weather_control = this.weather_control;
             }
             // Add editable fields for distance if data is from distance sensor
             if (data.distance) {
@@ -187,8 +195,8 @@ export class Routes {
     private check_for_rain(extended_data: DB_entrie) {
         let rain_amount_arr = extended_data.weather_forecast_3h.split(":");
         let rain_amount = parseFloat(rain_amount_arr[1].replace("mm", ""));
-        console.log("Rain amount: ",rain_amount);
-        if(rain_amount>0.5){
+        console.log("Rain amount: ", rain_amount);
+        if (rain_amount > 0.5) {
             console.log("Expecting rain. Don't check if watering is needed.");
             return true;
         }
@@ -205,6 +213,7 @@ export class Routes {
                 description: req.body.description.toString(),
                 watering_time: req.body.watering_time.toString(),
                 time_control: req.body.time_control ? req.body.time_control : "false",
+                weather_control: req.body.weather_control ? req.body.weather_control : "false",
                 hum_min: parseInt(req.body.hum_min),
                 hum_max: parseInt(req.body.hum_max),
             };

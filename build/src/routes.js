@@ -16,6 +16,7 @@ const weather_1 = require("./weather");
 class Routes {
     constructor() {
         this.time_control = "true";
+        this.weather_control = "true";
         this.downlink = new downlink_1.Downlink();
         this.db = new db_1.DB();
         this.weather = new weather_1.Weather();
@@ -83,7 +84,12 @@ class Routes {
                 yield this.db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
                 // If uplink data comes from soil sensor, check if watering is necessary
                 if (extended_data.soil_humidity) {
-                    if (!this.check_for_rain(extended_data)) {
+                    if (this.weather_control == "true") {
+                        if (!this.check_for_rain(extended_data)) {
+                            this.downlink.prepare_downlink(extended_data);
+                        }
+                    }
+                    else {
                         this.downlink.prepare_downlink(extended_data);
                     }
                 }
@@ -158,6 +164,7 @@ class Routes {
                     data.hum_max = db_entrie.hum_max;
                     data.watering_time = db_entrie.watering_time;
                     data.time_control = db_entrie.time_control;
+                    data.weather_control = db_entrie.weather_control;
                 }
                 // Add editable fields for distance if data is from distance sensor
                 if (data.distance) {
@@ -174,6 +181,7 @@ class Routes {
                     data.hum_max = default_max;
                     data.watering_time = default_time;
                     data.time_control = this.time_control;
+                    data.weather_control = this.weather_control;
                 }
                 // Add editable fields for distance if data is from distance sensor
                 if (data.distance) {
@@ -205,6 +213,7 @@ class Routes {
                     description: req.body.description.toString(),
                     watering_time: req.body.watering_time.toString(),
                     time_control: req.body.time_control ? req.body.time_control : "false",
+                    weather_control: req.body.weather_control ? req.body.weather_control : "false",
                     hum_min: parseInt(req.body.hum_min),
                     hum_max: parseInt(req.body.hum_max),
                 };
