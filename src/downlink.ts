@@ -77,7 +77,7 @@ export class Downlink {
     /** Sending downlink to stop watering if not already done. */
     private stop_watering() {
         if (this.last_soil_downlink != 2) {
-            this.send_downlink(1); 
+            this.send_downlink(2); 
             console.log(`Downlink to stop watering`);
         } else {
             console.log(`Downlink to stop watering has been already sent or watering has already been stopped`);
