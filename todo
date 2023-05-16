@@ -1,5 +1,4 @@
 # Must have
-- Grenzwerte funktionieren nicht für Ventil 
-- Weathercontrol always true
+
 # Nice to have
 - Anstatt in /uplink alle entries zu holen und nach der dev_eui durchzugehen einfach direkt mit findOne das richtige holen.

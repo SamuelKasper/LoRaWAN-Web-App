@@ -1,22 +1,21 @@
 import { Response, Request } from "express";
 import { DB } from "./db";
-import { Downlink } from "./downlink";
+import { Sensor } from "./sensor";
 import { Weather } from "./weather";
 
 export class Routes {
     private time_control = "true";
     private weather_control = "true";
-    //private downlink = new Downlink();
-    private downlinks: { [id: string]: Downlink } = {};
+    private sensors: { [id: string]: Sensor } = {};
     private db = new DB();
     private weather = new Weather();
 
     /** Get instance of class by dev_eui of Sensor. */
-    public getInstance(id: string): Downlink {
-        if (!this.downlinks[id]) {
-            this.downlinks[id] = new Downlink;
+    public getInstance(id: string): Sensor {
+        if (!this.sensors[id]) {
+            this.sensors[id] = new Sensor;
         }
-        return this.downlinks[id];
+        return this.sensors[id];
     }
 
     /** Loading data from DB and displays it on default URL. */
@@ -59,7 +58,6 @@ export class Routes {
                 // Get instance of class
                 let id = entries[i].dev_eui;
                 let instance = this.getInstance(id);
-                console.log("[Default Route] Class instance: ",instance);
                 if (instance.get_last_soil_downlink == 0) {
                     entries[i].last_soil_downlink = "Bewässerung ist aktiv (Zisterne)";
                 } else if (instance.get_last_soil_downlink == 1) {
@@ -89,7 +87,6 @@ export class Routes {
 
             // Get instance of class
             let instance = this.getInstance(extended_data.dev_eui);
-            console.log("[Uplink Route] Class instance: ",instance);
 
             // If uplink data comes from soil sensor, check if watering is necessary
             if (extended_data.soil_humidity) {
