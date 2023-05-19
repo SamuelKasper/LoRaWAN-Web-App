@@ -5,7 +5,7 @@ export class Sensor {
     private timeoutID?: NodeJS.Timeout;
     private last_watering_time = "08:00";
     private last_soil_downlink: number = 2;
-    private waterlevel_percent: number = 0;
+    private waterlevel_percent: number = -1;
     private min_waterlevel: number = 10;
 
     /** Checking if humidity is below or above the border values. */
@@ -115,12 +115,17 @@ export class Sensor {
         if (process.env.ENABLE_DOWNLINK != "true") {
             console.log(`ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.`);
             return;
-        } else { console.log(`Sending Downlink...`); }
+        } else { console.log(`Sending Downlink. Payload is: ${downlink_payload}`); }
 
         // Check if theres enought water in zistern otherwise open valve for watering.
         if (this.waterlevel_percent <= this.min_waterlevel) {
             if (downlink_payload == 0) {
-                console.log(`Waterlevel below 10% or not measured yet. Using valve for watering!`);
+                if(this.waterlevel_percent==-1){
+                    console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
+                }else{
+                    console.log(`Waterlevel below 10% (${this.waterlevel_percent}).`);
+                }
+                console.log(`Using valve for watering!`);
                 downlink_payload = 1;
             }
         }

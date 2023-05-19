@@ -19,7 +19,7 @@ class Sensor {
         this.waiting_for_timer = false;
         this.last_watering_time = "08:00";
         this.last_soil_downlink = 2;
-        this.waterlevel_percent = 0;
+        this.waterlevel_percent = -1;
         this.min_waterlevel = 10;
     }
     /** Checking if humidity is below or above the border values. */
@@ -128,12 +128,18 @@ class Sensor {
             return;
         }
         else {
-            console.log(`Sending Downlink...`);
+            console.log(`Sending Downlink. Payload is: ${downlink_payload}`);
         }
         // Check if theres enought water in zistern otherwise open valve for watering.
         if (this.waterlevel_percent <= this.min_waterlevel) {
             if (downlink_payload == 0) {
-                console.log(`Waterlevel below 10% or not measured yet. Using valve for watering!`);
+                if (this.waterlevel_percent == -1) {
+                    console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
+                }
+                else {
+                    console.log(`Waterlevel below 10% (${this.waterlevel_percent}).`);
+                }
+                console.log(`Using valve for watering!`);
                 downlink_payload = 1;
             }
         }
