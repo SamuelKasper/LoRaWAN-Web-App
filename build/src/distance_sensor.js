@@ -4,6 +4,10 @@ exports.Distance_sensor = void 0;
 class Distance_sensor {
     constructor() {
         this.waterlevel_percent = -1;
+        if (Distance_sensor.instance) {
+            throw new Error("Distance_sensor can only have one class. Use Distance_sensor.getInstance().");
+        }
+        Distance_sensor.instance = this;
     }
     /** Get instance for Distance_sensor class. */
     static get getInstance() {

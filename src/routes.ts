@@ -13,7 +13,7 @@ export class Routes {
     private distance_sensor = new Distance_sensor();
 
     /** Get instance of class by dev_eui of Sensor. */
-    public getInstance(id: string): Soil_sensor {
+    private getInstance(id: string): Soil_sensor {
         if (!this.sensors[id]) {
             this.sensors[id] = new Soil_sensor;
         }
@@ -23,7 +23,6 @@ export class Routes {
     /** Loading data from DB and displays it on default URL. */
     public async default(res: Response) {
         let entries = await this.db.get_entries() || [];
-
 
         for (let i = 0; i < entries.length; i++) {
             // Calculate percentage for distance
