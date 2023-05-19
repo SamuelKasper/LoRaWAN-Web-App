@@ -37,9 +37,10 @@ class Routes {
                 if (entries[i].distance) {
                     let max = entries[i].max_distance;
                     let dist = entries[i].distance;
+                    let diff = max - dist;
                     let percent = 100 - (dist / max * 100);
                     let percent_str = percent.toFixed(1);
-                    entries[i].distance = `${percent_str} % (${(max - dist)} cm)`;
+                    entries[i].distance = `${percent_str} % (${diff.toFixed(1)} cm)`;
                     // Add message if zistern water level is below 10%
                     if (percent < 10) {
                         entries[i].alert = "warning";
