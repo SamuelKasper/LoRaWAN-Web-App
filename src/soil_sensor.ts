@@ -1,11 +1,11 @@
 import https from "https";
+import { Distance_sensor } from "./distance_sensor";
 
-export class Sensor {
+export class Soil_sensor {
     private waiting_for_timer: boolean = false;
     private timeoutID?: NodeJS.Timeout;
     private last_watering_time = "08:00";
     private last_soil_downlink: number = 2;
-    private waterlevel_percent: number = -1;
     private min_waterlevel: number = 10;
 
     /** Checking if humidity is below or above the border values. */
@@ -118,12 +118,13 @@ export class Sensor {
         } else { console.log(`Sending Downlink. Payload is: ${downlink_payload}`); }
 
         // Check if theres enought water in zistern otherwise open valve for watering.
-        if (this.waterlevel_percent <= this.min_waterlevel) {
+        let waterlevel = Distance_sensor.getInstance.get_waterlevel;
+        if ( waterlevel <= this.min_waterlevel) {
             if (downlink_payload == 0) {
-                if(this.waterlevel_percent==-1){
+                if(waterlevel==-1){
                     console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
                 }else{
-                    console.log(`Waterlevel below 10% (${this.waterlevel_percent}).`);
+                    console.log(`Waterlevel below 10% (${waterlevel}).`);
                 }
                 console.log(`Using valve for watering!`);
                 downlink_payload = 1;
@@ -220,14 +221,6 @@ export class Sensor {
             this.send_downlink(0);
         } else {
             this.send_downlink(2);
-        }
-    }
-
-    /** Setting value for waterlevel_percent. */
-    public set_waterlevel(data: DB_entrie) {
-        if (data.max_distance != undefined && data.distance != undefined) {
-            this.waterlevel_percent = 100 - (data.distance / data.max_distance * 100);
-            console.log("Set waterlevel to: ", this.waterlevel_percent);
         }
     }
 

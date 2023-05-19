@@ -1,19 +1,21 @@
 import { Response, Request } from "express";
 import { DB } from "./db";
-import { Sensor } from "./sensor";
+import { Soil_sensor } from "./soil_sensor";
 import { Weather } from "./weather";
+import { Distance_sensor } from "./distance_sensor";
 
 export class Routes {
     private time_control = "true";
     private weather_control = "true";
-    private sensors: { [id: string]: Sensor } = {};
+    private sensors: { [id: string]: Soil_sensor } = {};
     private db = new DB();
     private weather = new Weather();
+    private distance_sensor = new Distance_sensor();
 
     /** Get instance of class by dev_eui of Sensor. */
-    public getInstance(id: string): Sensor {
+    public getInstance(id: string): Soil_sensor {
         if (!this.sensors[id]) {
-            this.sensors[id] = new Sensor;
+            this.sensors[id] = new Soil_sensor;
         }
         return this.sensors[id];
     }
@@ -28,7 +30,7 @@ export class Routes {
             if (entries[i].distance) {
                 let max: number = entries[i].max_distance;
                 let dist: number = entries[i].distance;
-                let diff = max-dist;
+                let diff = max - dist;
                 let percent: number = 100 - (dist / max * 100);
                 let percent_str: string = percent.toFixed(1);
                 entries[i].distance = `${percent_str} % (${diff.toFixed(1)} cm)`;
@@ -86,17 +88,16 @@ export class Routes {
             let extended_data = await this.replace_with_db_values(base_data);
             await this.db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
 
-            // Get instance of class
-            let instance = this.getInstance(extended_data.dev_eui);
-
             // If uplink data comes from soil sensor, check if watering is necessary
             if (extended_data.soil_humidity) {
+                // Get instance of class
+                let instance = this.getInstance(extended_data.dev_eui);
                 instance.prepare_downlink(extended_data);
             }
 
             // If uplink data comes from distance sensor, check if switching the valve is necessary
             if (extended_data.distance) {
-                instance.set_waterlevel(extended_data);
+                this.distance_sensor.set_waterlevel(extended_data);
             }
         }
     }

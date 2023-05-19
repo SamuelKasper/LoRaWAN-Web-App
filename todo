@@ -1,4 +1,3 @@
 # Must have
-- Manuelle Steuerung: Nachdem downlink mit 02 gesendet wurde, wird nochmal einer mit 01 gesendet. 
-
+- Waterlevel wird nicht überschrieben
 # Nice to have

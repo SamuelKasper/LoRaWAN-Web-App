@@ -11,8 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Routes = void 0;
 const db_1 = require("./db");
-const sensor_1 = require("./sensor");
+const soil_sensor_1 = require("./soil_sensor");
 const weather_1 = require("./weather");
+const distance_sensor_1 = require("./distance_sensor");
 class Routes {
     constructor() {
         this.time_control = "true";
@@ -20,11 +21,12 @@ class Routes {
         this.sensors = {};
         this.db = new db_1.DB();
         this.weather = new weather_1.Weather();
+        this.distance_sensor = new distance_sensor_1.Distance_sensor();
     }
     /** Get instance of class by dev_eui of Sensor. */
     getInstance(id) {
         if (!this.sensors[id]) {
-            this.sensors[id] = new sensor_1.Sensor;
+            this.sensors[id] = new soil_sensor_1.Soil_sensor;
         }
         return this.sensors[id];
     }
@@ -93,15 +95,15 @@ class Routes {
                 let base_data = yield this.build_data_object(sensor_data);
                 let extended_data = yield this.replace_with_db_values(base_data);
                 yield this.db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
-                // Get instance of class
-                let instance = this.getInstance(extended_data.dev_eui);
                 // If uplink data comes from soil sensor, check if watering is necessary
                 if (extended_data.soil_humidity) {
+                    // Get instance of class
+                    let instance = this.getInstance(extended_data.dev_eui);
                     instance.prepare_downlink(extended_data);
                 }
                 // If uplink data comes from distance sensor, check if switching the valve is necessary
                 if (extended_data.distance) {
-                    instance.set_waterlevel(extended_data);
+                    this.distance_sensor.set_waterlevel(extended_data);
                 }
             }
         });

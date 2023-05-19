@@ -12,14 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Sensor = void 0;
+exports.Soil_sensor = void 0;
 const https_1 = __importDefault(require("https"));
-class Sensor {
+const distance_sensor_1 = require("./distance_sensor");
+class Soil_sensor {
     constructor() {
         this.waiting_for_timer = false;
         this.last_watering_time = "08:00";
         this.last_soil_downlink = 2;
-        this.waterlevel_percent = -1;
         this.min_waterlevel = 10;
     }
     /** Checking if humidity is below or above the border values. */
@@ -131,13 +131,14 @@ class Sensor {
             console.log(`Sending Downlink. Payload is: ${downlink_payload}`);
         }
         // Check if theres enought water in zistern otherwise open valve for watering.
-        if (this.waterlevel_percent <= this.min_waterlevel) {
+        let waterlevel = distance_sensor_1.Distance_sensor.getInstance.get_waterlevel;
+        if (waterlevel <= this.min_waterlevel) {
             if (downlink_payload == 0) {
-                if (this.waterlevel_percent == -1) {
+                if (waterlevel == -1) {
                     console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
                 }
                 else {
-                    console.log(`Waterlevel below 10% (${this.waterlevel_percent}).`);
+                    console.log(`Waterlevel below 10% (${waterlevel}).`);
                 }
                 console.log(`Using valve for watering!`);
                 downlink_payload = 1;
@@ -225,13 +226,6 @@ class Sensor {
             this.send_downlink(2);
         }
     }
-    /** Setting value for waterlevel_percent. */
-    set_waterlevel(data) {
-        if (data.max_distance != undefined && data.distance != undefined) {
-            this.waterlevel_percent = 100 - (data.distance / data.max_distance * 100);
-            console.log("Set waterlevel to: ", this.waterlevel_percent);
-        }
-    }
     /** Check if rain amount is above 0.5mm. */
     check_for_rain(extended_data) {
         let rain_amount_arr = extended_data.weather_forecast_3h.split(":");
@@ -244,4 +238,4 @@ class Sensor {
         return false;
     }
 }
-exports.Sensor = Sensor;
+exports.Soil_sensor = Soil_sensor;
