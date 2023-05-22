@@ -25,16 +25,16 @@
             <form action="#" method="post" class="margin-lr-10px">
                 <div class="filter-container align-center">
                     <div class="col-2">
-                        <input type="radio" id="temp" name="filter_type" value="temp">
-                        <label for="temp">Temperatur</label>
+                        <input type="radio" id="rd_hum" name="filter_type" value="rd_hum">
+                        <label for="rd_hum">Feuchtigkeit</label>
                     </div>
                     <div class="col-2">
-                        <input type="radio" id="level" name="filter_type" value="level">
-                        <label for="level">Füllstand</label>
+                        <input type="radio" id="rd_level" name="filter_type" value="rd_level">
+                        <label for="rd_level">Füllstand</label>
                     </div>
                     <div class="col-2">
-                        <input type="radio" id="io" name="filter_type" value="io">
-                        <label for="io">I/O</label> 
+                        <input type="radio" id="rd_seeeduino" name="filter_type" value="rd_seeeduino">
+                        <label for="rd_seeeduino">Seeeduino</label> 
                     </div>
                     <div class="col-2">
                         <input type="radio" id="all" name="filter_type" value="all">
@@ -362,20 +362,20 @@ function myFilter(entrieString){
                 if(radioBtn.id == "all"){
                     document.getElementById(option[0]).style = "display: block";
                 // if button temperature was checked
-                }else if(radioBtn.id=="temp"){
+                }else if(radioBtn.id=="rd_hum"){
                     if(option[2] == "undefined" && option[3] == "undefined"){
                         document.getElementById(option[0]).style = "display: none";
                     }else{
                         document.getElementById(option[0]).style = "display: block";
                     }
                 //if button füllstand was checked
-                }else if(radioBtn.id=="level"){
+                }else if(radioBtn.id=="rd_level"){
                     if(option[4] == "undefined"){
                         document.getElementById(option[0]).style = "display: none";
                     }else{
                         document.getElementById(option[0]).style = "display: block";
                     }
-                }else if(radioBtn.id=="io"){
+                }else if(radioBtn.id=="rd_seeeduino"){
                     if(option[2] == "undefined" && option[3] == "undefined" && option[4] == "undefined"){
                         document.getElementById(option[0]).style = "display: block";
                     }else{
