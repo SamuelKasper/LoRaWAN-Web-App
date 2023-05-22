@@ -26,7 +26,7 @@
                 <div class="filter-container align-center">
                     <div class="col-2">
                         <input type="radio" id="rd_hum" name="filter_type" value="rd_hum">
-                        <label for="rd_hum">Feuchtigkeit</label>
+                        <label for="rd_hum">Bodenfeuchtigkeit</label>
                     </div>
                     <div class="col-2">
                         <input type="radio" id="rd_level" name="filter_type" value="rd_level">
@@ -49,7 +49,7 @@
                         let str = "";
                         entries.forEach(entrie=>{
                             //add parameters for search
-                            str = str + entrie._id+","+entrie.name+","+entrie.soil_temperature+","+entrie.air_temperature+","+entrie.distance+"|";
+                            str = str + entrie._id+","+entrie.name+","+entrie.soil_humidity+","+entrie.distance+"|";
                         });
                         %>
                         <button class="btn btn-primary" type="button" id="button-addon2" onclick="myFilter('<%=str%>')">Suche</button>
@@ -363,20 +363,20 @@ function myFilter(entrieString){
                     document.getElementById(option[0]).style = "display: block";
                 // if button temperature was checked
                 }else if(radioBtn.id=="rd_hum"){
-                    if(option[2] == "undefined" && option[3] == "undefined"){
+                    if(option[2] == "undefined"){
                         document.getElementById(option[0]).style = "display: none";
                     }else{
                         document.getElementById(option[0]).style = "display: block";
                     }
                 //if button füllstand was checked
                 }else if(radioBtn.id=="rd_level"){
-                    if(option[4] == "undefined"){
+                    if(option[3] == "undefined"){
                         document.getElementById(option[0]).style = "display: none";
                     }else{
                         document.getElementById(option[0]).style = "display: block";
                     }
                 }else if(radioBtn.id=="rd_seeeduino"){
-                    if(option[2] == "undefined" && option[3] == "undefined" && option[4] == "undefined"){
+                    if(option[2] == "undefined" && option[3] == "undefined"){
                         document.getElementById(option[0]).style = "display: block";
                     }else{
                         document.getElementById(option[0]).style = "display: none";
