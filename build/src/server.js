@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,29 +13,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const dotenv = __importStar(require("dotenv"));
-const routes_1 = require("./routes");
+const route_default_1 = require("./routes/route_default");
+const route_direct_downlink_1 = require("./routes/route_direct_downlink");
+const route_uplink_1 = require("./routes/route_uplink");
+const route_update_1 = require("./routes/route_update");
+const instance_helper_1 = require("./instance_helper");
+const db_1 = require("./db");
 const app = (0, express_1.default)();
 // Middleware
 app.use(express_1.default.static("views"));
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 app.set("view engine", "ejs");
-// Use enviroment variables
-dotenv.config();
 // Create class for Routes 
-let routes = new routes_1.Routes();
+let route_default = new route_default_1.Route_default();
+let route_uplink = new route_uplink_1.Route_uplink();
+let route_update = new route_update_1.Route_update();
+let route_direct_downlink = new route_direct_downlink_1.Route_direct_downlink();
+let instance_helper = new instance_helper_1.Instance_helper();
+let db = new db_1.DB();
 // Express Routes
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    routes.default(res);
+    route_default.main(res, instance_helper, db);
 }));
 app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    routes.uplink(req, res);
+    route_uplink.main(req, res, instance_helper, db);
 }));
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    routes.update(req, res);
+    route_update.main(req, res, db);
 }));
 app.post('/directDownlink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    routes.direct_downlink(req, res);
+    route_direct_downlink.main(req, res, instance_helper, db);
 }));
 app.listen(8000);

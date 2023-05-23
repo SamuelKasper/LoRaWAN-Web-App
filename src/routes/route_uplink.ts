@@ -1,80 +1,17 @@
-import { Response, Request } from "express";
-import { DB } from "./db";
-import { Soil_sensor } from "./soil_sensor";
-import { Weather } from "./weather";
-import { Distance_sensor } from "./distance_sensor";
+import { Request, Response } from "express";
+import { Distance_sensor } from "../distance_sensor";
+import { Weather } from "../weather";
+import { Instance_helper } from "../instance_helper";
+import { DB } from "../db";
 
-export class Routes {
+export class Route_uplink {
     private time_control = "true";
     private weather_control = "true";
-    private sensors: { [id: string]: Soil_sensor } = {};
-    private db = new DB();
     private weather = new Weather();
     private distance_sensor = new Distance_sensor();
 
-    /** Get instance of class by dev_eui of Sensor. */
-    private getInstance(id: string): Soil_sensor {
-        if (!this.sensors[id]) {
-            this.sensors[id] = new Soil_sensor;
-        }
-        return this.sensors[id];
-    }
-
-    /** Loading data from DB and displays it on default URL. */
-    public async default(res: Response) {
-        let entries = await this.db.get_entries() || [];
-
-        for (let i = 0; i < entries.length; i++) {
-            // Calculate percentage for distance
-            if (entries[i].distance) {
-                let max: number = entries[i].max_distance;
-                let dist: number = entries[i].distance;
-                let diff = max - dist;
-                let percent: number = 100 - (dist / max * 100);
-                let percent_str: string = percent.toFixed(1);
-                entries[i].distance = `${percent_str} % (${diff.toFixed(1)} cm)`;
-                // Add message if zistern water level is below 10%
-                if (percent < 10) {
-                    entries[i].alert = "warning";
-                }
-            }
-
-            // Add text for RSSI
-            switch (true) {
-                case entries[i].rssi > -100:
-                    entries[i].rssi = "Sehr gut";
-                    break;
-                case entries[i].rssi > -105:
-                    entries[i].rssi = "Gut";
-                    break;
-                case entries[i].rssi > -115:
-                    entries[i].rssi = "Ausreichend";
-                    break;
-                case entries[i].rssi <= -115:
-                    entries[i].rssi = "Schlecht";
-                    break;
-            }
-
-            // Add parameter to check watering status
-            if (entries[i].soil_humidity) {
-                // Get instance of class
-                let id = entries[i].dev_eui;
-                let instance = this.getInstance(id);
-                if (instance.get_last_soil_downlink == 0) {
-                    entries[i].last_soil_downlink = "Bewässerung ist aktiv (Zisterne)";
-                } else if (instance.get_last_soil_downlink == 1) {
-                    entries[i].last_soil_downlink = "Bewässerung ist aktiv (Grundwasser)";
-                } else {
-                    entries[i].last_soil_downlink = "Bewässerung ist inaktiv";
-                }
-            }
-        }
-        // Render the page with given entries
-        res.render("index", { entries });
-    }
-
     /** Processing uplink data. */
-    public async uplink(req: Request, res: Response) {
+    public async main(req: Request, res: Response, instance_helper: Instance_helper, db: DB) {
         // Respond to ttn. Otherwise the uplink will fail.
         res.sendStatus(200);
 
@@ -84,13 +21,13 @@ export class Routes {
         // Only process uplinks with a decoded payload
         if (sensor_data.uplink_message.decoded_payload) {
             let base_data = await this.build_data_object(sensor_data);
-            let extended_data = await this.replace_with_db_values(base_data);
-            await this.db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
+            let extended_data = await this.replace_with_db_values(base_data, db);
+            await db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
 
             // If uplink data comes from soil sensor, check if watering is necessary
             if (extended_data.soil_humidity) {
                 // Get instance of class
-                let instance = this.getInstance(extended_data.dev_eui);
+                let instance = instance_helper.get_sensor_instance(extended_data.dev_eui);
                 instance.prepare_downlink(extended_data);
             }
 
@@ -155,14 +92,14 @@ export class Routes {
     }
 
     /**Replace non sensor data (user inputs) with already existring db values. */
-    private async replace_with_db_values(data: DB_entrie): Promise<DB_entrie> {
+    private async replace_with_db_values(data: DB_entrie, db: DB): Promise<DB_entrie> {
         // Default values
         let default_min = 30;
         let default_max = 75;
         let default_max_distance = 200;
         let default_time = "08:00";
 
-        let db_entrie = await this.db.get_entrie_by_field(data.dev_eui);
+        let db_entrie = await db.get_entrie_by_field(data.dev_eui);
         // If data is already in db
         if (db_entrie != null && db_entrie != undefined) {
             // Overwrite description
@@ -199,49 +136,4 @@ export class Routes {
 
         return data;
     }
-
-    /** Processing data from user input fields send by form submit. */
-    public async update(req: Request, res: Response) {
-        let entrie = {};
-        // Update data of soil sensor
-        if (req.body.watering_time) {
-            entrie = {
-                description: req.body.description.toString(),
-                watering_time: req.body.watering_time.toString(),
-                time_control: req.body.time_control ? req.body.time_control : "false",
-                weather_control: req.body.weather_control ? req.body.weather_control : "false",
-                hum_min: parseInt(req.body.hum_min),
-                hum_max: parseInt(req.body.hum_max),
-            };
-            // Update data of distance sensor
-        } else if (req.body.max_distance) {
-            entrie = {
-                description: req.body.description.toString(),
-                max_distance: parseInt(req.body.max_distance),
-            };
-            // Update data of other sensors without special fields
-        } else {
-            entrie = {
-                description: req.body.description.toString(),
-            };
-        }
-
-        // Update db
-        await this.db.update_editable_fields(req.body.dbid, entrie);
-
-        // Reloade page
-        res.redirect('back');
-    }
-
-    /** Calling direct downlink from class Downlink. */
-    public async direct_downlink(req: Request, res: Response) {
-        // Get instance of class
-        let sensor_data = JSON.parse(JSON.stringify(req.body));
-        let id = sensor_data.dev_eui;
-        let instance = this.getInstance(id);
-
-        instance.direct_downlink();
-        // Reloade page
-        res.redirect('back');
-    }
-} 
+}

@@ -9,82 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Routes = void 0;
-const db_1 = require("./db");
-const soil_sensor_1 = require("./soil_sensor");
-const weather_1 = require("./weather");
-const distance_sensor_1 = require("./distance_sensor");
-class Routes {
+exports.Route_uplink = void 0;
+const distance_sensor_1 = require("../distance_sensor");
+const weather_1 = require("../weather");
+class Route_uplink {
     constructor() {
         this.time_control = "true";
         this.weather_control = "true";
-        this.sensors = {};
-        this.db = new db_1.DB();
         this.weather = new weather_1.Weather();
         this.distance_sensor = new distance_sensor_1.Distance_sensor();
     }
-    /** Get instance of class by dev_eui of Sensor. */
-    getInstance(id) {
-        if (!this.sensors[id]) {
-            this.sensors[id] = new soil_sensor_1.Soil_sensor;
-        }
-        return this.sensors[id];
-    }
-    /** Loading data from DB and displays it on default URL. */
-    default(res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let entries = (yield this.db.get_entries()) || [];
-            for (let i = 0; i < entries.length; i++) {
-                // Calculate percentage for distance
-                if (entries[i].distance) {
-                    let max = entries[i].max_distance;
-                    let dist = entries[i].distance;
-                    let diff = max - dist;
-                    let percent = 100 - (dist / max * 100);
-                    let percent_str = percent.toFixed(1);
-                    entries[i].distance = `${percent_str} % (${diff.toFixed(1)} cm)`;
-                    // Add message if zistern water level is below 10%
-                    if (percent < 10) {
-                        entries[i].alert = "warning";
-                    }
-                }
-                // Add text for RSSI
-                switch (true) {
-                    case entries[i].rssi > -100:
-                        entries[i].rssi = "Sehr gut";
-                        break;
-                    case entries[i].rssi > -105:
-                        entries[i].rssi = "Gut";
-                        break;
-                    case entries[i].rssi > -115:
-                        entries[i].rssi = "Ausreichend";
-                        break;
-                    case entries[i].rssi <= -115:
-                        entries[i].rssi = "Schlecht";
-                        break;
-                }
-                // Add parameter to check watering status
-                if (entries[i].soil_humidity) {
-                    // Get instance of class
-                    let id = entries[i].dev_eui;
-                    let instance = this.getInstance(id);
-                    if (instance.get_last_soil_downlink == 0) {
-                        entries[i].last_soil_downlink = "Bewässerung ist aktiv (Zisterne)";
-                    }
-                    else if (instance.get_last_soil_downlink == 1) {
-                        entries[i].last_soil_downlink = "Bewässerung ist aktiv (Grundwasser)";
-                    }
-                    else {
-                        entries[i].last_soil_downlink = "Bewässerung ist inaktiv";
-                    }
-                }
-            }
-            // Render the page with given entries
-            res.render("index", { entries });
-        });
-    }
     /** Processing uplink data. */
-    uplink(req, res) {
+    main(req, res, instance_helper, db) {
         return __awaiter(this, void 0, void 0, function* () {
             // Respond to ttn. Otherwise the uplink will fail.
             res.sendStatus(200);
@@ -93,12 +29,12 @@ class Routes {
             // Only process uplinks with a decoded payload
             if (sensor_data.uplink_message.decoded_payload) {
                 let base_data = yield this.build_data_object(sensor_data);
-                let extended_data = yield this.replace_with_db_values(base_data);
-                yield this.db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
+                let extended_data = yield this.replace_with_db_values(base_data, db);
+                yield db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
                 // If uplink data comes from soil sensor, check if watering is necessary
                 if (extended_data.soil_humidity) {
                     // Get instance of class
-                    let instance = this.getInstance(extended_data.dev_eui);
+                    let instance = instance_helper.get_sensor_instance(extended_data.dev_eui);
                     instance.prepare_downlink(extended_data);
                 }
                 // If uplink data comes from distance sensor, check if switching the valve is necessary
@@ -154,14 +90,14 @@ class Routes {
         });
     }
     /**Replace non sensor data (user inputs) with already existring db values. */
-    replace_with_db_values(data) {
+    replace_with_db_values(data, db) {
         return __awaiter(this, void 0, void 0, function* () {
             // Default values
             let default_min = 30;
             let default_max = 75;
             let default_max_distance = 200;
             let default_time = "08:00";
-            let db_entrie = yield this.db.get_entrie_by_field(data.dev_eui);
+            let db_entrie = yield db.get_entrie_by_field(data.dev_eui);
             // If data is already in db
             if (db_entrie != null && db_entrie != undefined) {
                 // Overwrite description
@@ -199,51 +135,5 @@ class Routes {
             return data;
         });
     }
-    /** Processing data from user input fields send by form submit. */
-    update(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let entrie = {};
-            // Update data of soil sensor
-            if (req.body.watering_time) {
-                entrie = {
-                    description: req.body.description.toString(),
-                    watering_time: req.body.watering_time.toString(),
-                    time_control: req.body.time_control ? req.body.time_control : "false",
-                    weather_control: req.body.weather_control ? req.body.weather_control : "false",
-                    hum_min: parseInt(req.body.hum_min),
-                    hum_max: parseInt(req.body.hum_max),
-                };
-                // Update data of distance sensor
-            }
-            else if (req.body.max_distance) {
-                entrie = {
-                    description: req.body.description.toString(),
-                    max_distance: parseInt(req.body.max_distance),
-                };
-                // Update data of other sensors without special fields
-            }
-            else {
-                entrie = {
-                    description: req.body.description.toString(),
-                };
-            }
-            // Update db
-            yield this.db.update_editable_fields(req.body.dbid, entrie);
-            // Reloade page
-            res.redirect('back');
-        });
-    }
-    /** Calling direct downlink from class Downlink. */
-    direct_downlink(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Get instance of class
-            let sensor_data = JSON.parse(JSON.stringify(req.body));
-            let id = sensor_data.dev_eui;
-            let instance = this.getInstance(id);
-            instance.direct_downlink();
-            // Reloade page
-            res.redirect('back');
-        });
-    }
 }
-exports.Routes = Routes;
+exports.Route_uplink = Route_uplink;
