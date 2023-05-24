@@ -39,7 +39,7 @@ class Weather {
     check_weather(data) {
         console.log(data.list[0]);
         let weather = data.list[0].weather[0].description;
-        let rain_amount = data.list[0].rain['3h'] ? data.list[0].rain['3h'] : 0;
+        let rain_amount = data.list[0].rain ? data.list[0].rain['3h'] : 0;
         this.city = data.city.name;
         this.weather_forecast = `${weather}: ${rain_amount}mm`;
     }

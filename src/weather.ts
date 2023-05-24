@@ -1,6 +1,6 @@
 const fetch = require("node-fetch");
 export class Weather {
-    private weather_forecast: string ="no data available";
+    private weather_forecast: string = "no data available";
     private city: string = "no data available";
 
     /** Fetching weather data from open weather api. */
@@ -25,18 +25,18 @@ export class Weather {
     public check_weather(data: any) {
         console.log(data.list[0]);
         let weather: string = data.list[0].weather[0].description;
-        let rain_amount:number = data.list[0].rain['3h'] ? data.list[0].rain['3h'] : 0;
+        let rain_amount: number = data.list[0].rain ? data.list[0].rain['3h'] : 0;
         this.city = data.city.name;
         this.weather_forecast = `${weather}: ${rain_amount}mm`;
     }
 
     /** Returning the city. */
-    public get get_city(){
+    public get get_city() {
         return this.city;
     }
 
     /** Returning the weather */
-    public get get_weather(){
+    public get get_weather() {
         return this.weather_forecast;
     }
 }
