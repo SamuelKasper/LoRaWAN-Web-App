@@ -73,7 +73,7 @@ class Soil_sensor {
         }
         else {
             // Delete former timeout
-            clearTimeout(this.timeoutID);
+            clearTimeout(this.timeout_id);
             // Schedule downlink
             this.schedule_downlink(data);
         }
@@ -84,8 +84,8 @@ class Soil_sensor {
         // If watering is inactive
         if (this.last_soil_downlink == 2) {
             // Delete former timeout if existing
-            if (this.timeoutID) {
-                clearTimeout(this.timeoutID);
+            if (this.timeout_id) {
+                clearTimeout(this.timeout_id);
             }
             this.send_downlink(0);
         }
@@ -109,7 +109,7 @@ class Soil_sensor {
         if (data.watering_time) {
             const waiting_time = this.calculate_waiting_time(data.watering_time);
             // Wait a specific time before running sendDownlink
-            this.timeoutID = setTimeout(() => {
+            this.timeout_id = setTimeout(() => {
                 this.send_downlink(0);
             }, waiting_time);
             // Set waiting indicator to true

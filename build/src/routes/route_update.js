@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Route_update = void 0;
 class Route_update {
     /** Processing data from user input fields send by form submit. */
-    main(req, res, db) {
+    update_user_input(req, res, db) {
         return __awaiter(this, void 0, void 0, function* () {
             let entrie = {};
             // Update data of soil sensor
@@ -40,7 +40,7 @@ class Route_update {
                 };
             }
             // Update db
-            yield db.update_editable_fields(req.body.dbid, entrie);
+            yield db.update_user_input(req.body.dbid, entrie);
             // Reloade page
             res.redirect('back');
         });

@@ -32,11 +32,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DB = void 0;
+exports.Database = void 0;
 const mongodb_1 = require("mongodb");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
-class DB {
+class Database {
     /** Returns a MongoClient Object. */
     get_client() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -65,13 +65,13 @@ class DB {
         });
     }
     /** Return entry with specific dev_eui. */
-    get_entrie_by_field(_dev_eui) {
+    get_entrie_by_id(id) {
         return __awaiter(this, void 0, void 0, function* () {
             let client = yield this.get_client();
             try {
                 yield client.connect();
                 const db_entries = client.db("lorawan_data").collection("sensor_data");
-                let entrie = yield db_entries.findOne({ dev_eui: `${_dev_eui}` });
+                let entrie = yield db_entries.findOne({ dev_eui: `${id}` });
                 if (entrie) {
                     entrie.time = new Date(entrie.time).toLocaleString("de-DE", { timeZone: "Europe/Berlin" });
                 }
@@ -86,13 +86,13 @@ class DB {
         });
     }
     /** Updates the user input fields. */
-    update_editable_fields(_id, data) {
+    update_user_input(id, data) {
         return __awaiter(this, void 0, void 0, function* () {
             let client = yield this.get_client();
             try {
                 yield client.connect();
                 const collection = client.db("lorawan_data").collection("sensor_data");
-                yield collection.updateOne({ "_id": new mongodb_1.ObjectId(_id) }, { $set: data });
+                yield collection.updateOne({ "_id": new mongodb_1.ObjectId(id) }, { $set: data });
             }
             catch (e) {
                 console.error(e);
@@ -103,14 +103,14 @@ class DB {
         });
     }
     /** Updates a db entry or add a new one. */
-    update_db_by_uplink(_devEUI, data, base_data) {
+    update_by_uplink(id, data, base_data) {
         return __awaiter(this, void 0, void 0, function* () {
             let client = yield this.get_client();
             try {
                 // Get db entrie by given dev_eui and save it in result
                 yield client.connect();
                 const collection = client.db("lorawan_data").collection("sensor_data");
-                const result = yield collection.find({ "dev_eui": _devEUI }).toArray();
+                const result = yield collection.find({ "dev_eui": id }).toArray();
                 // No db entrie was found
                 if (result.length == 0) {
                     const insert_data = JSON.parse(JSON.stringify(data));
@@ -134,4 +134,4 @@ class DB {
         });
     }
 }
-exports.DB = DB;
+exports.Database = Database;

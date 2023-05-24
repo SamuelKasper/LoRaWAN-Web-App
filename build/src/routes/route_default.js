@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Route_default = void 0;
 class Route_default {
     /** Loading data from DB and displays it on default URL. */
-    main(res, instance_helper, db) {
+    render_view(res, inst, db) {
         return __awaiter(this, void 0, void 0, function* () {
             let entries = (yield db.get_entries()) || [];
             for (let i = 0; i < entries.length; i++) {
@@ -48,7 +48,7 @@ class Route_default {
                 if (entries[i].soil_humidity) {
                     // Get instance of class
                     let id = entries[i].dev_eui;
-                    let instance = instance_helper.get_sensor_instance(id);
+                    let instance = inst.get_sensor_instance(id);
                     if (instance.get_last_soil_downlink == 0) {
                         entries[i].last_soil_downlink = "Bewässerung ist aktiv (Zisterne)";
                     }

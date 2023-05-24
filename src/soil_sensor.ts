@@ -3,8 +3,8 @@ import { Distance_sensor } from "./distance_sensor";
 
 export class Soil_sensor {
     private waiting_for_timer: boolean = false;
-    private timeoutID?: NodeJS.Timeout;
-    private last_watering_time = "08:00";
+    private timeout_id?: NodeJS.Timeout;
+    private last_watering_time: string = "08:00";
     private last_soil_downlink: number = 2;
     private min_waterlevel: number = 10;
 
@@ -59,7 +59,7 @@ export class Soil_sensor {
             }
         } else {
             // Delete former timeout
-            clearTimeout(this.timeoutID);
+            clearTimeout(this.timeout_id);
             // Schedule downlink
             this.schedule_downlink(data);
         }
@@ -72,8 +72,8 @@ export class Soil_sensor {
         // If watering is inactive
         if (this.last_soil_downlink == 2) {
             // Delete former timeout if existing
-            if (this.timeoutID) {
-                clearTimeout(this.timeoutID);
+            if (this.timeout_id) {
+                clearTimeout(this.timeout_id);
             }
             this.send_downlink(0);
         } else {
@@ -97,7 +97,7 @@ export class Soil_sensor {
         if (data.watering_time) {
             const waiting_time = this.calculate_waiting_time(data.watering_time);
             // Wait a specific time before running sendDownlink
-            this.timeoutID = setTimeout(() => {
+            this.timeout_id = setTimeout(() => {
                 this.send_downlink(0);
             }, waiting_time);
             // Set waiting indicator to true
@@ -187,7 +187,7 @@ export class Soil_sensor {
     }
 
     /** Calculate waiting time. */
-    private calculate_waiting_time(_watering_time: string) {
+    private calculate_waiting_time(_watering_time: string): number {
         // Split input into hours and minutes
         let splitted_time: string[] = _watering_time.split(":");
         let hours = parseInt(splitted_time[0]);
@@ -225,7 +225,7 @@ export class Soil_sensor {
     }
 
     /** Check if rain amount is above 0.5mm. */
-    private check_for_rain(extended_data: DB_entrie) {
+    private check_for_rain(extended_data: DB_entrie): boolean {
         let rain_amount_arr = extended_data.weather_forecast_3h.split(":");
         let rain_amount = parseFloat(rain_amount_arr[1].replace("mm", ""));
         if (rain_amount > 0.5) {

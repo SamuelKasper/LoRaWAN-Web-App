@@ -31,18 +31,18 @@ let route_uplink = new route_uplink_1.Route_uplink();
 let route_update = new route_update_1.Route_update();
 let route_direct_downlink = new route_direct_downlink_1.Route_direct_downlink();
 let instance_helper = new instance_helper_1.Instance_helper();
-let db = new db_1.DB();
+let db = new db_1.Database();
 // Express Routes
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    route_default.main(res, instance_helper, db);
+    route_default.render_view(res, instance_helper, db);
 }));
 app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    route_uplink.main(req, res, instance_helper, db);
+    route_uplink.process_uplink(req, res, instance_helper, db);
 }));
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    route_update.main(req, res, db);
+    route_update.update_user_input(req, res, db);
 }));
 app.post('/directDownlink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    route_direct_downlink.main(req, res, instance_helper, db);
+    route_direct_downlink.prepare_downlink(req, res, instance_helper);
 }));
 app.listen(8000);

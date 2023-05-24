@@ -2,14 +2,14 @@ import { MongoClient, ObjectId } from "mongodb";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-export class DB {
+export class Database {
     /** Returns a MongoClient Object. */
-    public async get_client() {
+    public async get_client(): Promise<MongoClient> {
         return new MongoClient(`mongodb+srv://${process.env.DB_USER}:${process.env.PASSWORD}@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority`);
     }
 
     /** Returns the DB entries. */
-    public async get_entries() {
+    public async get_entries(){
         let client = await this.get_client();
         try {
             await client.connect();
@@ -27,12 +27,12 @@ export class DB {
     }
 
     /** Return entry with specific dev_eui. */
-    public async get_entrie_by_field(_dev_eui: string) {
+    public async get_entrie_by_id(id: string) {
         let client = await this.get_client();
         try {
             await client.connect();
             const db_entries = client.db("lorawan_data").collection("sensor_data");
-            let entrie = await db_entries.findOne({dev_eui:`${_dev_eui}`});
+            let entrie = await db_entries.findOne({dev_eui:`${id}`});
             if (entrie) {
                 entrie.time = new Date(entrie.time).toLocaleString("de-DE", { timeZone: "Europe/Berlin" });
             }
@@ -45,12 +45,12 @@ export class DB {
     }
 
     /** Updates the user input fields. */
-    public async update_editable_fields(_id: string, data: {}) {
+    public async update_user_input(id: string, data: {}) {
         let client = await this.get_client();
         try {
             await client.connect();
             const collection = client.db("lorawan_data").collection("sensor_data");
-            await collection.updateOne({ "_id": new ObjectId(_id) }, { $set: data });
+            await collection.updateOne({ "_id": new ObjectId(id) }, { $set: data });
         } catch (e) {
             console.error(e);
         } finally {
@@ -59,13 +59,13 @@ export class DB {
     }
 
     /** Updates a db entry or add a new one. */
-    public async update_db_by_uplink(_devEUI: string, data: {}, base_data: {}) {
+    public async update_by_uplink(id: string, data: {}, base_data: {}) {
         let client = await this.get_client();
         try {
             // Get db entrie by given dev_eui and save it in result
             await client.connect();
             const collection = client.db("lorawan_data").collection("sensor_data");
-            const result = await collection.find({ "dev_eui": _devEUI }).toArray();
+            const result = await collection.find({ "dev_eui": id }).toArray();
 
             // No db entrie was found
             if (result.length == 0) {

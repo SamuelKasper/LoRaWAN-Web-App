@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { Distance_sensor } from "../distance_sensor";
 import { Weather } from "../weather";
 import { Instance_helper } from "../instance_helper";
-import { DB } from "../db";
+import { Database } from "../db";
 
 export class Route_uplink {
     private time_control = "true";
@@ -11,7 +11,7 @@ export class Route_uplink {
     private distance_sensor = new Distance_sensor();
 
     /** Processing uplink data. */
-    public async main(req: Request, res: Response, instance_helper: Instance_helper, db: DB) {
+    public async process_uplink(req: Request, res: Response, inst: Instance_helper, db: Database) {
         // Respond to ttn. Otherwise the uplink will fail.
         res.sendStatus(200);
 
@@ -21,13 +21,13 @@ export class Route_uplink {
         // Only process uplinks with a decoded payload
         if (sensor_data.uplink_message.decoded_payload) {
             let base_data = await this.build_data_object(sensor_data);
-            let extended_data = await this.replace_with_db_values(base_data, db);
-            await db.update_db_by_uplink(extended_data.dev_eui, extended_data, base_data);
+            let extended_data = await this.set_db_values(base_data, db);
+            await db.update_by_uplink(extended_data.dev_eui, extended_data, base_data);
 
             // If uplink data comes from soil sensor, check if watering is necessary
             if (extended_data.soil_humidity) {
                 // Get instance of class
-                let instance = instance_helper.get_sensor_instance(extended_data.dev_eui);
+                let instance = inst.get_sensor_instance(extended_data.dev_eui);
                 instance.prepare_downlink(extended_data);
             }
 
@@ -65,10 +65,6 @@ export class Route_uplink {
             weather_forecast_3h: this.weather.get_weather,
             description: "Beschreibung...",
 
-            // Air, just sends the Data without °C and %
-            air_temperature: <number>decoded_payload.TempC_SHT,
-            air_humidity: <number>decoded_payload.Hum_SHT,
-
             // Soil, sensor sends also °C and %!
             soil_temperature: <string>decoded_payload.temp_SOIL,
             soil_humidity: <string>decoded_payload.water_SOIL,
@@ -92,14 +88,14 @@ export class Route_uplink {
     }
 
     /**Replace non sensor data (user inputs) with already existring db values. */
-    private async replace_with_db_values(data: DB_entrie, db: DB): Promise<DB_entrie> {
+    private async set_db_values(data: DB_entrie, db: Database): Promise<DB_entrie> {
         // Default values
         let default_min = 30;
         let default_max = 75;
         let default_max_distance = 200;
         let default_time = "08:00";
 
-        let db_entrie = await db.get_entrie_by_field(data.dev_eui);
+        let db_entrie = await db.get_entrie_by_id(data.dev_eui);
         // If data is already in db
         if (db_entrie != null && db_entrie != undefined) {
             // Overwrite description

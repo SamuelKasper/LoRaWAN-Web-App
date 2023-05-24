@@ -1,5 +1,6 @@
 # Must have
 - Suchleiste enter -> error
+- node-fetch für downlink
 # Nice to have
 - Filter Handyansicht schöner
 - radio btn

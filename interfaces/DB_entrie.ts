@@ -8,8 +8,6 @@ interface DB_entrie {
     weather_forecast_3h: string;
     description: string,
     // Sensor data
-    air_temperature?: number, 
-    air_humidity?: number,
     soil_temperature?: string,
     soil_humidity?: string, 
     distance?: number,

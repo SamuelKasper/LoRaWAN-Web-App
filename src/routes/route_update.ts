@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { DB } from "../db";
+import { Database } from "../db";
 
 export class Route_update {
     /** Processing data from user input fields send by form submit. */
-    public async main(req: Request, res: Response, db: DB) {
+    public async update_user_input(req: Request, res: Response, db: Database) {
         let entrie = {};
         // Update data of soil sensor
         if (req.body.watering_time) {
@@ -29,7 +29,7 @@ export class Route_update {
         }
 
         // Update db
-        await db.update_editable_fields(req.body.dbid, entrie);
+        await db.update_user_input(req.body.dbid, entrie);
 
         // Reloade page
         res.redirect('back');

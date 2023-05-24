@@ -1,11 +1,11 @@
 import { Response } from "express";
 import { Instance_helper } from "../instance_helper";
-import { DB } from "../db";
+import { Database } from "../db";
 
 export class Route_default {
     
     /** Loading data from DB and displays it on default URL. */
-    public async main(res: Response, instance_helper: Instance_helper, db: DB) {
+    public async render_view(res: Response, inst: Instance_helper, db: Database) {
         let entries = await db.get_entries() || [];
 
         for (let i = 0; i < entries.length; i++) {
@@ -43,7 +43,7 @@ export class Route_default {
             if (entries[i].soil_humidity) {
                 // Get instance of class
                 let id = entries[i].dev_eui;
-                let instance = instance_helper.get_sensor_instance(id);
+                let instance = inst.get_sensor_instance(id);
                 if (instance.get_last_soil_downlink == 0) {
                     entries[i].last_soil_downlink = "Bewässerung ist aktiv (Zisterne)";
                 } else if (instance.get_last_soil_downlink == 1) {
