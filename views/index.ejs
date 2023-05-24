@@ -22,40 +22,38 @@
     <!--Filter area-->
     <div class="collapse" id="collapseFilter">
         <div class="card card-body">
-            <form action="#" method="post">
-                <div class="filter-container align-center">
-                    <div class="col-2">
-                        <input type="radio" id="rd_hum" name="filter_type" value="rd_hum" class="radio_btn">
-                        <label for="rd_hum">Feuchtigkeit</label>
-                    </div>
-                    <div class="col-2">
-                        <input type="radio" id="rd_level" name="filter_type" value="rd_level" class="radio_btn">
-                        <label for="rd_level">Füllstand</label>
-                    </div>
-                    <div class="col-2">
-                        <input type="radio" id="rd_seeeduino" name="filter_type" value="rd_seeeduino" class="radio_btn">
-                        <label for="rd_seeeduino">Seeeduino</label> 
-                    </div>
-                    <div class="col-2">
-                        <input type="radio" id="all" name="filter_type" value="all" class="radio_btn">
-                        <label for="all">Alles</label> 
-                    </div>
-                    <div class="col-2">
-                        <input type="text" id="filter_search" name="filter_search" class="form-control" placeholder="Sensor..." aria-label="Suche" aria-describedby="button-addon2" value="">
-                    </div>
-                    
-                    <div class="col-2 btn-align-right">
-                        <%
-                        let str = "";
-                        entries.forEach(entrie=>{
-                            //add parameters for search
-                            str = str + entrie._id+","+entrie.name+","+entrie.soil_humidity+","+entrie.distance+"|";
-                        });
-                        %>
-                        <button class="btn btn-primary" type="button" id="button-addon2" onclick="myFilter('<%=str%>')">Suche</button>
-                    </div>
+            <div class="filter-container align-center">
+                <div class="col-2">
+                    <input type="radio" id="rd_hum" name="filter_type" value="rd_hum" class="radio_btn">
+                    <label for="rd_hum">Feuchtigkeit</label>
                 </div>
-            </form>
+                <div class="col-2">
+                    <input type="radio" id="rd_level" name="filter_type" value="rd_level" class="radio_btn">
+                    <label for="rd_level">Füllstand</label>
+                </div>
+                <div class="col-2">
+                    <input type="radio" id="rd_seeeduino" name="filter_type" value="rd_seeeduino" class="radio_btn">
+                    <label for="rd_seeeduino">Seeeduino</label> 
+                </div>
+                <div class="col-2">
+                    <input type="radio" id="all" name="filter_type" value="all" class="radio_btn">
+                    <label for="all">Alles</label> 
+                </div>
+                <div class="col-2">
+                    <input type="text" id="filter_search" name="filter_search" class="form-control" placeholder="Sensor..." aria-label="Suche" aria-describedby="button-addon2" value="">
+                </div>
+                
+                <div class="col-2 btn-align-right">
+                    <%
+                    let str = "";
+                    entries.forEach(entrie=>{
+                        //add parameters for search
+                        str = str + entrie._id+","+entrie.name+","+entrie.soil_humidity+","+entrie.distance+"|";
+                    });
+                    %>
+                    <button class="btn btn-primary" type="button" id="button-addon2" onclick="myFilter('<%=str%>')">Suche</button>
+                </div>
+            </div>
         </div>
     </div>
     <%entries.forEach(entrie=>{

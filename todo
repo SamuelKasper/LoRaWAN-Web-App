@@ -1,6 +1,6 @@
 # Must have
-- Suchleiste enter -> error
 - node-fetch für downlink
+- Bewässerungs status anzeige ist für beide Sensoren immer gleich
 # Nice to have
 - Filter Handyansicht schöner
 - radio btn
