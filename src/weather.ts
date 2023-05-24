@@ -23,7 +23,6 @@ export class Weather {
 
     /** Set city and weather data. */
     public check_weather(data: any) {
-        console.log(data.list[0]);
         let weather: string = data.list[0].weather[0].description;
         let rain_amount: number = data.list[0].rain ? data.list[0].rain['3h'] : 0;
         this.city = data.city.name;
