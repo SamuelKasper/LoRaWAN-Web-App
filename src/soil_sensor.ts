@@ -1,4 +1,5 @@
 import https from "https";
+const fetch = require("node-fetch");
 import { Distance_sensor } from "./distance_sensor";
 
 export class Soil_sensor {
@@ -202,8 +203,8 @@ export class Soil_sensor {
                 "accept": "*/*",
 
             },
-        })
-            .then(res => res.json())
+        })/*
+            .then(resp => resp.json())
             .then(json => {
                 console.log(json);
                 // update controlling variables
@@ -211,7 +212,22 @@ export class Soil_sensor {
                 this.last_soil_downlink = downlink_payload;
                 console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
             })
-            .catch(err => console.log(err))
+            .catch(err => console.log(err))*/
+
+            .then((resp: { ok: any; statusText: string | undefined; json: () => any; }) => {
+                if (!resp.ok) {
+                    throw new Error(resp.statusText);
+                }
+                return resp.json();
+            })
+            .then((data: any) => {
+                console.log(data);
+                // update controlling variables
+                this.waiting_for_timer = false;
+                this.last_soil_downlink = downlink_payload;
+                console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
+            })
+            .catch(console.error);
     }
 
     /** Returns the value of the last downlink. */

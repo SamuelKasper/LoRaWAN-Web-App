@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Soil_sensor = void 0;
+const fetch = require("node-fetch");
 const distance_sensor_1 = require("./distance_sensor");
 class Soil_sensor {
     constructor() {
@@ -217,16 +218,30 @@ class Soil_sensor {
                     "Content-Length": Buffer.byteLength(data).toString(),
                     "accept": "*/*",
                 },
-            })
-                .then(res => res.json())
+            }) /*
+                .then(resp => resp.json())
                 .then(json => {
-                console.log(json);
+                    console.log(json);
+                    // update controlling variables
+                    this.waiting_for_timer = false;
+                    this.last_soil_downlink = downlink_payload;
+                    console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
+                })
+                .catch(err => console.log(err))*/
+                .then((resp) => {
+                if (!resp.ok) {
+                    throw new Error(resp.statusText);
+                }
+                return resp.json();
+            })
+                .then((data) => {
+                console.log(data);
                 // update controlling variables
                 this.waiting_for_timer = false;
                 this.last_soil_downlink = downlink_payload;
                 console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
             })
-                .catch(err => console.log(err));
+                .catch(console.error);
         });
     }
     /** Returns the value of the last downlink. */
