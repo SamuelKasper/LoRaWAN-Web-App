@@ -110,7 +110,7 @@ export class Soil_sensor {
      0: pump on, valve off
      1: valve on, pump off,
      2: everything off*/
-    private send_downlink(downlink_payload: 0 | 1 | 2) {
+    private async send_downlink(downlink_payload: 0 | 1 | 2) {
         // Only allow downlink while ENABLE_DOWNLINK is set to true
         if (process.env.ENABLE_DOWNLINK != "true") {
             console.log(`ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.`);
@@ -178,7 +178,7 @@ export class Soil_sensor {
         // update controlling variables
         this.waiting_for_timer = false;
         this.last_soil_downlink = downlink_payload;
-        console.log(`Waiting => false;last_soil_downlink = ${this.get_last_soil_downlink}`);
+        console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
     }
 
     /** Returns the value of the last downlink. */

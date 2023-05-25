@@ -51,7 +51,6 @@ function get_sensor_instance(id) {
     if (!sensors[id]) {
         sensors[id] = new soil_sensor_1.Soil_sensor();
     }
-    console.log(sensors);
     return sensors[id];
 }
 exports.get_sensor_instance = get_sensor_instance;

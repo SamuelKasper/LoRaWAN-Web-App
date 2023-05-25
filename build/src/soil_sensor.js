@@ -122,69 +122,71 @@ class Soil_sensor {
      1: valve on, pump off,
      2: everything off*/
     send_downlink(downlink_payload) {
-        // Only allow downlink while ENABLE_DOWNLINK is set to true
-        if (process.env.ENABLE_DOWNLINK != "true") {
-            console.log(`ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.`);
-            return;
-        }
-        else {
-            console.log(`Sending Downlink. Payload is: ${downlink_payload}`);
-        }
-        // Check if theres enought water in zistern otherwise open valve for watering.
-        let waterlevel = distance_sensor_1.Distance_sensor.getInstance.get_waterlevel;
-        if (waterlevel <= this.min_waterlevel) {
-            if (downlink_payload == 0) {
-                if (waterlevel == -1) {
-                    console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
-                }
-                else {
-                    console.log(`Waterlevel below 10% (${waterlevel}).`);
-                }
-                console.log(`Using valve for watering!`);
-                downlink_payload = 1;
+        return __awaiter(this, void 0, void 0, function* () {
+            // Only allow downlink while ENABLE_DOWNLINK is set to true
+            if (process.env.ENABLE_DOWNLINK != "true") {
+                console.log(`ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.`);
+                return;
             }
-        }
-        let app1 = "kaspersa-hfu-bachelor-thesis";
-        let wh1 = "webapp";
-        let dev1 = "eui-70b3d57ed005c853";
-        // Prepare payload data
-        let data = JSON.stringify({
-            "downlinks": [{
-                    "decoded_payload": {
-                        "on_off": downlink_payload
-                    },
-                    "f_port": 15,
-                    "priority": "NORMAL"
-                }]
+            else {
+                console.log(`Sending Downlink. Payload is: ${downlink_payload}`);
+            }
+            // Check if theres enought water in zistern otherwise open valve for watering.
+            let waterlevel = distance_sensor_1.Distance_sensor.getInstance.get_waterlevel;
+            if (waterlevel <= this.min_waterlevel) {
+                if (downlink_payload == 0) {
+                    if (waterlevel == -1) {
+                        console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
+                    }
+                    else {
+                        console.log(`Waterlevel below 10% (${waterlevel}).`);
+                    }
+                    console.log(`Using valve for watering!`);
+                    downlink_payload = 1;
+                }
+            }
+            let app1 = "kaspersa-hfu-bachelor-thesis";
+            let wh1 = "webapp";
+            let dev1 = "eui-70b3d57ed005c853";
+            // Prepare payload data
+            let data = JSON.stringify({
+                "downlinks": [{
+                        "decoded_payload": {
+                            "on_off": downlink_payload
+                        },
+                        "f_port": 15,
+                        "priority": "NORMAL"
+                    }]
+            });
+            // Preparing POST options
+            let options = {
+                host: `eu1.cloud.thethings.network`,
+                path: `/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`,
+                method: "POST",
+                headers: {
+                    "Authorization": `${process.env.AUTH_TOKEN}`,
+                    "Content-type": "application/json;",
+                    "User-Agent": "webapp/1.0",
+                    "Connection": "keep-alive",
+                    "Content-Length": Buffer.byteLength(data),
+                    "accept": "*/*",
+                },
+            };
+            // Create request object
+            let req = https_1.default.request(options, (res) => {
+                console.log(`Status: ${res.statusCode}`);
+            });
+            req.on("error", (e) => {
+                console.log(`Error: ${e.message}`);
+            });
+            // Write data to stream and close connection after
+            req.write(data);
+            req.end();
+            // update controlling variables
+            this.waiting_for_timer = false;
+            this.last_soil_downlink = downlink_payload;
+            console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
         });
-        // Preparing POST options
-        let options = {
-            host: `eu1.cloud.thethings.network`,
-            path: `/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`,
-            method: "POST",
-            headers: {
-                "Authorization": `${process.env.AUTH_TOKEN}`,
-                "Content-type": "application/json;",
-                "User-Agent": "webapp/1.0",
-                "Connection": "keep-alive",
-                "Content-Length": Buffer.byteLength(data),
-                "accept": "*/*",
-            },
-        };
-        // Create request object
-        let req = https_1.default.request(options, (res) => {
-            console.log(`Status: ${res.statusCode}`);
-        });
-        req.on("error", (e) => {
-            console.log(`Error: ${e.message}`);
-        });
-        // Write data to stream and close connection after
-        req.write(data);
-        req.end();
-        // update controlling variables
-        this.waiting_for_timer = false;
-        this.last_soil_downlink = downlink_payload;
-        console.log(`Waiting => false;last_soil_downlink = ${this.get_last_soil_downlink}`);
     }
     /** Returns the value of the last downlink. */
     get get_last_soil_downlink() {
