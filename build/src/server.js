@@ -31,7 +31,6 @@ let route_default = new route_default_1.Route_default();
 let route_uplink = new route_uplink_1.Route_uplink();
 let route_update = new route_update_1.Route_update();
 let route_direct_downlink = new route_direct_downlink_1.Route_direct_downlink();
-//let instance_helper = new Instance_helper();
 let db = new db_1.Database();
 // Express Routes
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -52,6 +51,7 @@ function get_sensor_instance(id) {
     if (!sensors[id]) {
         sensors[id] = new soil_sensor_1.Soil_sensor();
     }
+    console.log(sensors);
     return sensors[id];
 }
 exports.get_sensor_instance = get_sensor_instance;

@@ -3,7 +3,6 @@ import { Route_default } from "./routes/route_default";
 import { Route_direct_downlink } from "./routes/route_direct_downlink";
 import { Route_uplink } from "./routes/route_uplink";
 import { Route_update } from "./routes/route_update";
-import { Instance_helper } from "./instance_helper";
 import { Database } from "./db";
 import { Soil_sensor } from "./soil_sensor";
 const app = express();
@@ -19,7 +18,6 @@ let route_default = new Route_default();
 let route_uplink = new Route_uplink();
 let route_update = new Route_update();
 let route_direct_downlink = new Route_direct_downlink();
-//let instance_helper = new Instance_helper();
 let db = new Database();
 
 // Express Routes
@@ -45,6 +43,7 @@ export function get_sensor_instance(id: string): Soil_sensor {
     if (!sensors[id]) {
         sensors[id] = new Soil_sensor();
     }
+    console.log(sensors);
     return sensors[id];
 }
 

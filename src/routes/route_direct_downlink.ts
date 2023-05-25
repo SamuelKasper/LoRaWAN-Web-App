@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { Instance_helper } from "../instance_helper";
 import { get_sensor_instance } from "../server";
 
 export class Route_direct_downlink {

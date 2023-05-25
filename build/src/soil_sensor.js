@@ -184,7 +184,7 @@ class Soil_sensor {
         // update controlling variables
         this.waiting_for_timer = false;
         this.last_soil_downlink = downlink_payload;
-        console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
+        console.log(`Waiting => false;last_soil_downlink = ${this.get_last_soil_downlink}`);
     }
     /** Returns the value of the last downlink. */
     get get_last_soil_downlink() {

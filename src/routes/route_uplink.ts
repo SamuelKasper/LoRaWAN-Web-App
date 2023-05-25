@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { Distance_sensor } from "../distance_sensor";
 import { Weather } from "../weather";
-import { Instance_helper } from "../instance_helper";
 import { Database } from "../db";
 import { get_sensor_instance } from "../server";
 
