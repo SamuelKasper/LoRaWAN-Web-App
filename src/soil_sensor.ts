@@ -1,4 +1,3 @@
-import https from "https";
 const fetch = require("node-fetch");
 import { Distance_sensor } from "./distance_sensor";
 
@@ -131,52 +130,8 @@ export class Soil_sensor {
                 downlink_payload = 1;
             }
         }
-        /*
-        let app1 = "kaspersa-hfu-bachelor-thesis";
-        let wh1 = "webapp";
-        let dev1 = "eui-70b3d57ed005c853";
 
-        // Prepare payload data
-        let data = JSON.stringify({
-            "downlinks": [{
-                "decoded_payload": {
-                    "on_off": downlink_payload
-                },
-                "f_port": 15,
-                "priority": "NORMAL"
-            }]
-        });
-
-        // Preparing POST options
-        let options = {
-            host: `eu1.cloud.thethings.network`,
-            path: `/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`,
-            method: "POST",
-            headers: {
-                "Authorization": `${process.env.AUTH_TOKEN}`,
-                "Content-type": "application/json;",
-                "User-Agent": "webapp/1.0",
-                "Connection": "keep-alive",
-                "Content-Length": Buffer.byteLength(data),
-                "accept": "*",
-
-            },
-        };
-
-        // Create request object
-        let req = https.request(options, (res) => {
-            console.log(`Status: ${res.statusCode}`);
-        });
-
-        req.on("error", (e) => {
-            console.log(`Error: ${e.message}`);
-        });
-
-        // Write data to stream and close connection after
-        req.write(data);
-        req.end();*/
-
-        // new fetch
+        // Fetch
         let app1 = "kaspersa-hfu-bachelor-thesis";
         let wh1 = "webapp";
         let dev1 = "eui-70b3d57ed005c853";
@@ -203,25 +158,9 @@ export class Soil_sensor {
                 "accept": "*/*",
 
             },
-        })/*
-            .then(resp => resp.json())
-            .then(json => {
-                console.log(json);
-                // update controlling variables
-                this.waiting_for_timer = false;
-                this.last_soil_downlink = downlink_payload;
-                console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
-            })
-            .catch(err => console.log(err))*/
-
-            .then((resp: { ok: any; statusText: string | undefined; json: () => any; }) => {
-                if (!resp.ok) {
-                    throw new Error(resp.statusText);
-                }
-                return resp.json();
-            })
-            .then((data: any) => {
-                console.log(data);
+        })
+            .then((resp: any) => {
+                console.log(resp.statusText);
                 // update controlling variables
                 this.waiting_for_timer = false;
                 this.last_soil_downlink = downlink_payload;
