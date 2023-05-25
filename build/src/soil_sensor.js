@@ -176,7 +176,7 @@ class Soil_sensor {
                 },
             })
                 .then((resp) => {
-                console.log(resp.statusText);
+                console.log(`TTN Downlink Response: ${resp.statusText}`);
                 // update controlling variables
                 this.waiting_for_timer = false;
                 this.last_soil_downlink = downlink_payload;
