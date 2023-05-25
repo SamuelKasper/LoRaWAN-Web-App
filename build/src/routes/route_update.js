@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Route_update = void 0;
-const instance_helper_1 = require("../instance_helper");
 class Route_update {
     /** Processing data from user input fields send by form submit. */
     update_user_input(req, res, db) {
@@ -42,9 +41,6 @@ class Route_update {
             }
             // Update db
             yield db.update_user_input(req.body.dbid, entrie);
-            //TEST
-            let inst = instance_helper_1.Instance_helper.get_instance_helper;
-            console.log(inst.get_sensor_instance(req.body.dev_eui));
             // Reloade page
             res.redirect('back');
         });

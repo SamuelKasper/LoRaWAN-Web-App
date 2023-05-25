@@ -32,10 +32,6 @@ export class Route_update {
         // Update db
         await db.update_user_input(req.body.dbid, entrie);
 
-        //TEST
-        let inst = Instance_helper.get_instance_helper; 
-        console.log(inst.get_sensor_instance(req.body.dev_eui));
-
         // Reloade page
         res.redirect('back');
     }
