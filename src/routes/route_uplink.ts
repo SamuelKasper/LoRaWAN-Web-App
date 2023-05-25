@@ -28,6 +28,7 @@ export class Route_uplink {
             if (extended_data.soil_humidity) {
                 // Get instance of class
                 let instance = get_sensor_instance(extended_data.dev_eui);
+                console.log(`org id: ${sensor_data.end_device_ids.dev_eui},\next id: ${extended_data.dev_eui},\ninstance: ${instance}`);
                 instance.prepare_downlink(extended_data);
             }
 
