@@ -2,7 +2,6 @@
 - node-fetch für downlink
 - Bewässerungs status anzeige ist für beide Sensoren immer gleich
 -> Overwrite instance data
-- Beim ersten mal uplink wird kein Downlink geplant
 # Nice to have
 - Filter Handyansicht schöner
 - radio btn
