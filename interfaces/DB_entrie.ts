@@ -17,5 +17,6 @@ interface DB_entrie {
     hum_max?: number,
     watering_time?: string,
     time_control?: string,
-    weather_control?: string
+    weather_control?: string,
+    relais_nr?: number,
 }

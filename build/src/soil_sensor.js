@@ -53,7 +53,7 @@ class Soil_sensor {
             this.watering_by_time(data);
         }
         else {
-            this.watering_by_boardervalue();
+            this.watering_by_boardervalue(data);
         }
     }
     /** Check if downlink is already scheduled for specific time. */
@@ -76,7 +76,7 @@ class Soil_sensor {
         }
     }
     /** Sending downlink to start watering by boardervalues. */
-    watering_by_boardervalue() {
+    watering_by_boardervalue(data) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log(`Time control is turned off.`);
             // If watering is inactive
@@ -85,7 +85,7 @@ class Soil_sensor {
                 if (this.timeout_id) {
                     clearTimeout(this.timeout_id);
                 }
-                yield this.send_downlink(0);
+                yield this.send_downlink(0, data.relais_nr);
             }
             else {
                 console.log(`Watering is already active.`);
@@ -96,7 +96,7 @@ class Soil_sensor {
     stop_watering() {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.last_soil_downlink != 2) {
-                yield this.send_downlink(2);
+                yield this.send_downlink(2, undefined);
                 console.log(`Downlink to stop watering`);
             }
             else {
@@ -112,7 +112,7 @@ class Soil_sensor {
                 const waiting_time = this.calculate_waiting_time(data.watering_time);
                 // Wait a specific time before running sendDownlink
                 this.timeout_id = setTimeout(() => __awaiter(this, void 0, void 0, function* () {
-                    yield this.send_downlink(0);
+                    yield this.send_downlink(0, data.relais_nr);
                 }), waiting_time);
                 // Set waiting indicator to true
                 this.waiting_for_timer = true;
@@ -124,7 +124,7 @@ class Soil_sensor {
      0: pump on, valve off
      1: valve on, pump off,
      2: everything off*/
-    send_downlink(downlink_payload) {
+    send_downlink(downlink_payload, relais_nr) {
         return __awaiter(this, void 0, void 0, function* () {
             // Only allow downlink while ENABLE_DOWNLINK is set to true
             if (process.env.ENABLE_DOWNLINK != "true") {
@@ -157,7 +157,8 @@ class Soil_sensor {
             let data = JSON.stringify({
                 "downlinks": [{
                         "decoded_payload": {
-                            "on_off": downlink_payload
+                            "on_off": downlink_payload,
+                            "relais": relais_nr
                         },
                         "f_port": 15,
                         "priority": "NORMAL"
@@ -217,13 +218,13 @@ class Soil_sensor {
         return time_left;
     }
     /** Sending dircet downlink for pump controll with either 0 or 2. */
-    direct_downlink() {
+    direct_downlink(relais_nr) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.last_soil_downlink == 2) {
-                yield this.send_downlink(0);
+                yield this.send_downlink(0, relais_nr);
             }
             else {
-                yield this.send_downlink(2);
+                yield this.send_downlink(2, undefined);
             }
         });
     }

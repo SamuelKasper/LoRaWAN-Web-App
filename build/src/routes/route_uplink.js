@@ -96,6 +96,7 @@ class Route_uplink {
             let default_max = 75;
             let default_max_distance = 200;
             let default_time = "08:00";
+            let default_relais = 3;
             let db_entrie = yield db.get_entrie_by_id(data.dev_eui);
             // If data is already in db
             if (db_entrie != null && db_entrie != undefined) {
@@ -108,6 +109,7 @@ class Route_uplink {
                     data.watering_time = db_entrie.watering_time;
                     data.time_control = db_entrie.time_control;
                     data.weather_control = db_entrie.weather_control;
+                    data.relais_nr = db_entrie.default_relais;
                 }
                 // Add editable fields for distance if data is from distance sensor
                 if (data.distance) {
@@ -125,6 +127,7 @@ class Route_uplink {
                     data.watering_time = default_time;
                     data.time_control = this.time_control;
                     data.weather_control = this.weather_control;
+                    data.relais_nr = default_relais;
                 }
                 // Add editable fields for distance if data is from distance sensor
                 if (data.distance) {

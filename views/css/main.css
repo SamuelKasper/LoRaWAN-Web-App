@@ -224,10 +224,16 @@ input[type=radio] {
     padding-right: 20px;
 }
 
-/*Radio Button*/
+.height-45px {
+    height: 45px !important;
+}
 
 
 @media (max-width: 565px) {
+    .height-45px {
+        height: auto !important;
+    }
+
     .filter-container {
         flex-direction: column;
     }

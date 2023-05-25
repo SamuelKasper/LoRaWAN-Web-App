@@ -12,6 +12,7 @@ export class Route_update {
                 watering_time: req.body.watering_time.toString(),
                 time_control: req.body.time_control ? req.body.time_control : "false",
                 weather_control: req.body.weather_control ? req.body.weather_control : "false",
+                relais_nr: req.body.relais_nr ? req.body.relais_nr : 3,
                 hum_min: parseInt(req.body.hum_min),
                 hum_max: parseInt(req.body.hum_max),
             };
