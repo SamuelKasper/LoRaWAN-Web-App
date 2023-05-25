@@ -18,9 +18,9 @@ export class Soil_sensor {
         if (data.weather_control == "true") {
             // Check if its raining. True = raining, no need for watering.
             if (this.check_for_rain(data)) {
-               return;
+                return;
             }
-        } 
+        }
 
         // Check humidity
         const humidity = parseInt(data.soil_humidity.replace("%", ""));
@@ -66,7 +66,7 @@ export class Soil_sensor {
     }
 
     /** Sending downlink to start watering by boardervalues. */
-    private watering_by_boardervalue() {
+    private async watering_by_boardervalue() {
         console.log(`Time control is turned off.`);
 
         // If watering is inactive
@@ -75,16 +75,16 @@ export class Soil_sensor {
             if (this.timeout_id) {
                 clearTimeout(this.timeout_id);
             }
-            this.send_downlink(0);
+            await this.send_downlink(0);
         } else {
             console.log(`Watering is already active.`);
         }
     }
 
     /** Sending downlink to stop watering if not already done. */
-    private stop_watering() {
+    private async stop_watering() {
         if (this.last_soil_downlink != 2) {
-            this.send_downlink(2);
+            await this.send_downlink(2);
             console.log(`Downlink to stop watering`);
         } else {
             console.log(`Downlink to stop watering has been already sent or watering has already been stopped`);
@@ -92,13 +92,13 @@ export class Soil_sensor {
     }
 
     /** Scheduling a downlink for specific time. */
-    private schedule_downlink(data: DB_entrie) {
+    private async schedule_downlink(data: DB_entrie) {
         // Get waiting time
         if (data.watering_time) {
             const waiting_time = this.calculate_waiting_time(data.watering_time);
             // Wait a specific time before running sendDownlink
-            this.timeout_id = setTimeout(() => {
-                this.send_downlink(0);
+            this.timeout_id = setTimeout(async () => {
+                await this.send_downlink(0);
             }, waiting_time);
             // Set waiting indicator to true
             this.waiting_for_timer = true;
@@ -119,18 +119,18 @@ export class Soil_sensor {
 
         // Check if theres enought water in zistern otherwise open valve for watering.
         let waterlevel = Distance_sensor.getInstance.get_waterlevel;
-        if ( waterlevel <= this.min_waterlevel) {
+        if (waterlevel <= this.min_waterlevel) {
             if (downlink_payload == 0) {
-                if(waterlevel==-1){
+                if (waterlevel == -1) {
                     console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
-                }else{
+                } else {
                     console.log(`Waterlevel below 10% (${waterlevel}).`);
                 }
                 console.log(`Using valve for watering!`);
                 downlink_payload = 1;
             }
         }
-
+        /*
         let app1 = "kaspersa-hfu-bachelor-thesis";
         let wh1 = "webapp";
         let dev1 = "eui-70b3d57ed005c853";
@@ -157,7 +157,7 @@ export class Soil_sensor {
                 "User-Agent": "webapp/1.0",
                 "Connection": "keep-alive",
                 "Content-Length": Buffer.byteLength(data),
-                "accept": "*/*",
+                "accept": "*",
 
             },
         };
@@ -173,12 +173,45 @@ export class Soil_sensor {
 
         // Write data to stream and close connection after
         req.write(data);
-        req.end();
+        req.end();*/
 
-        // update controlling variables
-        this.waiting_for_timer = false;
-        this.last_soil_downlink = downlink_payload;
-        console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
+        // new fetch
+        let app1 = "kaspersa-hfu-bachelor-thesis";
+        let wh1 = "webapp";
+        let dev1 = "eui-70b3d57ed005c853";
+        let url = `https://eu1.cloud.thethings.network/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`
+        // Prepare payload data
+        let data = JSON.stringify({
+            "downlinks": [{
+                "decoded_payload": {
+                    "on_off": downlink_payload
+                },
+                "f_port": 15,
+                "priority": "NORMAL"
+            }]
+        });
+        await fetch(url, {
+            method: "POST",
+            body: data,
+            headers: {
+                "Authorization": `${process.env.AUTH_TOKEN}`,
+                "Content-type": "application/json;",
+                "User-Agent": "webapp/1.0",
+                "Connection": "keep-alive",
+                "Content-Length": Buffer.byteLength(data).toString(),
+                "accept": "*/*",
+
+            },
+        })
+            .then(res => res.json())
+            .then(json => {
+                console.log(json);
+                // update controlling variables
+                this.waiting_for_timer = false;
+                this.last_soil_downlink = downlink_payload;
+                console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
+            })
+            .catch(err => console.log(err))
     }
 
     /** Returns the value of the last downlink. */
@@ -216,11 +249,11 @@ export class Soil_sensor {
     }
 
     /** Sending dircet downlink for pump controll with either 0 or 2. */
-    public direct_downlink() {
+    public async direct_downlink() {
         if (this.last_soil_downlink == 2) {
-            this.send_downlink(0);
+            await this.send_downlink(0);
         } else {
-            this.send_downlink(2);
+            await this.send_downlink(2);
         }
     }
 

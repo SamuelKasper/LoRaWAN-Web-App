@@ -8,12 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Soil_sensor = void 0;
-const https_1 = __importDefault(require("https"));
 const distance_sensor_1 = require("./distance_sensor");
 class Soil_sensor {
     constructor() {
@@ -80,42 +76,48 @@ class Soil_sensor {
     }
     /** Sending downlink to start watering by boardervalues. */
     watering_by_boardervalue() {
-        console.log(`Time control is turned off.`);
-        // If watering is inactive
-        if (this.last_soil_downlink == 2) {
-            // Delete former timeout if existing
-            if (this.timeout_id) {
-                clearTimeout(this.timeout_id);
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log(`Time control is turned off.`);
+            // If watering is inactive
+            if (this.last_soil_downlink == 2) {
+                // Delete former timeout if existing
+                if (this.timeout_id) {
+                    clearTimeout(this.timeout_id);
+                }
+                yield this.send_downlink(0);
             }
-            this.send_downlink(0);
-        }
-        else {
-            console.log(`Watering is already active.`);
-        }
+            else {
+                console.log(`Watering is already active.`);
+            }
+        });
     }
     /** Sending downlink to stop watering if not already done. */
     stop_watering() {
-        if (this.last_soil_downlink != 2) {
-            this.send_downlink(2);
-            console.log(`Downlink to stop watering`);
-        }
-        else {
-            console.log(`Downlink to stop watering has been already sent or watering has already been stopped`);
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.last_soil_downlink != 2) {
+                yield this.send_downlink(2);
+                console.log(`Downlink to stop watering`);
+            }
+            else {
+                console.log(`Downlink to stop watering has been already sent or watering has already been stopped`);
+            }
+        });
     }
     /** Scheduling a downlink for specific time. */
     schedule_downlink(data) {
-        // Get waiting time
-        if (data.watering_time) {
-            const waiting_time = this.calculate_waiting_time(data.watering_time);
-            // Wait a specific time before running sendDownlink
-            this.timeout_id = setTimeout(() => {
-                this.send_downlink(0);
-            }, waiting_time);
-            // Set waiting indicator to true
-            this.waiting_for_timer = true;
-            console.log(`Downlink planned at: ${data.watering_time}. ${(waiting_time / 1000 / 60).toFixed(1)} min left.`);
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            // Get waiting time
+            if (data.watering_time) {
+                const waiting_time = this.calculate_waiting_time(data.watering_time);
+                // Wait a specific time before running sendDownlink
+                this.timeout_id = setTimeout(() => __awaiter(this, void 0, void 0, function* () {
+                    yield this.send_downlink(0);
+                }), waiting_time);
+                // Set waiting indicator to true
+                this.waiting_for_timer = true;
+                console.log(`Downlink planned at: ${data.watering_time}. ${(waiting_time / 1000 / 60).toFixed(1)} min left.`);
+            }
+        });
     }
     /** Function for sending downlinks.
      0: pump on, valve off
@@ -145,19 +147,22 @@ class Soil_sensor {
                     downlink_payload = 1;
                 }
             }
+            /*
             let app1 = "kaspersa-hfu-bachelor-thesis";
             let wh1 = "webapp";
             let dev1 = "eui-70b3d57ed005c853";
+    
             // Prepare payload data
             let data = JSON.stringify({
                 "downlinks": [{
-                        "decoded_payload": {
-                            "on_off": downlink_payload
-                        },
-                        "f_port": 15,
-                        "priority": "NORMAL"
-                    }]
+                    "decoded_payload": {
+                        "on_off": downlink_payload
+                    },
+                    "f_port": 15,
+                    "priority": "NORMAL"
+                }]
             });
+    
             // Preparing POST options
             let options = {
                 host: `eu1.cloud.thethings.network`,
@@ -169,23 +174,59 @@ class Soil_sensor {
                     "User-Agent": "webapp/1.0",
                     "Connection": "keep-alive",
                     "Content-Length": Buffer.byteLength(data),
-                    "accept": "*/*",
+                    "accept": "*",
+    
                 },
             };
+    
             // Create request object
-            let req = https_1.default.request(options, (res) => {
+            let req = https.request(options, (res) => {
                 console.log(`Status: ${res.statusCode}`);
             });
+    
             req.on("error", (e) => {
                 console.log(`Error: ${e.message}`);
             });
+    
             // Write data to stream and close connection after
             req.write(data);
-            req.end();
-            // update controlling variables
-            this.waiting_for_timer = false;
-            this.last_soil_downlink = downlink_payload;
-            console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
+            req.end();*/
+            // new fetch
+            let app1 = "kaspersa-hfu-bachelor-thesis";
+            let wh1 = "webapp";
+            let dev1 = "eui-70b3d57ed005c853";
+            let url = `https://eu1.cloud.thethings.network/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`;
+            // Prepare payload data
+            let data = JSON.stringify({
+                "downlinks": [{
+                        "decoded_payload": {
+                            "on_off": downlink_payload
+                        },
+                        "f_port": 15,
+                        "priority": "NORMAL"
+                    }]
+            });
+            yield fetch(url, {
+                method: "POST",
+                body: data,
+                headers: {
+                    "Authorization": `${process.env.AUTH_TOKEN}`,
+                    "Content-type": "application/json;",
+                    "User-Agent": "webapp/1.0",
+                    "Connection": "keep-alive",
+                    "Content-Length": Buffer.byteLength(data).toString(),
+                    "accept": "*/*",
+                },
+            })
+                .then(res => res.json())
+                .then(json => {
+                console.log(json);
+                // update controlling variables
+                this.waiting_for_timer = false;
+                this.last_soil_downlink = downlink_payload;
+                console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
+            })
+                .catch(err => console.log(err));
         });
     }
     /** Returns the value of the last downlink. */
@@ -221,12 +262,14 @@ class Soil_sensor {
     }
     /** Sending dircet downlink for pump controll with either 0 or 2. */
     direct_downlink() {
-        if (this.last_soil_downlink == 2) {
-            this.send_downlink(0);
-        }
-        else {
-            this.send_downlink(2);
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.last_soil_downlink == 2) {
+                yield this.send_downlink(0);
+            }
+            else {
+                yield this.send_downlink(2);
+            }
+        });
     }
     /** Check if rain amount is above 0.5mm. */
     check_for_rain(extended_data) {
