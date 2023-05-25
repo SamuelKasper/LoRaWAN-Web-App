@@ -85,7 +85,10 @@ class Soil_sensor {
                 if (this.timeout_id) {
                     clearTimeout(this.timeout_id);
                 }
-                yield this.send_downlink(0, data.relais_nr);
+                if (data.relais_nr) {
+                    yield this.send_downlink(data.relais_nr);
+                    yield this.send_downlink(0);
+                }
             }
             else {
                 console.log(`Watering is already active.`);
@@ -96,7 +99,7 @@ class Soil_sensor {
     stop_watering() {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.last_soil_downlink != 2) {
-                yield this.send_downlink(2, undefined);
+                yield this.send_downlink(2);
                 console.log(`Downlink to stop watering`);
             }
             else {
@@ -112,7 +115,10 @@ class Soil_sensor {
                 const waiting_time = this.calculate_waiting_time(data.watering_time);
                 // Wait a specific time before running sendDownlink
                 this.timeout_id = setTimeout(() => __awaiter(this, void 0, void 0, function* () {
-                    yield this.send_downlink(0, data.relais_nr);
+                    if (data.relais_nr != undefined) {
+                        yield this.send_downlink(data.relais_nr);
+                        yield this.send_downlink(0);
+                    }
                 }), waiting_time);
                 // Set waiting indicator to true
                 this.waiting_for_timer = true;
@@ -124,7 +130,7 @@ class Soil_sensor {
      0: pump on, valve off
      1: valve on, pump off,
      2: everything off*/
-    send_downlink(downlink_payload, relais_nr) {
+    send_downlink(downlink_payload) {
         return __awaiter(this, void 0, void 0, function* () {
             // Only allow downlink while ENABLE_DOWNLINK is set to true
             if (process.env.ENABLE_DOWNLINK != "true") {
@@ -157,8 +163,7 @@ class Soil_sensor {
             let data = JSON.stringify({
                 "downlinks": [{
                         "decoded_payload": {
-                            "on_off": downlink_payload,
-                            "relais": relais_nr
+                            "on_off": downlink_payload
                         },
                         "f_port": 15,
                         "priority": "NORMAL"
@@ -221,10 +226,11 @@ class Soil_sensor {
     direct_downlink(relais_nr) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.last_soil_downlink == 2) {
-                yield this.send_downlink(0, relais_nr);
+                yield this.send_downlink(relais_nr);
+                yield this.send_downlink(0);
             }
             else {
-                yield this.send_downlink(2, undefined);
+                yield this.send_downlink(2);
             }
         });
     }

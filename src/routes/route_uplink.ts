@@ -95,7 +95,7 @@ export class Route_uplink {
         let default_max = 75;
         let default_max_distance = 200;
         let default_time = "08:00";
-        let default_relais = 3;
+        let default_relais: 3 | 4 = 3;
 
         let db_entrie = await db.get_entrie_by_id(data.dev_eui);
         // If data is already in db
