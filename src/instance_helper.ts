@@ -18,7 +18,7 @@ export class Instance_helper {
     private sensors: { [id: string]: Soil_sensor } = {};
     /** Get instance of class by dev_eui of Sensor. */
     public get_sensor_instance(id: string): Soil_sensor {
-        console.log(this.sensors);
+        console.log(id,": ",this.sensors[id]);
         if (!this.sensors[id]) {
             this.sensors[id] = new Soil_sensor;
         }

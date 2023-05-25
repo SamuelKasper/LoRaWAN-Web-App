@@ -16,7 +16,7 @@ class Instance_helper {
     }
     /** Get instance of class by dev_eui of Sensor. */
     get_sensor_instance(id) {
-        console.log(this.sensors);
+        console.log(id, ": ", this.sensors[id]);
         if (!this.sensors[id]) {
             this.sensors[id] = new soil_sensor_1.Soil_sensor;
         }

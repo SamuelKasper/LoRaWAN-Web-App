@@ -1,6 +1,7 @@
 # Must have
 - node-fetch für downlink
 - Bewässerungs status anzeige ist für beide Sensoren immer gleich
+-> Overwrite instance data
 # Nice to have
 - Filter Handyansicht schöner
 - radio btn

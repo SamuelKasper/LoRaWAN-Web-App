@@ -49,7 +49,6 @@ class Route_default {
                     // Get instance of class
                     let id = entries[i].dev_eui;
                     let instance = inst.get_sensor_instance(id);
-                    console.log(instance);
                     if (instance.get_last_soil_downlink == 0) {
                         entries[i].last_soil_downlink = "Bewässerung ist aktiv (Zisterne)";
                     }
