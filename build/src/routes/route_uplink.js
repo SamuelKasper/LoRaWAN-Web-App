@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Route_uplink = void 0;
 const distance_sensor_1 = require("../distance_sensor");
 const weather_1 = require("../weather");
+const server_1 = require("../server");
 class Route_uplink {
     constructor() {
         this.time_control = "true";
@@ -20,7 +21,7 @@ class Route_uplink {
         this.distance_sensor = new distance_sensor_1.Distance_sensor();
     }
     /** Processing uplink data. */
-    process_uplink(req, res, inst, db) {
+    process_uplink(req, res, db) {
         return __awaiter(this, void 0, void 0, function* () {
             // Respond to ttn. Otherwise the uplink will fail.
             res.sendStatus(200);
@@ -34,7 +35,7 @@ class Route_uplink {
                 // If uplink data comes from soil sensor, check if watering is necessary
                 if (extended_data.soil_humidity) {
                     // Get instance of class
-                    let instance = inst.get_sensor_instance(extended_data.dev_eui);
+                    let instance = (0, server_1.get_sensor_instance)(extended_data.dev_eui);
                     instance.prepare_downlink(extended_data);
                 }
                 // If uplink data comes from distance sensor, check if switching the valve is necessary

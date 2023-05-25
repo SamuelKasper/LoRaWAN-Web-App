@@ -14,13 +14,13 @@ export class Instance_helper {
     public static get get_instance_helper(){
         return this.instance;
     }
-
+    /**
     private sensors: { [id: string]: Soil_sensor } = {};
-    /** Get instance of class by dev_eui of Sensor. */
+    /** Get instance of class by dev_eui of Sensor. 
     public get_sensor_instance(id: string): Soil_sensor {
         if (!this.sensors[id]) {
             this.sensors[id] = new Soil_sensor();
         }
         return this.sensors[id];
-    }
+    } */
 }

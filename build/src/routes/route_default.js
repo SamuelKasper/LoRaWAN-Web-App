@@ -10,9 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Route_default = void 0;
+const server_1 = require("../server");
 class Route_default {
     /** Loading data from DB and displays it on default URL. */
-    render_view(res, inst, db) {
+    render_view(res, db) {
         return __awaiter(this, void 0, void 0, function* () {
             let entries = (yield db.get_entries()) || [];
             for (let i = 0; i < entries.length; i++) {
@@ -48,7 +49,7 @@ class Route_default {
                 if (entries[i].soil_humidity) {
                     // Get instance of class
                     let id = entries[i].dev_eui;
-                    let instance = inst.get_sensor_instance(id);
+                    let instance = (0, server_1.get_sensor_instance)(id);
                     console.log(id, instance);
                     if (instance.get_last_soil_downlink == 0) {
                         entries[i].last_soil_downlink = "Bewässerung ist aktiv (Zisterne)";

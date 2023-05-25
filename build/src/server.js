@@ -12,13 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.get_sensor_instance = void 0;
 const express_1 = __importDefault(require("express"));
 const route_default_1 = require("./routes/route_default");
 const route_direct_downlink_1 = require("./routes/route_direct_downlink");
 const route_uplink_1 = require("./routes/route_uplink");
 const route_update_1 = require("./routes/route_update");
-const instance_helper_1 = require("./instance_helper");
 const db_1 = require("./db");
+const soil_sensor_1 = require("./soil_sensor");
 const app = (0, express_1.default)();
 // Middleware
 app.use(express_1.default.static("views"));
@@ -30,19 +31,28 @@ let route_default = new route_default_1.Route_default();
 let route_uplink = new route_uplink_1.Route_uplink();
 let route_update = new route_update_1.Route_update();
 let route_direct_downlink = new route_direct_downlink_1.Route_direct_downlink();
-let instance_helper = new instance_helper_1.Instance_helper();
+//let instance_helper = new Instance_helper();
 let db = new db_1.Database();
 // Express Routes
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    route_default.render_view(res, instance_helper, db);
+    route_default.render_view(res, db);
 }));
 app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    route_uplink.process_uplink(req, res, instance_helper, db);
+    route_uplink.process_uplink(req, res, db);
 }));
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     route_update.update_user_input(req, res, db);
 }));
 app.post('/directDownlink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    route_direct_downlink.prepare_downlink(req, res, instance_helper);
+    route_direct_downlink.prepare_downlink(req, res);
 }));
+let sensors = {};
+/** Get instance of class by dev_eui of Sensor. */
+function get_sensor_instance(id) {
+    if (!sensors[id]) {
+        sensors[id] = new soil_sensor_1.Soil_sensor();
+    }
+    return sensors[id];
+}
+exports.get_sensor_instance = get_sensor_instance;
 app.listen(8000);

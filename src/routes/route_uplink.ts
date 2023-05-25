@@ -3,6 +3,7 @@ import { Distance_sensor } from "../distance_sensor";
 import { Weather } from "../weather";
 import { Instance_helper } from "../instance_helper";
 import { Database } from "../db";
+import { get_sensor_instance } from "../server";
 
 export class Route_uplink {
     private time_control = "true";
@@ -11,7 +12,7 @@ export class Route_uplink {
     private distance_sensor = new Distance_sensor();
 
     /** Processing uplink data. */
-    public async process_uplink(req: Request, res: Response, inst: Instance_helper, db: Database) {
+    public async process_uplink(req: Request, res: Response, db: Database) {
         // Respond to ttn. Otherwise the uplink will fail.
         res.sendStatus(200);
 
@@ -27,7 +28,7 @@ export class Route_uplink {
             // If uplink data comes from soil sensor, check if watering is necessary
             if (extended_data.soil_humidity) {
                 // Get instance of class
-                let instance = inst.get_sensor_instance(extended_data.dev_eui);
+                let instance = get_sensor_instance(extended_data.dev_eui);
                 instance.prepare_downlink(extended_data);
             }
 
