@@ -12,16 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Route_direct_downlink = void 0;
 const server_1 = require("../server");
 class Route_direct_downlink {
-    /** Calling direct downlink from class Downlink. */
+    /** Calling direct downlink for specific instance of Soil_sensor. */
     prepare_downlink(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             // Get instance of class
             let sensor_data = JSON.parse(JSON.stringify(req.body));
             let id = sensor_data.dev_eui;
             let instance = (0, server_1.get_sensor_instance)(id);
-            instance.direct_downlink();
+            //instance.direct_downlink();
             console.log(`direct_downlink:\n id: ${id},\ninstance:`, instance);
-            // Reloade page
+            // Reloade page 
             res.redirect('back');
         });
     }
