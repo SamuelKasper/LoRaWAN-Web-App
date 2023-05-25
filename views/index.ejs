@@ -241,9 +241,9 @@
                                     <td><strong data-toggle="tooltip" data-placement="top" title="Nummer des Relais / Ventils, welches für den Sensor geöffnet werden soll.">Ventil Nummer:</strong>
                                     </td>
                                     <td>
-                                        <div class="input-group">
+                                        <div class="input-group w100px">
                                             <span class="input-group-text">Nr.</span>
-                                            <input id="relais_<%=index%>" name="relais" type="text" class="form-control w50px"
+                                            <input id="relais_<%=index%>" name="relais" min="3" max="8" type="number" class="form-control w50px"
                                                 value="<%=entrie.relais_nr%>">
                                         </div>
                                     </td>
@@ -257,13 +257,13 @@
                                     </td>
                                     <td>
                                         <div class="input-group">
-                                            <input id="hum_min_<%=index%>" name="hum_min" type="text" class="form-control w50px"
+                                            <input id="hum_min_<%=index%>" name="hum_min" type="number" class="form-control w50px"
                                                 value="<%=entrie.hum_min%>">
                                             <span class="input-group-text border-radius-right">%</span>
                                             
                                             <span class="pad_lr_15px"> bis </span>
 
-                                            <input id="hum_max_<%=index%>" name="hum_max" type="text" class="form-control w50px border-radius-left"
+                                            <input id="hum_max_<%=index%>" name="hum_max" type="number" class="form-control w50px border-radius-left"
                                                 value="<%=entrie.hum_max%>">
                                             <span class="input-group-text">%</span>
                                         </div>

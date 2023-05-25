@@ -228,6 +228,10 @@ input[type=radio] {
     height: 45px !important;
 }
 
+.w100px{
+    width: 100px !important;
+}
+
 
 @media (max-width: 565px) {
     .height-45px {
