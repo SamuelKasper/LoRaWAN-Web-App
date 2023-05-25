@@ -10,7 +10,6 @@ export class Route_direct_downlink {
         let instance = get_sensor_instance(id); 
 
         instance.direct_downlink(sensor_data.relais_nr);
-        console.log(`direct_downlink:\n id: ${id},\ninstance:`, instance);
         // Reloade page 
         res.redirect('back');
     }
