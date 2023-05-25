@@ -18,9 +18,11 @@ class Soil_sensor {
         this.last_watering_time = "08:00";
         this.last_soil_downlink = 2;
         this.min_waterlevel = 10;
+        this.valve_1 = false;
+        this.valve_2 = false;
     }
     /** Checking if humidity is below or above the border values. */
-    prepare_downlink(data) {
+    check_humidity(data) {
         return __awaiter(this, void 0, void 0, function* () {
             // Check if required data is available
             if (data.soil_humidity == undefined || data.watering_time == undefined || data.hum_min == undefined || data.hum_max == undefined) {
@@ -38,7 +40,10 @@ class Soil_sensor {
                 this.start_watering(data);
             }
             else {
-                this.stop_watering();
+                if (data.relais_nr) {
+                    this.prepare_downlink(data.relais_nr);
+                }
+                //this.stop_watering();
             }
             // Set new value for the last watering time
             this.last_watering_time = data.watering_time;
@@ -86,8 +91,9 @@ class Soil_sensor {
                     clearTimeout(this.timeout_id);
                 }
                 if (data.relais_nr) {
-                    yield this.send_downlink(data.relais_nr);
-                    yield this.send_downlink(0);
+                    yield this.prepare_downlink(data.relais_nr);
+                    //await this.send_downlink(data.relais_nr);
+                    //await this.send_downlink(0);
                 }
             }
             else {
@@ -95,18 +101,15 @@ class Soil_sensor {
             }
         });
     }
-    /** Sending downlink to stop watering if not already done. */
-    stop_watering() {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (this.last_soil_downlink != 2) {
-                yield this.send_downlink(2);
-                console.log(`Downlink to stop watering`);
-            }
-            else {
-                console.log(`Downlink to stop watering has been already sent or watering has already been stopped`);
-            }
-        });
-    }
+    /** Sending downlink to stop watering if not already done.
+    private async stop_watering() {
+        if (this.last_soil_downlink != 2) {
+            await this.send_downlink(2);
+            console.log(`Downlink to stop watering`);
+        } else {
+            console.log(`Downlink to stop watering has been already sent or watering has already been stopped`);
+        }
+    }*/
     /** Scheduling a downlink for specific time. */
     schedule_downlink(data) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -116,8 +119,9 @@ class Soil_sensor {
                 // Wait a specific time before running sendDownlink
                 this.timeout_id = setTimeout(() => __awaiter(this, void 0, void 0, function* () {
                     if (data.relais_nr != undefined) {
-                        yield this.send_downlink(data.relais_nr);
-                        yield this.send_downlink(0);
+                        yield this.prepare_downlink(data.relais_nr);
+                        //await this.send_downlink(data.relais_nr);
+                        //await this.send_downlink(0);
                     }
                 }), waiting_time);
                 // Set waiting indicator to true
@@ -126,24 +130,42 @@ class Soil_sensor {
             }
         });
     }
-    /** Function for sending downlinks.
-     0: pump on, valve off
-     1: valve on, pump off,
-     2: everything off*/
-    send_downlink(downlink_payload) {
+    /** Preparing downlink. */
+    prepare_downlink(valve) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Only allow downlink while ENABLE_DOWNLINK is set to true
-            if (process.env.ENABLE_DOWNLINK != "true") {
-                console.log(`ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.`);
-                return;
+            // Open the valve, given as parameter. 1 = relais 3, 2 = relais 4
+            let payload;
+            if (valve == 1) {
+                payload = 3;
             }
             else {
-                console.log(`Sending Downlink. Payload is: ${downlink_payload}`);
+                payload = 4;
             }
-            // Check if theres enought water in zistern otherwise open valve for watering.
-            let waterlevel = distance_sensor_1.Distance_sensor.getInstance.get_waterlevel;
-            if (waterlevel <= this.min_waterlevel) {
-                if (downlink_payload == 0) {
+            // Open or close the valve
+            this.downlink(payload);
+            // Set values to check if valve is open or closed
+            if (valve == 1) {
+                if (this.valve_1) {
+                    this.valve_1 = false;
+                }
+                else {
+                    this.valve_1 = true;
+                }
+            }
+            else {
+                if (this.valve_2) {
+                    this.valve_2 = false;
+                }
+                else {
+                    this.valve_2 = true;
+                }
+            }
+            console.log("valve_1: ", this.valve_1);
+            console.log("valve_2: ", this.valve_2);
+            // Call downlink to start watering if at least one valve is open
+            if (this.valve_1 || this.valve_2) {
+                let waterlevel = distance_sensor_1.Distance_sensor.getInstance.get_waterlevel;
+                if (waterlevel <= this.min_waterlevel) {
                     if (waterlevel == -1) {
                         console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
                     }
@@ -151,10 +173,28 @@ class Soil_sensor {
                         console.log(`Waterlevel below 10% (${waterlevel}).`);
                     }
                     console.log(`Using valve for watering!`);
-                    downlink_payload = 1;
+                    // Not enough water in zistern
+                    this.downlink(1);
+                    this.last_soil_downlink = 1;
                 }
+                else {
+                    // Enough water in zistern
+                    this.downlink(0);
+                    this.last_soil_downlink = 0;
+                }
+                // update controlling variables
+                this.waiting_for_timer = false;
+                console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
             }
-            // Fetch
+            // Call downlink to stop watering
+            if (!this.valve_1 && !this.valve_2) {
+                this.downlink(2);
+            }
+        });
+    }
+    /** Sending downlink with given payload */
+    downlink(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
             let app1 = "kaspersa-hfu-bachelor-thesis";
             let wh1 = "webapp";
             let dev1 = "eui-70b3d57ed005c853";
@@ -163,7 +203,7 @@ class Soil_sensor {
             let data = JSON.stringify({
                 "downlinks": [{
                         "decoded_payload": {
-                            "on_off": downlink_payload
+                            "on_off": payload
                         },
                         "f_port": 15,
                         "priority": "NORMAL"
@@ -183,14 +223,72 @@ class Soil_sensor {
             })
                 .then((resp) => {
                 console.log(`TTN Downlink Response: ${resp.statusText}`);
+            })
+                .catch(console.error);
+        });
+    }
+    /** Function for sending downlinks.
+     0: pump on, valve off
+     1: valve on, pump off,
+     2: everything off
+    private async send_downlink(downlink_payload: 0 | 1 | 2 | 3 | 4) {
+        // Only allow downlink while ENABLE_DOWNLINK is set to true
+        if (process.env.ENABLE_DOWNLINK != "true") {
+            console.log(`ENABLE_DOWNLINK is set to false. Change it in the enviroment variables to allow downlinks.`);
+            return;
+        } else { console.log(`Sending Downlink. Payload is: ${downlink_payload}`); }
+
+        // Check if theres enought water in zistern otherwise open valve for watering.
+        let waterlevel = Distance_sensor.getInstance.get_waterlevel;
+        if (waterlevel <= this.min_waterlevel) {
+            if (downlink_payload == 0) {
+                if (waterlevel == -1) {
+                    console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
+                } else {
+                    console.log(`Waterlevel below 10% (${waterlevel}).`);
+                }
+                console.log(`Using valve for watering!`);
+                downlink_payload = 1;
+            }
+        }
+
+        // Fetch
+        let app1 = "kaspersa-hfu-bachelor-thesis";
+        let wh1 = "webapp";
+        let dev1 = "eui-70b3d57ed005c853";
+        let url = `https://eu1.cloud.thethings.network/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`
+        // Prepare payload data
+        let data = JSON.stringify({
+            "downlinks": [{
+                "decoded_payload": {
+                    "on_off": downlink_payload
+                },
+                "f_port": 15,
+                "priority": "NORMAL"
+            }]
+        });
+        await fetch(url, {
+            method: "POST",
+            body: data,
+            headers: {
+                "Authorization": `${process.env.AUTH_TOKEN}`,
+                "Content-type": "application/json;",
+                "User-Agent": "webapp/1.0",
+                "Connection": "keep-alive",
+                "Content-Length": Buffer.byteLength(data).toString(),
+                "accept": "",
+
+            },
+        })
+            .then((resp: any) => {
+                console.log(`TTN Downlink Response: ${resp.statusText}`);
                 // update controlling variables
                 this.waiting_for_timer = false;
                 this.last_soil_downlink = downlink_payload;
                 console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
             })
-                .catch(console.error);
-        });
-    }
+            .catch(console.error);
+    }*/
     /** Returns the value of the last downlink. */
     get get_last_soil_downlink() {
         return this.last_soil_downlink;
@@ -225,13 +323,13 @@ class Soil_sensor {
     /** Sending dircet downlink for pump controll with either 0 or 2. */
     direct_downlink(relais_nr) {
         return __awaiter(this, void 0, void 0, function* () {
+            yield this.prepare_downlink(relais_nr);
+            /*
             if (this.last_soil_downlink == 2) {
-                yield this.send_downlink(relais_nr);
-                yield this.send_downlink(0);
-            }
-            else {
-                yield this.send_downlink(2);
-            }
+                await this.send_downlink(0);
+            } else {
+                await this.send_downlink(2);
+            }*/
         });
     }
     /** Check if rain amount is above 0.5mm. */

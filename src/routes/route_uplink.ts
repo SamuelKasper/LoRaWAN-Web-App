@@ -28,7 +28,7 @@ export class Route_uplink {
             if (extended_data.soil_humidity) {
                 // Get instance of class
                 let instance = get_sensor_instance(extended_data.dev_eui);
-                instance.prepare_downlink(extended_data);
+                instance.check_humidity(extended_data);
                 console.log(`ext id: ${extended_data.dev_eui},\ninstance:`, instance);
             }
 
@@ -95,7 +95,7 @@ export class Route_uplink {
         let default_max = 75;
         let default_max_distance = 200;
         let default_time = "08:00";
-        let default_relais: 3 | 4 = 3;
+        let default_relais: 1 | 2 = 1;
 
         let db_entrie = await db.get_entrie_by_id(data.dev_eui);
         // If data is already in db
