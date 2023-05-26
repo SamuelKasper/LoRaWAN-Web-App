@@ -3,6 +3,7 @@ import { Distance_sensor } from "../distance_sensor";
 import { Weather } from "../weather";
 import { Database } from "../db";
 import { get_sensor_instance } from "../server";
+import { ObjectId } from "mongodb";
 
 export class Route_uplink {
     private time_control = "true";

@@ -1,6 +1,8 @@
 # Must have
 - funktioniert die wettervorhersage bzgl. regen?
 - Downlink Logik anpassen
+- Wenn beide Ventile offen sind und ein downlink zum ausschalten eines Ventils kommt, gehen beide aus. 
+    -> Macht keinen Sinn beide Ventile abzufragen, weil pro instanz immer nur ein Ventil geöffnet werden kann. Demnach muss man durch alle instanzen durchgehen und schauen ob da noch eine offene ist.
 # Nice to have
 - Filter Handyansicht schöner
 - radio btn styling

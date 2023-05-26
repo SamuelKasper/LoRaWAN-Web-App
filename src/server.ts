@@ -46,4 +46,9 @@ export function get_sensor_instance(id: string): Soil_sensor {
     return sensors[id];
 }
 
+/** Returns all instances of Soil_sensor */
+export function get_all_instances(){
+    return Object.values(sensors);
+}
+
 app.listen(8000);

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Soil_sensor = void 0;
 const fetch = require("node-fetch");
 const distance_sensor_1 = require("./distance_sensor");
+const server_1 = require("./server");
 class Soil_sensor {
     constructor() {
         this.waiting_for_timer = false;
@@ -183,12 +184,23 @@ class Soil_sensor {
                 this.waiting_for_timer = false;
                 console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
             }
-            // Call downlink to stop watering. valve = 0 means no valve.
-            if (!this.valve_1 && !this.valve_2) {
+            if (!this.any_valve_open()) {
                 yield this.downlink(0, 2);
                 this.last_soil_downlink = 2;
             }
         });
+    }
+    /** Returns true if any valve is open. */
+    any_valve_open() {
+        // Check all instances for open valves. If every valve is closed stop watering.
+        let all_instances = (0, server_1.get_all_instances)();
+        return all_instances.some(instance => instance.valve_1 || instance.valve_2);
+        /* for (const instance of all_instances) {
+            if (instance.valve_1 || instance.valve_2) {
+                return true;
+            }
+        }
+        return false; */
     }
     /** Sending downlink with given payload */
     downlink(payload_valve, payload_watering) {

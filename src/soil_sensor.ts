@@ -1,5 +1,6 @@
 const fetch = require("node-fetch");
 import { Distance_sensor } from "./distance_sensor";
+import { get_all_instances } from "./server";
 
 export class Soil_sensor {
     private waiting_for_timer: boolean = false;
@@ -7,8 +8,8 @@ export class Soil_sensor {
     private last_watering_time: string = "08:00";
     private last_soil_downlink: number = 2;
     private min_waterlevel: number = 10;
-    private valve_1: boolean = false;
-    private valve_2: boolean = false;
+    public valve_1: boolean = false;
+    public valve_2: boolean = false;
 
     /** Checking if humidity is below or above the border values. */
     public async check_humidity(data: DB_entrie) {
@@ -159,12 +160,24 @@ export class Soil_sensor {
             this.waiting_for_timer = false;
             console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
         }
-
-        // Call downlink to stop watering. valve = 0 means no valve.
-        if (!this.valve_1 && !this.valve_2) {
+        if (!this.any_valve_open()) {
             await this.downlink(0, 2);
             this.last_soil_downlink = 2;
         }
+    }
+
+    /** Returns true if any valve is open. */
+    private any_valve_open() {
+        // Check all instances for open valves. If every valve is closed stop watering.
+        let all_instances = get_all_instances();
+        return all_instances.some(instance => instance.valve_1 || instance.valve_2);
+
+        /* for (const instance of all_instances) {
+            if (instance.valve_1 || instance.valve_2) {
+                return true;
+            }
+        }
+        return false; */
     }
 
     /** Sending downlink with given payload */

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.get_sensor_instance = void 0;
+exports.get_all_instances = exports.get_sensor_instance = void 0;
 const express_1 = __importDefault(require("express"));
 const route_default_1 = require("./routes/route_default");
 const route_direct_downlink_1 = require("./routes/route_direct_downlink");
@@ -54,4 +54,9 @@ function get_sensor_instance(id) {
     return sensors[id];
 }
 exports.get_sensor_instance = get_sensor_instance;
+/** Returns all instances of Soil_sensor */
+function get_all_instances() {
+    return Object.values(sensors);
+}
+exports.get_all_instances = get_all_instances;
 app.listen(8000);
