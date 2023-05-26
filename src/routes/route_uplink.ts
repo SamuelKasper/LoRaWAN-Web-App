@@ -34,6 +34,7 @@ export class Route_uplink {
                 if (!any_valve_open()) {
                     if (Route_uplink.watering_rn) {
                         instance.downlink(0, 2);
+                        Route_uplink.watering_rn = false;
                     } else {
                         console.log("Route_uplink: Watering already stopped.");
                     }

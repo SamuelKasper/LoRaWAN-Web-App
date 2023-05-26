@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Route_direct_downlink = void 0;
 const server_1 = require("../server");
+const route_uplink_1 = require("./route_uplink");
 class Route_direct_downlink {
     /** Calling direct downlink for specific instance of Soil_sensor. */
     prepare_downlink(req, res) {
@@ -20,6 +21,16 @@ class Route_direct_downlink {
             let id = sensor_data.dev_eui;
             let instance = (0, server_1.get_sensor_instance)(id);
             instance.prepare_downlink(sensor_data.relais_nr);
+            // Check if any valve if open. If not stop watering.
+            if (!(0, server_1.any_valve_open)()) {
+                if (route_uplink_1.Route_uplink.watering_rn) {
+                    instance.downlink(0, 2);
+                    route_uplink_1.Route_uplink.watering_rn = false;
+                }
+                else {
+                    console.log("Route_uplink: Watering already stopped.");
+                }
+            }
             // Reloade page 
             res.redirect('back');
         });
