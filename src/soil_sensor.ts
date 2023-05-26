@@ -28,12 +28,13 @@ export class Soil_sensor {
         const humidity = parseInt(data.soil_humidity.replace("%", ""));
         if (humidity <= data.hum_min) {
             this.start_watering(data);
-        } else if (humidity > data.hum_max){
+        } else if (humidity > data.hum_max) {
             // Stop watering if not already done
             if (this.last_soil_downlink != 2) {
+                console.log("Sending downlink to stop watering.")
                 await this.downlink(0, 2);
                 this.last_soil_downlink = 2;
-            }
+            } else { console.log("Watering already stopped.") }
         }
 
         // Set new value for the last watering time
