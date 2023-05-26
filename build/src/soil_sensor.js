@@ -12,15 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Soil_sensor = void 0;
 const fetch = require("node-fetch");
 const distance_sensor_1 = require("./distance_sensor");
+const route_uplink_1 = require("./routes/route_uplink");
 class Soil_sensor {
     constructor() {
         this.waiting_for_timer = false;
         this.last_watering_time = "08:00";
-        this.last_soil_downlink = 2;
         this.min_waterlevel = 10;
-        this.valve_1 = false;
+        this.valve_open = false;
     }
-    //public valve_2: boolean = false;
     /** Checking if humidity is below or above the border values. */
     check_humidity(data) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -41,10 +40,10 @@ class Soil_sensor {
             }
             else if (humidity > data.hum_max) {
                 // Stop watering if not already done
-                if (this.last_soil_downlink != 2) {
+                if (route_uplink_1.Route_uplink.watering_rn) {
                     console.log("Sending downlink to stop watering.");
                     yield this.downlink(0, 2);
-                    this.last_soil_downlink = 2;
+                    route_uplink_1.Route_uplink.watering_rn = false;
                 }
                 else {
                     console.log("Watering already stopped.");
@@ -90,7 +89,7 @@ class Soil_sensor {
         return __awaiter(this, void 0, void 0, function* () {
             console.log(`Time control is turned off.`);
             // If watering is inactive
-            if (this.last_soil_downlink == 2) {
+            if (!route_uplink_1.Route_uplink.watering_rn) {
                 // Delete former timeout if existing
                 if (this.timeout_id) {
                     clearTimeout(this.timeout_id);
@@ -141,23 +140,16 @@ class Soil_sensor {
             }
             // Set values to check if valve is open or closed
             if (valve == 1) {
-                if (this.valve_1) {
-                    this.valve_1 = false;
+                if (this.valve_open) {
+                    this.valve_open = false;
                 }
                 else {
-                    this.valve_1 = true;
+                    this.valve_open = true;
                 }
-            } /* else {
-                if (this.valve_2) {
-                    this.valve_2 = false;
-                } else {
-                    this.valve_2 = true;
-                }
-            }*/
-            console.log("valve_1: ", this.valve_1);
-            //console.log("valve_2: ", this.valve_2);
+            }
+            console.log("valve_open: ", this.valve_open);
             // Call downlink to start watering if at least one valve is open
-            if (this.valve_1 /*|| this.valve_2*/) {
+            if (this.valve_open) {
                 let payload_watering;
                 let waterlevel = distance_sensor_1.Distance_sensor.getInstance.get_waterlevel;
                 if (waterlevel <= this.min_waterlevel) {
@@ -177,9 +169,9 @@ class Soil_sensor {
                 }
                 yield this.downlink(payload_valve, payload_watering);
                 // update controlling variables
-                this.last_soil_downlink = payload_watering;
+                route_uplink_1.Route_uplink.watering_rn = true;
                 this.waiting_for_timer = false;
-                console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
+                console.log(`Waiting => false; watering_rn = ${route_uplink_1.Route_uplink.watering_rn}`);
             }
         });
     }
@@ -218,10 +210,6 @@ class Soil_sensor {
             })
                 .catch(console.error);
         });
-    }
-    /** Returns the value of the last downlink. */
-    get get_last_soil_downlink() {
-        return this.last_soil_downlink;
     }
     /** Calculate waiting time. */
     calculate_waiting_time(_watering_time) {

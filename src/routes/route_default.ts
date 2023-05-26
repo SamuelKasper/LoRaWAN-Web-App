@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { Database } from "../db";
 import { get_sensor_instance } from "../server";
+import { Route_uplink } from "./route_uplink";
 
 export class Route_default {
     
@@ -44,10 +45,8 @@ export class Route_default {
                 // Get instance of class
                 let id = entries[i].dev_eui;
                 let instance = get_sensor_instance(id);
-                if (instance.get_last_soil_downlink == 0) {
-                    entries[i].last_soil_downlink = "Bewässerung ist aktiv (Zisterne)";
-                } else if (instance.get_last_soil_downlink == 1) {
-                    entries[i].last_soil_downlink = "Bewässerung ist aktiv (Grundwasser)";
+                if (instance.valve_open && Route_uplink.watering_rn) {
+                    entries[i].last_soil_downlink = "Bewässerung läuft.";
                 } else {
                     entries[i].last_soil_downlink = "Bewässerung ist inaktiv";
                 }

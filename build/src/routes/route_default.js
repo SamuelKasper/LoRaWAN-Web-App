@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Route_default = void 0;
 const server_1 = require("../server");
+const route_uplink_1 = require("./route_uplink");
 class Route_default {
     /** Loading data from DB and displays it on default URL. */
     render_view(res, db) {
@@ -50,11 +51,8 @@ class Route_default {
                     // Get instance of class
                     let id = entries[i].dev_eui;
                     let instance = (0, server_1.get_sensor_instance)(id);
-                    if (instance.get_last_soil_downlink == 0) {
-                        entries[i].last_soil_downlink = "Bewässerung ist aktiv (Zisterne)";
-                    }
-                    else if (instance.get_last_soil_downlink == 1) {
-                        entries[i].last_soil_downlink = "Bewässerung ist aktiv (Grundwasser)";
+                    if (instance.valve_open && route_uplink_1.Route_uplink.watering_rn) {
+                        entries[i].last_soil_downlink = "Bewässerung läuft.";
                     }
                     else {
                         entries[i].last_soil_downlink = "Bewässerung ist inaktiv";

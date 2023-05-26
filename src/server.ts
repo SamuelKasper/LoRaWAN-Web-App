@@ -48,8 +48,8 @@ export function get_sensor_instance(id: string): Soil_sensor {
 
 /** Returns true if any valve is open. */
 export function any_valve_open() {
-    // Check all instances for open valves. If every valve is closed stop watering.
-    return Object.values(sensors).some(instance => instance.valve_1);
+    // Check all instances for open valves. If any is open, return
+    return Object.values(sensors).some(instance => instance.valve_open);
 }
 
 app.listen(8000);
