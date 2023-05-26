@@ -19,6 +19,7 @@ class Route_uplink {
         this.weather_control = "true";
         this.weather = new weather_1.Weather();
         this.distance_sensor = new distance_sensor_1.Distance_sensor();
+        this.watering_rn = false;
     }
     /** Processing uplink data. */
     process_uplink(req, res, db) {
@@ -39,9 +40,12 @@ class Route_uplink {
                     instance.check_humidity(extended_data);
                     // Check if any valve if open. If not stop watering.
                     if (!(0, server_1.any_valve_open)()) {
-                        // stop watering. Which instance is used is does not matter.
-                        instance.downlink(0, 2);
-                        //this.last_soil_downlink = 2;
+                        if (this.watering_rn) {
+                            instance.downlink(0, 2);
+                        }
+                        else {
+                            console.log("Watering already stopped");
+                        }
                     }
                 }
                 // If uplink data comes from distance sensor, check if switching the valve is necessary

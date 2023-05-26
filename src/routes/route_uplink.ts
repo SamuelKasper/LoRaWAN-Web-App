@@ -9,6 +9,7 @@ export class Route_uplink {
     private weather_control = "true";
     private weather = new Weather();
     private distance_sensor = new Distance_sensor();
+    private watering_rn: boolean = false;
 
     /** Processing uplink data. */
     public async process_uplink(req: Request, res: Response, db: Database) {
@@ -31,9 +32,11 @@ export class Route_uplink {
                 instance.check_humidity(extended_data);
                 // Check if any valve if open. If not stop watering.
                 if (!any_valve_open()) {
-                    // stop watering. Which instance is used is does not matter.
-                    instance.downlink(0, 2);
-                    //this.last_soil_downlink = 2;
+                    if (this.watering_rn) {
+                        instance.downlink(0, 2);
+                    } else {
+                        console.log("Watering already stopped");
+                    }
                 }
             }
 

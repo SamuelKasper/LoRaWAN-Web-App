@@ -6,6 +6,7 @@
 - bewässerungsstatus nach valve nicht nach last downlink
 - Umschalten reagiert erst beim zweiten mal
 - last soil downlink durch ventil ist an / aus ersetzen
+- globale var. für pumpe an aus.
 # Nice to have
 - Filter Handyansicht schöner
 - radio btn styling
