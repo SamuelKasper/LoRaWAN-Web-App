@@ -19,7 +19,7 @@ class Route_direct_downlink {
             let sensor_data = JSON.parse(JSON.stringify(req.body));
             let id = sensor_data.dev_eui;
             let instance = (0, server_1.get_sensor_instance)(id);
-            instance.direct_downlink(sensor_data.relais_nr);
+            instance.prepare_downlink(sensor_data.relais_nr);
             // Reloade page 
             res.redirect('back');
         });

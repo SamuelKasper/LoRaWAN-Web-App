@@ -1,8 +1,10 @@
 # Must have
-- alten code entfernen
 - kommentare überarbeiten
-- last_soil_downlink überflüssig?
-- arduino switched noch nicht
+- funktioniert die wettervorhersage bzgl. regen?
+- [fixed?] aktuell geht die pumpe an, bevor das ventil aufgeht. Umdrehen!
+- [fixed?] Beim manuellen ausschalten wird der bewässerungsstatus nicht geändert.
+- Klassendiagram anpassen
 # Nice to have
 - Filter Handyansicht schöner
 - radio btn styling
+- downlinks zusammenführen
