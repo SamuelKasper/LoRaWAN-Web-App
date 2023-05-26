@@ -32,7 +32,6 @@ export class Soil_sensor {
             if (data.relais_nr) {
                 this.prepare_downlink(data.relais_nr);
             }
-            //this.stop_watering();
         }
 
         // Set new value for the last watering time

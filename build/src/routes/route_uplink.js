@@ -36,8 +36,8 @@ class Route_uplink {
                 if (extended_data.soil_humidity) {
                     // Get instance of class
                     let instance = (0, server_1.get_sensor_instance)(extended_data.dev_eui);
+                    console.log("ext_data:", extended_data);
                     instance.check_humidity(extended_data);
-                    console.log(`ext id: ${extended_data.dev_eui},\ninstance:`, instance);
                 }
                 // If uplink data comes from distance sensor, check if switching the valve is necessary
                 if (extended_data.distance) {
@@ -109,7 +109,7 @@ class Route_uplink {
                     data.watering_time = db_entrie.watering_time;
                     data.time_control = db_entrie.time_control;
                     data.weather_control = db_entrie.weather_control;
-                    data.relais_nr = db_entrie.default_relais;
+                    data.relais_nr = db_entrie.relais_nr;
                 }
                 // Add editable fields for distance if data is from distance sensor
                 if (data.distance) {
