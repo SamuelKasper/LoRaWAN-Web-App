@@ -2,8 +2,7 @@ import { Request, Response } from "express";
 import { Distance_sensor } from "../distance_sensor";
 import { Weather } from "../weather";
 import { Database } from "../db";
-import { get_sensor_instance } from "../server";
-import { ObjectId } from "mongodb";
+import { any_valve_open, get_sensor_instance } from "../server";
 
 export class Route_uplink {
     private time_control = "true";
@@ -30,6 +29,12 @@ export class Route_uplink {
                 // Get instance of class
                 let instance = get_sensor_instance(extended_data.dev_eui);
                 instance.check_humidity(extended_data);
+                // Check if any valve if open. If not stop watering.
+                if (!any_valve_open()) {
+                    // stop watering. Which instance is used is does not matter.
+                    instance.downlink(0, 2);
+                    //this.last_soil_downlink = 2;
+                }
             }
 
             // If uplink data comes from distance sensor, check if switching the valve is necessary

@@ -37,6 +37,12 @@ class Route_uplink {
                     // Get instance of class
                     let instance = (0, server_1.get_sensor_instance)(extended_data.dev_eui);
                     instance.check_humidity(extended_data);
+                    // Check if any valve if open. If not stop watering.
+                    if (!(0, server_1.any_valve_open)()) {
+                        // stop watering. Which instance is used is does not matter.
+                        instance.downlink(0, 2);
+                        //this.last_soil_downlink = 2;
+                    }
                 }
                 // If uplink data comes from distance sensor, check if switching the valve is necessary
                 if (extended_data.distance) {

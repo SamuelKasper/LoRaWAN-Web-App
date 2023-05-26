@@ -28,11 +28,6 @@ app.get('/', async (req, res) => {
 
 app.post('/uplink', async (req, res) => {
     route_uplink.process_uplink(req, res, db);
-    // Check if any valve if open. If not stop watering.
-    if (!any_valve_open()) {
-        Object.values(sensors)[0].downlink(0, 2);
-        //this.last_soil_downlink = 2;
-    }
 });
 
 app.post('/update', async (req, res) => {
@@ -52,7 +47,7 @@ export function get_sensor_instance(id: string): Soil_sensor {
 }
 
 /** Returns true if any valve is open. */
-function any_valve_open() {
+export function any_valve_open() {
     // Check all instances for open valves. If every valve is closed stop watering.
     return Object.values(sensors).some(instance => instance.valve_1);
 }
