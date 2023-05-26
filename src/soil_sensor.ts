@@ -80,11 +80,9 @@ export class Soil_sensor {
             if (this.timeout_id) {
                 clearTimeout(this.timeout_id);
             }
-            if (data.relais_nr) {
+            if (data.relais_nr != undefined) {
                 await this.prepare_downlink(data.relais_nr);
-                //await this.send_downlink(data.relais_nr);
-                //await this.send_downlink(0);
-            }
+            } else { console.log("relais nr is: ", data.relais_nr); }
         } else {
             console.log(`Watering is already active.`);
         }
@@ -99,9 +97,7 @@ export class Soil_sensor {
             this.timeout_id = setTimeout(async () => {
                 if (data.relais_nr != undefined) {
                     await this.prepare_downlink(data.relais_nr);
-                    //await this.send_downlink(data.relais_nr);
-                    //await this.send_downlink(0);
-                }
+                } else { console.log("relais nr is: ", data.relais_nr); }
             }, waiting_time);
             // Set waiting indicator to true
             this.waiting_for_timer = true;
@@ -137,8 +133,8 @@ export class Soil_sensor {
             }
         }
 
-        console.log("valve_1: ",this.valve_1);
-        console.log("valve_2: ",this.valve_2);
+        console.log("valve_1: ", this.valve_1);
+        console.log("valve_2: ", this.valve_2);
 
         // Call downlink to start watering if at least one valve is open
         if (this.valve_1 || this.valve_2) {

@@ -4,6 +4,7 @@
 - [fixed?] aktuell geht die pumpe an, bevor das ventil aufgeht. Umdrehen!
 - [fixed?] Beim manuellen ausschalten wird der bewässerungsstatus nicht geändert.
 - Klassendiagram anpassen
+- Zeitsteuerung geht nicht
 # Nice to have
 - Filter Handyansicht schöner
 - radio btn styling

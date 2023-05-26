@@ -90,10 +90,11 @@ class Soil_sensor {
                 if (this.timeout_id) {
                     clearTimeout(this.timeout_id);
                 }
-                if (data.relais_nr) {
+                if (data.relais_nr != undefined) {
                     yield this.prepare_downlink(data.relais_nr);
-                    //await this.send_downlink(data.relais_nr);
-                    //await this.send_downlink(0);
+                }
+                else {
+                    console.log("relais nr is: ", data.relais_nr);
                 }
             }
             else {
@@ -111,8 +112,9 @@ class Soil_sensor {
                 this.timeout_id = setTimeout(() => __awaiter(this, void 0, void 0, function* () {
                     if (data.relais_nr != undefined) {
                         yield this.prepare_downlink(data.relais_nr);
-                        //await this.send_downlink(data.relais_nr);
-                        //await this.send_downlink(0);
+                    }
+                    else {
+                        console.log("relais nr is: ", data.relais_nr);
                     }
                 }), waiting_time);
                 // Set waiting indicator to true
