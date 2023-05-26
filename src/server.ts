@@ -13,12 +13,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.set("view engine", "ejs");
 
-// Create class for Routes 
+// Class objects and variables
 let route_default = new Route_default();
 let route_uplink = new Route_uplink();
 let route_update = new Route_update();
 let route_direct_downlink = new Route_direct_downlink();
 let db = new Database();
+let sensors: { [id: string]: Soil_sensor } = {};
 
 // Express Routes
 app.get('/', async (req, res) => {
@@ -37,7 +38,6 @@ app.post('/directDownlink', async (req, res) => {
     route_direct_downlink.prepare_downlink(req, res);
 });
 
-let sensors: { [id: string]: Soil_sensor } = {};
 /** Get instance of class by dev_eui of Sensor. */
 export function get_sensor_instance(id: string): Soil_sensor {
     if (!sensors[id]) {

@@ -36,7 +36,6 @@ class Route_uplink {
                 if (extended_data.soil_humidity) {
                     // Get instance of class
                     let instance = (0, server_1.get_sensor_instance)(extended_data.dev_eui);
-                    console.log("ext_data:", extended_data);
                     instance.check_humidity(extended_data);
                 }
                 // If uplink data comes from distance sensor, check if switching the valve is necessary

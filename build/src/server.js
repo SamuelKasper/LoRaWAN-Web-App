@@ -26,12 +26,13 @@ app.use(express_1.default.static("views"));
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 app.set("view engine", "ejs");
-// Create class for Routes 
+// Class objects and variables
 let route_default = new route_default_1.Route_default();
 let route_uplink = new route_uplink_1.Route_uplink();
 let route_update = new route_update_1.Route_update();
 let route_direct_downlink = new route_direct_downlink_1.Route_direct_downlink();
 let db = new db_1.Database();
+let sensors = {};
 // Express Routes
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     route_default.render_view(res, db);
@@ -45,7 +46,6 @@ app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 app.post('/directDownlink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     route_direct_downlink.prepare_downlink(req, res);
 }));
-let sensors = {};
 /** Get instance of class by dev_eui of Sensor. */
 function get_sensor_instance(id) {
     if (!sensors[id]) {
