@@ -35,7 +35,7 @@ export class Route_uplink {
                     if (Route_uplink.watering_rn) {
                         instance.downlink(0, 2);
                     } else {
-                        console.log("Watering already stopped");
+                        console.log("Route_uplink: Watering already stopped.");
                     }
                 }
             }

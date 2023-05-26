@@ -33,7 +33,7 @@ export class Soil_sensor {
                 console.log("Sending downlink to stop watering.")
                 await this.downlink(0, 2);
                 Route_uplink.watering_rn = false;
-            } else { console.log("Watering already stopped.") }
+            } else { console.log("Soil_sensor: Watering already stopped.") }
         }
 
         // Set new value for the last watering time
@@ -117,13 +117,12 @@ export class Soil_sensor {
         }
 
         // Set values to check if valve is open or closed
-        if (valve == 1) {
-            if (this.valve_open) {
-                this.valve_open = false;
-            } else {
-                this.valve_open = true;
-            }
+        if (this.valve_open) {
+            this.valve_open = false;
+        } else {
+            this.valve_open = true;
         }
+
 
         console.log("valve_open: ", this.valve_open);
 

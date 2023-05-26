@@ -46,7 +46,7 @@ class Soil_sensor {
                     route_uplink_1.Route_uplink.watering_rn = false;
                 }
                 else {
-                    console.log("Watering already stopped.");
+                    console.log("Soil_sensor: Watering already stopped.");
                 }
             }
             // Set new value for the last watering time
@@ -139,13 +139,11 @@ class Soil_sensor {
                 payload_valve = 4;
             }
             // Set values to check if valve is open or closed
-            if (valve == 1) {
-                if (this.valve_open) {
-                    this.valve_open = false;
-                }
-                else {
-                    this.valve_open = true;
-                }
+            if (this.valve_open) {
+                this.valve_open = false;
+            }
+            else {
+                this.valve_open = true;
             }
             console.log("valve_open: ", this.valve_open);
             // Call downlink to start watering if at least one valve is open
