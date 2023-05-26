@@ -2,7 +2,7 @@
 - kommentare überarbeiten
 - funktioniert die wettervorhersage bzgl. regen?
 - Klassendiagram anpassen
-- Wenn sensor im wasser: Bewässerung startet
+- Wenn sensor im wasser: -> Bewässerung startet. Sollte aber aus bleiben
 # Nice to have
 - Filter Handyansicht schöner
 - radio btn styling
