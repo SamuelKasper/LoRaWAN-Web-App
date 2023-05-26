@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Soil_sensor = void 0;
 const fetch = require("node-fetch");
 const distance_sensor_1 = require("./distance_sensor");
-const server_1 = require("./server");
 class Soil_sensor {
     constructor() {
         this.waiting_for_timer = false;
@@ -20,8 +19,8 @@ class Soil_sensor {
         this.last_soil_downlink = 2;
         this.min_waterlevel = 10;
         this.valve_1 = false;
-        this.valve_2 = false;
     }
+    //public valve_2: boolean = false;
     /** Checking if humidity is below or above the border values. */
     check_humidity(data) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -148,19 +147,17 @@ class Soil_sensor {
                 else {
                     this.valve_1 = true;
                 }
-            }
-            else {
+            } /* else {
                 if (this.valve_2) {
                     this.valve_2 = false;
-                }
-                else {
+                } else {
                     this.valve_2 = true;
                 }
-            }
+            }*/
             console.log("valve_1: ", this.valve_1);
-            console.log("valve_2: ", this.valve_2);
+            //console.log("valve_2: ", this.valve_2);
             // Call downlink to start watering if at least one valve is open
-            if (this.valve_1 || this.valve_2) {
+            if (this.valve_1 /*|| this.valve_2*/) {
                 let payload_watering;
                 let waterlevel = distance_sensor_1.Distance_sensor.getInstance.get_waterlevel;
                 if (waterlevel <= this.min_waterlevel) {
@@ -184,23 +181,7 @@ class Soil_sensor {
                 this.waiting_for_timer = false;
                 console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
             }
-            if (!this.any_valve_open()) {
-                yield this.downlink(0, 2);
-                this.last_soil_downlink = 2;
-            }
         });
-    }
-    /** Returns true if any valve is open. */
-    any_valve_open() {
-        // Check all instances for open valves. If every valve is closed stop watering.
-        let all_instances = (0, server_1.get_all_instances)();
-        return all_instances.some(instance => instance.valve_1 || instance.valve_2);
-        /* for (const instance of all_instances) {
-            if (instance.valve_1 || instance.valve_2) {
-                return true;
-            }
-        }
-        return false; */
     }
     /** Sending downlink with given payload */
     downlink(payload_valve, payload_watering) {

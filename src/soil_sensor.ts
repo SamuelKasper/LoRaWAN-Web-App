@@ -1,6 +1,5 @@
 const fetch = require("node-fetch");
 import { Distance_sensor } from "./distance_sensor";
-import { get_all_instances } from "./server";
 
 export class Soil_sensor {
     private waiting_for_timer: boolean = false;
@@ -9,7 +8,7 @@ export class Soil_sensor {
     private last_soil_downlink: number = 2;
     private min_waterlevel: number = 10;
     public valve_1: boolean = false;
-    public valve_2: boolean = false;
+    //public valve_2: boolean = false;
 
     /** Checking if humidity is below or above the border values. */
     public async check_humidity(data: DB_entrie) {
@@ -125,19 +124,19 @@ export class Soil_sensor {
             } else {
                 this.valve_1 = true;
             }
-        } else {
+        } /* else {
             if (this.valve_2) {
                 this.valve_2 = false;
             } else {
                 this.valve_2 = true;
-            }
-        }
+            } 
+        }*/
 
         console.log("valve_1: ", this.valve_1);
-        console.log("valve_2: ", this.valve_2);
+        //console.log("valve_2: ", this.valve_2);
 
         // Call downlink to start watering if at least one valve is open
-        if (this.valve_1 || this.valve_2) {
+        if (this.valve_1 /*|| this.valve_2*/) {
             let payload_watering: number;
             let waterlevel = Distance_sensor.getInstance.get_waterlevel;
             if (waterlevel <= this.min_waterlevel) {
@@ -160,28 +159,10 @@ export class Soil_sensor {
             this.waiting_for_timer = false;
             console.log(`Waiting => false; last_soil_downlink = ${this.get_last_soil_downlink}`);
         }
-        if (!this.any_valve_open()) {
-            await this.downlink(0, 2);
-            this.last_soil_downlink = 2;
-        }
-    }
-
-    /** Returns true if any valve is open. */
-    private any_valve_open() {
-        // Check all instances for open valves. If every valve is closed stop watering.
-        let all_instances = get_all_instances();
-        return all_instances.some(instance => instance.valve_1 || instance.valve_2);
-
-        /* for (const instance of all_instances) {
-            if (instance.valve_1 || instance.valve_2) {
-                return true;
-            }
-        }
-        return false; */
     }
 
     /** Sending downlink with given payload */
-    private async downlink(payload_valve: number, payload_watering: number) {
+    public async downlink(payload_valve: number, payload_watering: number) {
         let app1 = "kaspersa-hfu-bachelor-thesis";
         let wh1 = "webapp";
         let dev1 = "eui-70b3d57ed005c853";

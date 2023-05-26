@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.get_all_instances = exports.get_sensor_instance = void 0;
+exports.get_sensor_instance = void 0;
 const express_1 = __importDefault(require("express"));
 const route_default_1 = require("./routes/route_default");
 const route_direct_downlink_1 = require("./routes/route_direct_downlink");
@@ -39,6 +39,11 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 }));
 app.post('/uplink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     route_uplink.process_uplink(req, res, db);
+    // Check if any valve if open. If not stop watering.
+    if (!any_valve_open()) {
+        Object.values(sensors)[0].downlink(0, 2);
+        //this.last_soil_downlink = 2;
+    }
 }));
 app.post('/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     route_update.update_user_input(req, res, db);
@@ -54,9 +59,9 @@ function get_sensor_instance(id) {
     return sensors[id];
 }
 exports.get_sensor_instance = get_sensor_instance;
-/** Returns all instances of Soil_sensor */
-function get_all_instances() {
-    return Object.values(sensors);
+/** Returns true if any valve is open. */
+function any_valve_open() {
+    // Check all instances for open valves. If every valve is closed stop watering.
+    return Object.values(sensors).some(instance => instance.valve_1);
 }
-exports.get_all_instances = get_all_instances;
 app.listen(8000);
