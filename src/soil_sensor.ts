@@ -165,7 +165,7 @@ export class Soil_sensor {
     }
 
     /** Sending downlink with given payload */
-    private async downlink(payload_watering: number, payload_valve: number) {
+    private async downlink(payload_valve: number, payload_watering: number) {
         let app1 = "kaspersa-hfu-bachelor-thesis";
         let wh1 = "webapp";
         let dev1 = "eui-70b3d57ed005c853";

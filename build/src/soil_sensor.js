@@ -185,7 +185,7 @@ class Soil_sensor {
         });
     }
     /** Sending downlink with given payload */
-    downlink(payload_watering, payload_valve) {
+    downlink(payload_valve, payload_watering) {
         return __awaiter(this, void 0, void 0, function* () {
             let app1 = "kaspersa-hfu-bachelor-thesis";
             let wh1 = "webapp";
