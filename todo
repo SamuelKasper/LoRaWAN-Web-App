@@ -1,12 +1,8 @@
 # Must have
 - funktioniert die wettervorhersage bzgl. regen?
 - Downlink Logik anpassen
-- Wenn beide Ventile offen sind und ein downlink zum ausschalten eines Ventils kommt, gehen beide aus. 
-    -> Macht keinen Sinn beide Ventile abzufragen, weil pro instanz immer nur ein Ventil geöffnet werden kann. Demnach muss man durch alle instanzen durchgehen und schauen ob da noch eine offene ist.
-- bewässerungsstatus nach valve nicht nach last downlink
-- Umschalten reagiert erst beim zweiten mal
-- last soil downlink durch ventil ist an / aus ersetzen
-- globale var. für pumpe an aus.
+- Wenn beide Ventile offen sind, kann nicht mehr nur eines ausgeschaltet werden.
+    -> weil soil_sensor 130: valve_open??
 # Nice to have
 - Filter Handyansicht schöner
 - radio btn styling

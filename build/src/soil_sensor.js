@@ -146,31 +146,29 @@ class Soil_sensor {
                 this.valve_open = true;
             }
             console.log("valve_open: ", this.valve_open);
-            // Call downlink to start watering if at least one valve is open
-            if (this.valve_open) {
-                let payload_watering;
-                let waterlevel = distance_sensor_1.Distance_sensor.getInstance.get_waterlevel;
-                if (waterlevel <= this.min_waterlevel) {
-                    if (waterlevel == -1) {
-                        console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
-                    }
-                    else {
-                        console.log(`Waterlevel below 10% (${waterlevel}).`);
-                    }
-                    console.log(`Using valve for watering!`);
-                    // Not enough water in zistern
-                    payload_watering = 1;
+            // Call downlink to start watering
+            let payload_watering;
+            let waterlevel = distance_sensor_1.Distance_sensor.getInstance.get_waterlevel;
+            if (waterlevel <= this.min_waterlevel) {
+                if (waterlevel == -1) {
+                    console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
                 }
                 else {
-                    // Enough water in zistern
-                    payload_watering = 0;
+                    console.log(`Waterlevel below 10% (${waterlevel}).`);
                 }
-                yield this.downlink(payload_valve, payload_watering);
-                // update controlling variables
-                route_uplink_1.Route_uplink.watering_rn = true;
-                this.waiting_for_timer = false;
-                console.log(`Waiting => false; watering_rn = ${route_uplink_1.Route_uplink.watering_rn}`);
+                console.log(`Using valve for watering!`);
+                // Not enough water in zistern
+                payload_watering = 1;
             }
+            else {
+                // Enough water in zistern
+                payload_watering = 0;
+            }
+            yield this.downlink(payload_valve, payload_watering);
+            // update controlling variables
+            route_uplink_1.Route_uplink.watering_rn = true;
+            this.waiting_for_timer = false;
+            console.log(`Waiting => false; watering_rn = ${route_uplink_1.Route_uplink.watering_rn}`);
         });
     }
     /** Sending downlink with given payload */
