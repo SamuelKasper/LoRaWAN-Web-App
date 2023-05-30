@@ -40,7 +40,7 @@ class Soil_sensor {
             }
             else if (humidity > data.hum_max) {
                 // Stop watering if not already done
-                if (route_uplink_1.Route_uplink.watering_rn == true) {
+                if (this.valve_open == true) {
                     console.log("Sending downlink to close valve.");
                     if (data.relais_nr) {
                         yield this.prepare_downlink(data.relais_nr);
