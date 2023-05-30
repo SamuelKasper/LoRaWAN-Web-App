@@ -1,8 +1,6 @@
 # Must have
 - funktioniert die wettervorhersage bzgl. regen?
 - Downlink Logik anpassen
-- Wenn beide Ventile offen sind, kann nicht mehr nur eines ausgeschaltet werden.
-    -> weil soil_sensor 130: valve_open??
 # Nice to have
 - Filter Handyansicht schöner
 - radio btn styling

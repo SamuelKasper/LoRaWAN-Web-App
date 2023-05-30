@@ -217,6 +217,7 @@ table {
 
 input[type=radio] {
     margin-right: 5px;
+    width: 15px;
 }
 
 .btn-align-right {
