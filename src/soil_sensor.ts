@@ -108,15 +108,7 @@ export class Soil_sensor {
     }
 
     /** Preparing payload and sending downlinks for opening / closing valves and start / stop the watering. */
-    public async prepare_downlink(valve: 1 | 2) {
-        // Open the valve, given as parameter. 1 = relais 3, 2 = relais 4
-        let payload_valve;
-        if (valve == 1) {
-            payload_valve = 3;
-        } else {
-            payload_valve = 4;
-        }
-
+    public async prepare_downlink(payload_valve: 3 | 4) {
         // Set values to check if valve is open or closed
         if (this.valve_open) {
             this.valve_open = false;

@@ -11,7 +11,7 @@ export class Route_uplink {
     private weather = new Weather();
     private distance_sensor = new Distance_sensor();
     public static watering_rn: boolean = false;
-    public static amount_soil_sensors: 1 | 2 = 1;
+    public static amount_soil_sensors: 3 | 4 = 3;
 
     /** Processing uplink data. */
     public async process_uplink(req: Request, res: Response, db: Database) {

@@ -149,5 +149,5 @@ class Route_uplink {
     }
 }
 Route_uplink.watering_rn = false;
-Route_uplink.amount_soil_sensors = 1;
+Route_uplink.amount_soil_sensors = 3;
 exports.Route_uplink = Route_uplink;
