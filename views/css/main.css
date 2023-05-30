@@ -229,11 +229,11 @@ input[type=radio] {
     width: 100px !important;
 }
 
+.w60px{
+    width: 60px !important;
+}
 
 @media (max-width: 565px) {
-    .height-45px {
-        height: auto !important;
-    }
 
     .filter-container {
         flex-direction: column;
