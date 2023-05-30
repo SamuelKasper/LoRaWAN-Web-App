@@ -1,7 +1,7 @@
 # Must have
 - funktioniert die wettervorhersage bzgl. regen?
 - Downlink Logik anpassen
-- Wenn Grenzwert erreicht ist, wird nicht das Ventil geschlossen, sondern die Pumpe ausgemacht
+- Beim ausschalten muss zuerst das Ventil und dann die Pumpe aus gemacht. Sonst geht die Pumpe wieder an.
 # Nice to have
 - Filter Handyansicht schöner
 - radio btn styling

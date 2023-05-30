@@ -30,11 +30,11 @@ export class Route_uplink {
             if (extended_data.soil_humidity) {
                 // Get instance of class
                 let instance = get_sensor_instance(extended_data.dev_eui);
-                instance.check_humidity(extended_data);
+                await instance.check_humidity(extended_data);
                 // Check if any valve if open. If not stop watering.
                 if (!any_valve_open()) {
                     if (Route_uplink.watering_rn) {
-                        instance.downlink(0, 2);
+                        await instance.downlink(0, 2);
                         Route_uplink.watering_rn = false;
                     } else {
                         console.log("Route_uplink: Watering already stopped.");
