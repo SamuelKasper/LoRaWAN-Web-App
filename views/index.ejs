@@ -141,26 +141,6 @@
                                 </tr>
                             <%}%>
 
-                            <!--Lufttemperatur-->
-                            <%if(entrie.air_temperature){%>
-                                <tr>
-                                    <td><strong>Lufttemperatur:</strong></td>
-                                    <td>
-                                        <%=entrie.air_temperature +" °C" %>
-                                    </td>
-                                </tr>
-                            <%}%>
-
-                            <!--Luftfeuchtigkeit-->
-                            <%if(entrie.air_humidity){%>
-                                <tr>
-                                    <td><strong>Luftfeuchtigkeit:</strong></td>
-                                    <td>
-                                        <%=entrie.air_humidity +" %" %>
-                                    </td>
-                                </tr>
-                            <%}%>
-
                             <!--Bodentemperatur-->
                             <%if(entrie.soil_temperature){%>
                                 <tr>
@@ -191,6 +171,17 @@
                                 </tr>
                             <%}%>
 
+                            <!-- Ventil Nummer-->
+                            <%if(entrie.soil_humidity){%>
+                                <tr>
+                                    <td><strong data-toggle="tooltip" data-placement="top" title="Nummer des Relais / Ventils, welches für den Sensor geöffnet werden soll.">Ventil Nummer:</strong>
+                                    </td>
+                                    <td>
+                                        <%=entrie.relais_nr%>
+                                    </td>
+                                </tr>
+                            <%}%>
+
                             <!--Spacing-->
                             <tr>
                                 <td><hr></td>
@@ -216,7 +207,7 @@
 
                             <!--Zeitsteuerung-->
                             <%if(entrie.soil_humidity){%>
-                                <tr class="height-45px">
+                                <tr>
                                     <td><strong data-toggle="tooltip" data-placement="top" title="Checkbox aktivieren um die Zeitsteuerung zu verwenden. Andernfalls werden nur die angegebenen Grenzwerte verwendet.">Zeitsteuerung verwenden:</strong>
                                     </td>
                                     <td class="display_flex">
@@ -231,21 +222,6 @@
                                         <input id="watering_time_<%=index%>" name="watering_time" type="time" 
                                             class="input-group-text"
                                             value="<%=entrie.watering_time%>">
-                                    </td>
-                                </tr>
-                            <%}%>
-
-                            <!-- Ventil Nummer-->
-                            <%if(entrie.soil_humidity){%>
-                                <tr>
-                                    <td><strong data-toggle="tooltip" data-placement="top" title="Nummer des Relais / Ventils, welches für den Sensor geöffnet werden soll.">Ventil Nummer:</strong>
-                                    </td>
-                                    <td>
-                                        <div class="input-group w100px">
-                                            <span class="input-group-text">Nr.</span>
-                                            <input id="relais_<%=index%>" name="relais_nr" type="number" class="form-control w50px"
-                                                value="<%=entrie.relais_nr%>" disabled>
-                                        </div>
                                     </td>
                                 </tr>
                             <%}%>
