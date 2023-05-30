@@ -1,7 +1,8 @@
 # Must have
 - funktioniert die wettervorhersage bzgl. regen?
 - Downlink Logik anpassen
-- Beim ausschalten muss zuerst das Ventil und dann die Pumpe aus gemacht. Sonst geht die Pumpe wieder an.
+- Wenn beide Sensoren das selbe Ventil verwenden stimmt die false true anzeige nicht mehr da der zweite das erste wieder ausmacht. -> Sperre eibauen
+
 # Nice to have
 - Filter Handyansicht schöner
 - radio btn styling

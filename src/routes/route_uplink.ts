@@ -11,6 +11,7 @@ export class Route_uplink {
     private weather = new Weather();
     private distance_sensor = new Distance_sensor();
     public static watering_rn: boolean = false;
+    public static amount_soil_sensors: 1 | 2 = 1;
 
     /** Processing uplink data. */
     public async process_uplink(req: Request, res: Response, db: Database) {
@@ -105,7 +106,8 @@ export class Route_uplink {
         let default_max = 75;
         let default_max_distance = 200;
         let default_time = "08:00";
-        let default_relais: 1 | 2 = 1;
+        //let default_relais: 1 | 2 = 1;
+        
 
         let db_entrie = await db.get_entrie_by_id(data.dev_eui);
         // If data is already in db
@@ -136,7 +138,9 @@ export class Route_uplink {
                 data.watering_time = default_time;
                 data.time_control = this.time_control;
                 data.weather_control = this.weather_control;
-                data.relais_nr = default_relais;
+                data.relais_nr = Route_uplink.amount_soil_sensors;
+
+                Route_uplink.amount_soil_sensors++;
             }
             // Add editable fields for distance if data is from distance sensor
             if (data.distance) {

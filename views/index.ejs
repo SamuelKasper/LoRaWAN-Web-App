@@ -243,8 +243,8 @@
                                     <td>
                                         <div class="input-group w100px">
                                             <span class="input-group-text">Nr.</span>
-                                            <input id="relais_<%=index%>" name="relais_nr" min="1" max="2" type="number" class="form-control w50px"
-                                                value="<%=entrie.relais_nr%>">
+                                            <input id="relais_<%=index%>" name="relais_nr" type="number" class="form-control w50px"
+                                                value="<%=entrie.relais_nr%>" disabled>
                                         </div>
                                     </td>
                                 </tr>
@@ -325,7 +325,7 @@
                             <!--Submit Button-->
                             <tr>
                                 <td>
-                                    <button type="submit" class="btn btn-primary margin-top-20">Änderungen speichern</button>
+                                    <button id="submit_<%=index%>" type="submit" class="btn btn-primary margin-top-20">Änderungen speichern</button>
                                 </td>
                             </tr>
                         </table>
