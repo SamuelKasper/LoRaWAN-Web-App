@@ -15,6 +15,7 @@ const weather_1 = require("../weather");
 const server_1 = require("../server");
 class Route_uplink {
     constructor() {
+        // Has to be Strings, because time_control & weather_control are set as checkbox values.
         this.time_control = "true";
         this.weather_control = "true";
         this.weather = new weather_1.Weather();

@@ -1,6 +1,7 @@
 # Must have
 - funktioniert die wettervorhersage bzgl. regen?
 - Downlink Logik anpassen
+- Wenn Grenzwert erreicht ist, wird nicht das Ventil geschlossen, sondern die Pumpe ausgemacht
 # Nice to have
 - Filter Handyansicht schöner
 - radio btn styling

@@ -5,6 +5,7 @@ import { Database } from "../db";
 import { any_valve_open, get_sensor_instance } from "../server";
 
 export class Route_uplink {
+    // Has to be Strings, because time_control & weather_control are set as checkbox values.
     private time_control = "true";
     private weather_control = "true";
     private weather = new Weather();
