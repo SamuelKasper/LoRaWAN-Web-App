@@ -145,38 +145,42 @@ export class Soil_sensor {
 
     /** Sending downlink with given payload */
     public async downlink(payload_valve: number, payload_watering: number) {
-        let app1 = "kaspersa-hfu-bachelor-thesis";
-        let wh1 = "webapp";
-        let dev1 = "eui-70b3d57ed005c853";
-        let url = `https://eu1.cloud.thethings.network/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`
-        // Prepare payload data
-        let data = JSON.stringify({
-            "downlinks": [{
-                "decoded_payload": {
-                    "on_off": payload_watering,
-                    "valve": payload_valve
-                },
-                "f_port": 15,
-                "priority": "NORMAL"
-            }]
-        });
-        await fetch(url, {
-            method: "POST",
-            body: data,
-            headers: {
-                "Authorization": `${process.env.AUTH_TOKEN}`,
-                "Content-type": "application/json;",
-                "User-Agent": "webapp/1.0",
-                "Connection": "keep-alive",
-                "Content-Length": Buffer.byteLength(data).toString(),
-                "accept": "*/*",
+        if (process.env.ENABLE_DOWNLINK == "false") {
+            console.log("Downlink disabled by enviroment variable.");
+        } else {
+            let app1 = "kaspersa-hfu-bachelor-thesis";
+            let wh1 = "webapp";
+            let dev1 = "eui-70b3d57ed005c853";
+            let url = `https://eu1.cloud.thethings.network/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`
+            // Prepare payload data
+            let data = JSON.stringify({
+                "downlinks": [{
+                    "decoded_payload": {
+                        "on_off": payload_watering,
+                        "valve": payload_valve
+                    },
+                    "f_port": 15,
+                    "priority": "NORMAL"
+                }]
+            });
+            await fetch(url, {
+                method: "POST",
+                body: data,
+                headers: {
+                    "Authorization": `${process.env.AUTH_TOKEN}`,
+                    "Content-type": "application/json;",
+                    "User-Agent": "webapp/1.0",
+                    "Connection": "keep-alive",
+                    "Content-Length": Buffer.byteLength(data).toString(),
+                    "accept": "*/*",
 
-            },
-        })
-            .then((resp: any) => {
-                console.log(`TTN Downlink Response: ${resp.statusText}`);
+                },
             })
-            .catch(console.error);
+                .then((resp: any) => {
+                    console.log(`TTN Downlink Response: ${resp.statusText}`);
+                })
+                .catch(console.error);
+        }
     }
 
     /** Calculate waiting time. */

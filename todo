@@ -1,7 +1,6 @@
 # Must have
 - funktioniert die wettervorhersage bzgl. regen?
 - Downlink Logik anpassen
-- Wenn beide Sensoren das selbe Ventil verwenden stimmt die false true anzeige nicht mehr da der zweite das erste wieder ausmacht. -> Sperre eibauen
 
 # Nice to have
 - Filter Handyansicht schöner
