@@ -10,7 +10,7 @@ class Distance_sensor {
         Distance_sensor.instance = this;
     }
     /** Get instance for Distance_sensor class. */
-    static get getInstance() {
+    static get get_instance() {
         return this.instance;
     }
     /** Setting value for waterlevel_percent. */

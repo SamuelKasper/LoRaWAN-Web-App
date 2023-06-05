@@ -121,7 +121,7 @@ export class Soil_sensor {
 
         // Call downlink to start watering
         let payload_watering: number;
-        let waterlevel = Distance_sensor.getInstance.get_waterlevel;
+        let waterlevel = Distance_sensor.get_instance.get_waterlevel;
         if (waterlevel <= this.min_waterlevel) {
             if (waterlevel == -1) {
                 console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);

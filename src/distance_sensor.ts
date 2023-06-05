@@ -10,7 +10,7 @@ export class Distance_sensor {
     }
 
     /** Get instance for Distance_sensor class. */
-    public static get getInstance(){
+    public static get get_instance(){
         return this.instance;
     }
 
