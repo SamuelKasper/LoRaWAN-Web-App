@@ -6,7 +6,7 @@ export class Soil_sensor {
     private waiting_for_timer: boolean = false;
     private timeout_id?: NodeJS.Timeout;
     private last_watering_time: string = "08:00";
-    private min_waterlevel: number = 10;
+    public min_waterlevel: number = 10;
     public valve_open: boolean = false;
 
     /** Checking if humidity is below or above the border values. */

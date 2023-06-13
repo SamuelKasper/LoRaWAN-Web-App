@@ -33,10 +33,19 @@ class Route_uplink {
                 let base_data = yield this.build_data_object(sensor_data);
                 let extended_data = yield this.set_db_values(base_data, db);
                 yield db.update_by_uplink(extended_data.dev_eui, extended_data, base_data);
-                // If uplink data comes from soil sensor, check if watering is necessary
+                // If uplink data comes from soil sensor:
                 if (extended_data.soil_humidity) {
-                    // Get instance of class
+                    // Get instance of sensor
                     let instance = (0, server_1.get_sensor_instance)(extended_data.dev_eui);
+                    // Turn everything off if waterlevel is below 10% and watering is active
+                    if (Route_uplink.watering_rn) {
+                        if (this.distance_sensor.get_waterlevel <= instance.min_waterlevel && this.distance_sensor.get_waterlevel != -1) {
+                            yield instance.downlink(0, 2);
+                            Route_uplink.watering_rn = false;
+                            instance.valve_open = false;
+                        }
+                    }
+                    // Start watering process
                     yield instance.check_humidity(extended_data);
                     // Check if any valve if open. If not stop watering.
                     if (!(0, server_1.any_valve_open)()) {

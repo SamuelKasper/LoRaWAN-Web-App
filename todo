@@ -1,7 +1,10 @@
 # Must have
-- funktioniert die wettervorhersage bzgl. regen?
-- Downlink Logik anpassen
+- Wasserversorgung während laufzeit bei niedrigem wasserstand wechseln
 
 # Nice to have
-- Filter Handyansicht schöner
-- radio btn styling
+- Mehrere Distanz Sensoren möglich
+- console.logs einheitliche " und `
+
+# last changes
+- min_waterlevel ist jetzt public
+- Nach dem holen der instanz in route_uplink wird zuerst geprüft ob eine bewässerung läuft und das wasser noch ausreicht. Notfalls alles ausschalten und die Bewässerungslogik neu starken.
