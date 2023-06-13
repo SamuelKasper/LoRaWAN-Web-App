@@ -33,9 +33,9 @@ export class Route_uplink {
                 let instance = get_sensor_instance(extended_data.dev_eui);
 
                 // Turn everything off if waterlevel is below 10% and watering is active
-                if(Route_uplink.watering_rn){
+                if(instance.valve_open){
                     if(this.distance_sensor.get_waterlevel<=instance.min_waterlevel && this.distance_sensor.get_waterlevel != -1){
-                        await instance.downlink(0, 2);
+                        await instance.downlink(0, 2); // Geht nicht, weil das auch aus macht, wenn Grundwasser läuft.
                         Route_uplink.watering_rn = false;
                         instance.valve_open = false;
                     }
