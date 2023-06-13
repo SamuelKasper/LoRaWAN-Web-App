@@ -4,9 +4,9 @@ import { Database } from "../db";
 import { any_valve_open, get_sensor_instance } from "../server";
 
 export class Route_uplink {
-    // Has to be Strings, because time_control & weather_control are set as checkbox values.
-    private time_control = "true";
-    private weather_control = "true";
+    // time_control and weather_control have to be strings, because they are set as checkbox values.
+    private time_control: string = "true";
+    private weather_control: string = "true";
     private weather = new Weather();
     public static watering_rn: boolean = false;
     public static amount_soil_sensors: 3 | 4 = 3;

@@ -9,7 +9,7 @@ export class Route_direct_downlink {
         let sensor_data = JSON.parse(JSON.stringify(req.body));
         let id = sensor_data.dev_eui;
         let instance = get_sensor_instance(id);
-        await instance.prepare_downlink(sensor_data.relais_nr);
+        await instance.prepare_payload(sensor_data.relais_nr);
 
         // Check if any valve if open. If not stop watering.
         if (!any_valve_open()) {

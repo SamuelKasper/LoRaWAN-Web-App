@@ -30,7 +30,7 @@ export class Soil_sensor {
             if (this.valve_open == true) {
                 console.log("Sending downlink to close valve.")
                 if (data.relais_nr) {
-                    await this.prepare_downlink(data.relais_nr);
+                    await this.prepare_payload(data.relais_nr);
                 }
             } else { console.log("Soil_sensor: Valve already closed.") }
         }
@@ -81,7 +81,7 @@ export class Soil_sensor {
                 clearTimeout(this.timeout_id);
             }
             if (data.relais_nr != undefined) {
-                await this.prepare_downlink(data.relais_nr);
+                await this.prepare_payload(data.relais_nr);
             } else { console.log("relais nr is: ", data.relais_nr); }
         } else {
             console.log(`Watering is already active.`);
@@ -96,7 +96,7 @@ export class Soil_sensor {
             // Wait a specific time before running sendDownlink
             this.timeout_id = setTimeout(async () => {
                 if (data.relais_nr != undefined) {
-                    await this.prepare_downlink(data.relais_nr);
+                    await this.prepare_payload(data.relais_nr);
                 } else { console.log("relais nr is: ", data.relais_nr); }
             }, waiting_time);
             // Set waiting indicator to true
@@ -106,14 +106,13 @@ export class Soil_sensor {
     }
 
     /** Preparing payload and sending downlinks for opening / closing valves and start / stop the watering. */
-    public async prepare_downlink(payload_valve: 3 | 4) {
+    public async prepare_payload(payload_valve: 3 | 4) {
         // Set values to check if valve is open or closed
         if (this.valve_open) {
             this.valve_open = false;
         } else {
             this.valve_open = true;
         }
-
 
         console.log("valve_open: ", this.valve_open);
 
@@ -127,18 +126,17 @@ export class Soil_sensor {
                 console.log(`Waterlevel below 10% (${waterlevel}).`);
             }
             console.log("Using valve for watering!");
-            // Not enough water in zistern
             payload_watering = 1;
         } else {
-            // Enough water in zistern
             payload_watering = 0;
         }
 
         await this.downlink(payload_valve, payload_watering);
+
         // update controlling variables
         Route_uplink.watering_rn = true;
         this.waiting_for_timer = false;
-        console.log(`Waiting => false; watering_rn = ${Route_uplink.watering_rn}`);
+        console.log("Waiting => false; watering_rn = true");
     }
 
     /** Sending downlink with given payload */

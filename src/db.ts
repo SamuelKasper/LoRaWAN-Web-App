@@ -4,7 +4,7 @@ dotenv.config();
 
 export class Database {
     /** Returns a MongoClient Object. */
-    public async get_client(): Promise<MongoClient> {
+    private async get_client(): Promise<MongoClient> {
         return new MongoClient(`mongodb+srv://${process.env.DB_USER}:${process.env.PASSWORD}@mycluster.fnu9yyz.mongodb.net/?retryWrites=true&w=majority`);
     }
 
