@@ -26,7 +26,7 @@ export class Soil_sensor {
         // Check humidity
         const humidity = parseInt(data.soil_humidity.replace("%", ""));
         if (humidity <= data.hum_min) {
-            this.start_watering(data);
+            this.check_time_control(data);
         } else if (humidity > data.hum_max) {
             // Stop watering if not already done
             if (this.valve_open == true) {
@@ -42,20 +42,20 @@ export class Soil_sensor {
     }
 
     /** Checking if time control is enabled or disabled. */
-    private start_watering(data: DB_entrie) {
+    private check_time_control(data: DB_entrie) {
         if (data.time_control == undefined) {
             return;
         }
 
         if (data.time_control.toString() == "true") {
-            this.watering_by_time(data);
+            this.check_time_changed(data);
         } else {
             this.watering_by_boardervalue(data);
         }
     }
 
     /** Check if downlink is already scheduled for specific time. */
-    private watering_by_time(data: DB_entrie) {
+    private check_time_changed(data: DB_entrie) {
         // Check if watering time has changed
         if (this.last_watering_time == data.watering_time) {
             // Check if downlink is already scheduled
