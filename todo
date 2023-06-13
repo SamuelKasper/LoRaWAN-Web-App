@@ -1,10 +1,8 @@
 # Must have
-- Wasserversorgung während laufzeit bei niedrigem wasserstand wechseln
 
 # Nice to have
 - Mehrere Distanz Sensoren möglich
 - console.logs einheitliche " und `
 
 # last changes
-- min_waterlevel ist jetzt public
-- Nach dem holen der instanz in route_uplink wird zuerst geprüft ob eine bewässerung läuft und das wasser noch ausreicht. Notfalls alles ausschalten und die Bewässerungslogik neu starken.
+- update waterlevel logik. Removed distance_sensor class

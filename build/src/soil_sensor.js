@@ -11,13 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Soil_sensor = void 0;
 const fetch = require("node-fetch");
-const distance_sensor_1 = require("./distance_sensor");
 const route_uplink_1 = require("./routes/route_uplink");
 class Soil_sensor {
     constructor() {
         this.waiting_for_timer = false;
         this.last_watering_time = "08:00";
-        this.min_waterlevel = 10;
+        //public min_waterlevel: number = 10;
         this.valve_open = false;
     }
     /** Checking if humidity is below or above the border values. */
@@ -141,8 +140,8 @@ class Soil_sensor {
             console.log("valve_open: ", this.valve_open);
             // Call downlink to start watering
             let payload_watering;
-            let waterlevel = distance_sensor_1.Distance_sensor.get_instance.get_waterlevel;
-            if (waterlevel <= this.min_waterlevel) {
+            let waterlevel = route_uplink_1.Route_uplink.waterlevel_percent; //Distance_sensor.get_instance.get_waterlevel;
+            if (waterlevel <= route_uplink_1.Route_uplink.min_waterlevel) {
                 if (waterlevel == -1) {
                     console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
                 }

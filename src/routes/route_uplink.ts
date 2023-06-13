@@ -9,9 +9,11 @@ export class Route_uplink {
     private time_control = "true";
     private weather_control = "true";
     private weather = new Weather();
-    private distance_sensor = new Distance_sensor();
+    //private distance_sensor = new Distance_sensor();
     public static watering_rn: boolean = false;
     public static amount_soil_sensors: 3 | 4 = 3;
+    public static waterlevel_percent:number = -1;
+    public static min_waterlevel: number = 10;
 
     /** Processing uplink data. */
     public async process_uplink(req: Request, res: Response, db: Database) {
@@ -34,7 +36,7 @@ export class Route_uplink {
 
                 // Turn everything off if waterlevel is below 10% and watering is active
                 if(instance.valve_open){
-                    if(this.distance_sensor.get_waterlevel<=instance.min_waterlevel && this.distance_sensor.get_waterlevel != -1){
+                    if(Route_uplink.waterlevel_percent<=Route_uplink.min_waterlevel && Route_uplink.waterlevel_percent != -1){
                         await instance.downlink(0, 2); // Geht nicht, weil das auch aus macht, wenn Grundwasser läuft.
                         Route_uplink.watering_rn = false;
                         instance.valve_open = false;
@@ -55,9 +57,15 @@ export class Route_uplink {
                 }
             }
 
-            // If uplink data comes from distance sensor, check if switching the valve is necessary
+            // If uplink data comes from distance sensor, calculate waterlevel
             if (extended_data.distance) {
-                this.distance_sensor.set_waterlevel(extended_data);
+                if (extended_data.max_distance != undefined && extended_data.distance != undefined) {
+                    Route_uplink.waterlevel_percent = 100 - (extended_data.distance / extended_data.max_distance * 100);
+                    console.log("Set waterlevel to: ", Route_uplink.waterlevel_percent);
+                }else{
+                    console.log("max_distance or distance is undefined!");
+                }
+                //this.distance_sensor.set_waterlevel(extended_data);
             }
         }
     }

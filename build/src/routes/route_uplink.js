@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Route_uplink = void 0;
-const distance_sensor_1 = require("../distance_sensor");
 const weather_1 = require("../weather");
 const server_1 = require("../server");
 class Route_uplink {
@@ -19,7 +18,6 @@ class Route_uplink {
         this.time_control = "true";
         this.weather_control = "true";
         this.weather = new weather_1.Weather();
-        this.distance_sensor = new distance_sensor_1.Distance_sensor();
     }
     /** Processing uplink data. */
     process_uplink(req, res, db) {
@@ -39,7 +37,7 @@ class Route_uplink {
                     let instance = (0, server_1.get_sensor_instance)(extended_data.dev_eui);
                     // Turn everything off if waterlevel is below 10% and watering is active
                     if (instance.valve_open) {
-                        if (this.distance_sensor.get_waterlevel <= instance.min_waterlevel && this.distance_sensor.get_waterlevel != -1) {
+                        if (Route_uplink.waterlevel_percent <= Route_uplink.min_waterlevel && Route_uplink.waterlevel_percent != -1) {
                             yield instance.downlink(0, 2); // Geht nicht, weil das auch aus macht, wenn Grundwasser läuft.
                             Route_uplink.watering_rn = false;
                             instance.valve_open = false;
@@ -58,9 +56,16 @@ class Route_uplink {
                         }
                     }
                 }
-                // If uplink data comes from distance sensor, check if switching the valve is necessary
+                // If uplink data comes from distance sensor, calculate waterlevel
                 if (extended_data.distance) {
-                    this.distance_sensor.set_waterlevel(extended_data);
+                    if (extended_data.max_distance != undefined && extended_data.distance != undefined) {
+                        Route_uplink.waterlevel_percent = 100 - (extended_data.distance / extended_data.max_distance * 100);
+                        console.log("Set waterlevel to: ", Route_uplink.waterlevel_percent);
+                    }
+                    else {
+                        console.log("max_distance or distance is undefined!");
+                    }
+                    //this.distance_sensor.set_waterlevel(extended_data);
                 }
             }
         });
@@ -157,6 +162,9 @@ class Route_uplink {
         });
     }
 }
+//private distance_sensor = new Distance_sensor();
 Route_uplink.watering_rn = false;
 Route_uplink.amount_soil_sensors = 3;
+Route_uplink.waterlevel_percent = -1;
+Route_uplink.min_waterlevel = 10;
 exports.Route_uplink = Route_uplink;

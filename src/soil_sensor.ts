@@ -6,7 +6,7 @@ export class Soil_sensor {
     private waiting_for_timer: boolean = false;
     private timeout_id?: NodeJS.Timeout;
     private last_watering_time: string = "08:00";
-    public min_waterlevel: number = 10;
+    //public min_waterlevel: number = 10;
     public valve_open: boolean = false;
 
     /** Checking if humidity is below or above the border values. */
@@ -121,8 +121,8 @@ export class Soil_sensor {
 
         // Call downlink to start watering
         let payload_watering: number;
-        let waterlevel = Distance_sensor.get_instance.get_waterlevel;
-        if (waterlevel <= this.min_waterlevel) {
+        let waterlevel = Route_uplink.waterlevel_percent//Distance_sensor.get_instance.get_waterlevel;
+        if (waterlevel <= Route_uplink.min_waterlevel) {
             if (waterlevel == -1) {
                 console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
             } else {
