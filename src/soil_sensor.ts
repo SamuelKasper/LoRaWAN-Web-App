@@ -153,7 +153,7 @@ export class Soil_sensor {
             let data = JSON.stringify({
                 "downlinks": [{
                     "decoded_payload": {
-                        "on_off": payload_watering,
+                        "watersource": payload_watering,
                         "valve": payload_valve
                     },
                     "f_port": 15,
@@ -177,7 +177,7 @@ export class Soil_sensor {
                     console.log(`TTN Downlink Response: ${resp.statusText}`);
                 })
                 .catch(console.error);
-                
+
             // Set last watersource
             this.active_watersource = payload_watering;
         }

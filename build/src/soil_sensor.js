@@ -176,7 +176,7 @@ class Soil_sensor {
                 let data = JSON.stringify({
                     "downlinks": [{
                             "decoded_payload": {
-                                "on_off": payload_watering,
+                                "watersource": payload_watering,
                                 "valve": payload_valve
                             },
                             "f_port": 15,
