@@ -6,6 +6,7 @@ export class Soil_sensor {
     private timeout_id?: NodeJS.Timeout;
     private last_watering_time: string = "08:00";
     public valve_open: boolean = false;
+    public active_watersource: number = 2;
 
     /** Checking if humidity is below or above the border values. */
     public async check_humidity(data: DB_entrie) {
@@ -176,6 +177,9 @@ export class Soil_sensor {
                     console.log(`TTN Downlink Response: ${resp.statusText}`);
                 })
                 .catch(console.error);
+                
+            // Set last watersource
+            this.active_watersource = payload_watering;
         }
     }
 

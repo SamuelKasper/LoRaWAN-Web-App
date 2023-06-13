@@ -5,4 +5,4 @@
 - console.logs einheitliche " und `
 
 # last changes
-- update waterlevel logik. Removed distance_sensor class
+- add active_watersource var to check which watersource was used last

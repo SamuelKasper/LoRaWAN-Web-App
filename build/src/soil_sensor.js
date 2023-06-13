@@ -17,6 +17,7 @@ class Soil_sensor {
         this.waiting_for_timer = false;
         this.last_watering_time = "08:00";
         this.valve_open = false;
+        this.active_watersource = 2;
     }
     /** Checking if humidity is below or above the border values. */
     check_humidity(data) {
@@ -198,6 +199,8 @@ class Soil_sensor {
                     console.log(`TTN Downlink Response: ${resp.statusText}`);
                 })
                     .catch(console.error);
+                // Set last watersource
+                this.active_watersource = payload_watering;
             }
         });
     }
