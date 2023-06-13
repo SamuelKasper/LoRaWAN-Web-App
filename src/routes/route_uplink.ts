@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { Distance_sensor } from "../distance_sensor";
 import { Weather } from "../weather";
 import { Database } from "../db";
 import { any_valve_open, get_sensor_instance } from "../server";
@@ -9,7 +8,6 @@ export class Route_uplink {
     private time_control = "true";
     private weather_control = "true";
     private weather = new Weather();
-    //private distance_sensor = new Distance_sensor();
     public static watering_rn: boolean = false;
     public static amount_soil_sensors: 3 | 4 = 3;
     public static waterlevel_percent:number = -1;
@@ -65,7 +63,6 @@ export class Route_uplink {
                 }else{
                     console.log("max_distance or distance is undefined!");
                 }
-                //this.distance_sensor.set_waterlevel(extended_data);
             }
         }
     }

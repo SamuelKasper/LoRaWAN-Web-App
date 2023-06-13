@@ -16,7 +16,6 @@ class Soil_sensor {
     constructor() {
         this.waiting_for_timer = false;
         this.last_watering_time = "08:00";
-        //public min_waterlevel: number = 10;
         this.valve_open = false;
     }
     /** Checking if humidity is below or above the border values. */
@@ -140,15 +139,15 @@ class Soil_sensor {
             console.log("valve_open: ", this.valve_open);
             // Call downlink to start watering
             let payload_watering;
-            let waterlevel = route_uplink_1.Route_uplink.waterlevel_percent; //Distance_sensor.get_instance.get_waterlevel;
+            let waterlevel = route_uplink_1.Route_uplink.waterlevel_percent;
             if (waterlevel <= route_uplink_1.Route_uplink.min_waterlevel) {
                 if (waterlevel == -1) {
-                    console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
+                    console.log("Waterlevel not measured yet! Wait for distance sensor to send data.");
                 }
                 else {
                     console.log(`Waterlevel below 10% (${waterlevel}).`);
                 }
-                console.log(`Using valve for watering!`);
+                console.log("Using valve for watering!");
                 // Not enough water in zistern
                 payload_watering = 1;
             }

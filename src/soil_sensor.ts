@@ -1,12 +1,10 @@
 const fetch = require("node-fetch");
-import { Distance_sensor } from "./distance_sensor";
 import { Route_uplink } from "./routes/route_uplink";
 
 export class Soil_sensor {
     private waiting_for_timer: boolean = false;
     private timeout_id?: NodeJS.Timeout;
     private last_watering_time: string = "08:00";
-    //public min_waterlevel: number = 10;
     public valve_open: boolean = false;
 
     /** Checking if humidity is below or above the border values. */
@@ -121,14 +119,14 @@ export class Soil_sensor {
 
         // Call downlink to start watering
         let payload_watering: number;
-        let waterlevel = Route_uplink.waterlevel_percent//Distance_sensor.get_instance.get_waterlevel;
+        let waterlevel = Route_uplink.waterlevel_percent;
         if (waterlevel <= Route_uplink.min_waterlevel) {
             if (waterlevel == -1) {
-                console.log(`Waterlevel not measured yet! Wait for distance sensor to send data.`);
+                console.log("Waterlevel not measured yet! Wait for distance sensor to send data.");
             } else {
                 console.log(`Waterlevel below 10% (${waterlevel}).`);
             }
-            console.log(`Using valve for watering!`);
+            console.log("Using valve for watering!");
             // Not enough water in zistern
             payload_watering = 1;
         } else {

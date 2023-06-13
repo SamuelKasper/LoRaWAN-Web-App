@@ -65,7 +65,6 @@ class Route_uplink {
                     else {
                         console.log("max_distance or distance is undefined!");
                     }
-                    //this.distance_sensor.set_waterlevel(extended_data);
                 }
             }
         });
@@ -162,7 +161,6 @@ class Route_uplink {
         });
     }
 }
-//private distance_sensor = new Distance_sensor();
 Route_uplink.watering_rn = false;
 Route_uplink.amount_soil_sensors = 3;
 Route_uplink.waterlevel_percent = -1;
