@@ -14,7 +14,7 @@ const weather_1 = require("../weather");
 const server_1 = require("../server");
 class Route_uplink {
     constructor() {
-        // time_control and weather_control have to be strings, because they are set as checkbox values.
+        // Time_control and weather_control have to be strings, because they are set as checkbox values.
         this.time_control = "true";
         this.weather_control = "true";
         this.weather = new weather_1.Weather();
@@ -61,7 +61,7 @@ class Route_uplink {
                 if (extended_data.distance) {
                     if (extended_data.max_distance != undefined && extended_data.distance != undefined) {
                         Route_uplink.waterlevel_percent = 100 - (extended_data.distance / extended_data.max_distance * 100);
-                        console.log("Set waterlevel to: ", Route_uplink.waterlevel_percent);
+                        console.log(`Set waterlevel to: ${Route_uplink.waterlevel_percent}`);
                     }
                     else {
                         console.log("max_distance or distance is undefined!");

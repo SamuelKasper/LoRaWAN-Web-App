@@ -26,12 +26,12 @@ class Route_default {
                     let percent = 100 - (dist / max * 100);
                     let percent_str = percent.toFixed(1);
                     entries[i].distance = `${percent_str} % (${diff.toFixed(1)} cm)`;
-                    // Add message if zistern water level is below 10%
+                    // Add alert field to entries to decide if alert should be called in ejs.
                     if (percent < 10) {
                         entries[i].alert = "warning";
                     }
                 }
-                // Add text for RSSI
+                // Overwrite Signalstrength in RSSI with Text
                 switch (true) {
                     case entries[i].rssi > -100:
                         entries[i].rssi = "Sehr gut";
@@ -46,7 +46,7 @@ class Route_default {
                         entries[i].rssi = "Schlecht";
                         break;
                 }
-                // Add parameter to check watering status
+                // Add Status for watering
                 if (entries[i].soil_humidity) {
                     // Get instance of class
                     let id = entries[i].dev_eui;
@@ -59,7 +59,7 @@ class Route_default {
                     }
                 }
             }
-            // Render the page with given entries
+            // Render the page with given options
             res.render("index", { entries });
         });
     }

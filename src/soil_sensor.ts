@@ -56,18 +56,16 @@ export class Soil_sensor {
 
     /** Check if downlink is already scheduled for specific time. */
     private check_time_changed(data: DB_entrie) {
-        // Check if watering time has changed
         if (this.last_watering_time == data.watering_time) {
             // Check if downlink is already scheduled
-            if (!this.waiting_for_timer) {
-                this.schedule_downlink(data);
-            } else {
+            if (this.waiting_for_timer) {
                 console.log(`Downlink already scheduled for ${data.watering_time}`);
+            } else {
+                this.schedule_downlink(data);
             }
         } else {
-            // Delete former timeout
+            // Delete old timeout and set a new one
             clearTimeout(this.timeout_id);
-            // Schedule downlink
             this.schedule_downlink(data);
         }
     }
@@ -92,15 +90,16 @@ export class Soil_sensor {
 
     /** Scheduling a downlink for specific time. */
     private async schedule_downlink(data: DB_entrie) {
-        // Get waiting time
         if (data.watering_time) {
             const waiting_time = this.calculate_waiting_time(data.watering_time);
-            // Wait a specific time before running sendDownlink
+
+            // Wait a specific time before running prepare_payload
             this.timeout_id = setTimeout(async () => {
                 if (data.relais_nr != undefined) {
                     await this.prepare_payload(data.relais_nr);
-                } else { console.log("relais nr is: ", data.relais_nr); }
+                } else { console.log("Soil_Sensor: Relais_nr is undefined"); }
             }, waiting_time);
+
             // Set waiting indicator to true
             this.waiting_for_timer = true;
             console.log(`Downlink planned at: ${data.watering_time}. ${(waiting_time / 1000 / 60).toFixed(1)} min left.`)
@@ -109,13 +108,13 @@ export class Soil_sensor {
 
     /** Preparing payload and sending downlinks for opening / closing valves and start / stop the watering. */
     public async prepare_payload(payload_valve: number) {
-        // Check if downlink is enabled
+        // Check if downlink is enabled by enviroment variable.
         if (process.env.ENABLE_DOWNLINK == "false") {
             console.log("Downlink disabled by enviroment variable.");
             return;
         }
 
-        // Set values to check if valve is open or closed
+        // Switch values to open or close valve.
         if (this.valve_open) {
             this.valve_open = false;
         } else {
@@ -124,7 +123,7 @@ export class Soil_sensor {
 
         console.log("valve_open: ", this.valve_open);
 
-        // Call downlink to start watering
+        // Set payload_watering by waterlevel
         let payload_watering: number;
         let waterlevel = Route_uplink.waterlevel_percent;
         if (waterlevel <= Route_uplink.min_waterlevel) {
@@ -141,7 +140,7 @@ export class Soil_sensor {
 
         await this.downlink(payload_valve, payload_watering);
 
-        // update controlling variables
+        // Update controlling variables
         Route_uplink.watering_rn = true;
         this.waiting_for_timer = false;
         console.log("Waiting => false; watering_rn = true");
@@ -170,6 +169,7 @@ export class Soil_sensor {
                 "priority": "NORMAL"
             }]
         });
+        // Fetch URL with given options
         await fetch(url, {
             method: "POST",
             body: data,
@@ -180,7 +180,6 @@ export class Soil_sensor {
                 "Connection": "keep-alive",
                 "Content-Length": Buffer.byteLength(data).toString(),
                 "accept": "*/*",
-
             },
         })
             .then((resp: any) => {

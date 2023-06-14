@@ -13,10 +13,10 @@ exports.Route_direct_downlink = void 0;
 const server_1 = require("../server");
 const route_uplink_1 = require("./route_uplink");
 class Route_direct_downlink {
-    /** Calling direct downlink for specific instance of Soil_sensor. */
+    /** Calling direct downlink for specific instance of soil_sensor. */
     prepare_downlink(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Get instance of class
+            // Get instance of class and call prepare_payload with relais_nr
             let sensor_data = JSON.parse(JSON.stringify(req.body));
             let id = sensor_data.dev_eui;
             let instance = (0, server_1.get_sensor_instance)(id);

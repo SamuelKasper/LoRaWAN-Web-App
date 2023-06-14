@@ -15,7 +15,7 @@ class Route_update {
     update_user_input(req, res, db) {
         return __awaiter(this, void 0, void 0, function* () {
             let entrie = {};
-            // Update data of soil sensor
+            // Set values for data of soil sensor
             if (req.body.watering_time) {
                 entrie = {
                     description: req.body.description.toString(),
@@ -26,21 +26,21 @@ class Route_update {
                     hum_min: parseInt(req.body.hum_min),
                     hum_max: parseInt(req.body.hum_max),
                 };
-                // Update data of distance sensor
+                // Set values for data of distance sensor
             }
             else if (req.body.max_distance) {
                 entrie = {
                     description: req.body.description.toString(),
                     max_distance: parseInt(req.body.max_distance),
                 };
-                // Update data of other sensors without special fields
+                // Set values for data of other sensors without special fields
             }
             else {
                 entrie = {
                     description: req.body.description.toString(),
                 };
             }
-            // Update db
+            // Update db with given options
             yield db.update_user_input(req.body.dbid, entrie);
             // Reloade page
             res.redirect('back');

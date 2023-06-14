@@ -5,7 +5,7 @@ export class Route_update {
     /** Processing data from user input fields send by form submit. */
     public async update_user_input(req: Request, res: Response, db: Database) {
         let entrie = {};
-        // Update data of soil sensor
+        // Set values for data of soil sensor
         if (req.body.watering_time) {
             entrie = {
                 description: req.body.description.toString(),
@@ -16,20 +16,20 @@ export class Route_update {
                 hum_min: parseInt(req.body.hum_min),
                 hum_max: parseInt(req.body.hum_max),
             };
-            // Update data of distance sensor
+            // Set values for data of distance sensor
         } else if (req.body.max_distance) {
             entrie = {
                 description: req.body.description.toString(),
                 max_distance: parseInt(req.body.max_distance),
             };
-            // Update data of other sensors without special fields
+            // Set values for data of other sensors without special fields
         } else {
             entrie = {
                 description: req.body.description.toString(),
             };
         }
 
-        // Update db
+        // Update db with given options
         await db.update_user_input(req.body.dbid, entrie);
 
         // Reloade page

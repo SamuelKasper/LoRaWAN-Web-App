@@ -56,6 +56,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Add alert if waterlevel is below 10%-->
     <%entries.forEach(entrie=>{
     if(entrie.alert){%>
     <div class="alert alert-<%=entrie.alert%>">Wasserstand von <%=entrie.name%> niedrig!</div>
