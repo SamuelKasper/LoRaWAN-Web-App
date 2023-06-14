@@ -1,8 +1,9 @@
 # Must have
+- Payload ist manchmal ein String
 
 # Nice to have
 - Mehrere Distanz Sensoren möglich
 - console.logs einheitliche " und `
 
 # last changes
-- add active_watersource var to check which watersource was used last
+- siehe commit

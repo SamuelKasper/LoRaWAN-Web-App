@@ -11,7 +11,8 @@ export class Soil_sensor {
     /** Checking if humidity is below or above the border values. */
     public async check_humidity(data: DB_entrie) {
         // Check if required data is available
-        if (data.soil_humidity == undefined || data.watering_time == undefined || data.hum_min == undefined || data.hum_max == undefined) {
+        if (data.soil_humidity == undefined || data.watering_time == undefined ||
+            data.hum_min == undefined || data.hum_max == undefined) {
             return;
         }
 
@@ -108,6 +109,12 @@ export class Soil_sensor {
 
     /** Preparing payload and sending downlinks for opening / closing valves and start / stop the watering. */
     public async prepare_payload(payload_valve: 3 | 4) {
+        // Check if downlink is enabled
+        if (process.env.ENABLE_DOWNLINK == "false") {
+            console.log("Downlink disabled by enviroment variable.");
+            return;
+        }
+
         // Set values to check if valve is open or closed
         if (this.valve_open) {
             this.valve_open = false;
@@ -142,45 +149,47 @@ export class Soil_sensor {
 
     /** Sending downlink with given payload */
     public async downlink(payload_valve: number, payload_watering: number) {
+        // Check if downlink is enabled. Needed because downlink will in special cases be called directly
         if (process.env.ENABLE_DOWNLINK == "false") {
             console.log("Downlink disabled by enviroment variable.");
-        } else {
-            let app1 = "kaspersa-hfu-bachelor-thesis";
-            let wh1 = "webapp";
-            let dev1 = "eui-70b3d57ed005c853";
-            let url = `https://eu1.cloud.thethings.network/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`
-            // Prepare payload data
-            let data = JSON.stringify({
-                "downlinks": [{
-                    "decoded_payload": {
-                        "watersource": payload_watering,
-                        "valve": payload_valve
-                    },
-                    "f_port": 15,
-                    "priority": "NORMAL"
-                }]
-            });
-            await fetch(url, {
-                method: "POST",
-                body: data,
-                headers: {
-                    "Authorization": `${process.env.AUTH_TOKEN}`,
-                    "Content-type": "application/json;",
-                    "User-Agent": "webapp/1.0",
-                    "Connection": "keep-alive",
-                    "Content-Length": Buffer.byteLength(data).toString(),
-                    "accept": "*/*",
-
-                },
-            })
-                .then((resp: any) => {
-                    console.log(`TTN Downlink Response: ${resp.statusText}`);
-                })
-                .catch(console.error);
-
-            // Set last watersource
-            this.active_watersource = payload_watering;
+            return;
         }
+
+        let app1 = "kaspersa-hfu-bachelor-thesis";
+        let wh1 = "webapp";
+        let dev1 = "eui-70b3d57ed005c853";
+        let url = `https://eu1.cloud.thethings.network/api/v3/as/applications/${app1}/webhooks/${wh1}/devices/${dev1}/down/push`
+        // Prepare payload data
+        let data = JSON.stringify({
+            "downlinks": [{
+                "decoded_payload": {
+                    "watersource": payload_watering,
+                    "valve": payload_valve
+                },
+                "f_port": 15,
+                "priority": "NORMAL"
+            }]
+        });
+        await fetch(url, {
+            method: "POST",
+            body: data,
+            headers: {
+                "Authorization": `${process.env.AUTH_TOKEN}`,
+                "Content-type": "application/json;",
+                "User-Agent": "webapp/1.0",
+                "Connection": "keep-alive",
+                "Content-Length": Buffer.byteLength(data).toString(),
+                "accept": "*/*",
+
+            },
+        })
+            .then((resp: any) => {
+                console.log(`TTN Downlink Response: ${resp.statusText}`);
+            })
+            .catch(console.error);
+
+        // Set last watersource
+        this.active_watersource = payload_watering;
     }
 
     /** Calculate waiting time. */
