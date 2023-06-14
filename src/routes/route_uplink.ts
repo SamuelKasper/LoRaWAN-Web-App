@@ -8,8 +8,8 @@ export class Route_uplink {
     private time_control: string = "true";
     private weather_control: string = "true";
     private weather = new Weather();
+    private relais_nr_counter: number = 3;
     public static watering_rn: boolean = false;
-    public static amount_soil_sensors: 3 | 4 = 3;
     public static waterlevel_percent:number = -1;
     public static min_waterlevel: number = 10;
 
@@ -32,7 +32,7 @@ export class Route_uplink {
                 // Get instance of sensor
                 let instance = get_sensor_instance(extended_data.dev_eui);
 
-                // Turn everything off if waterlevel is below 10% and pump is active
+                // Turn everything off if waterlevel is below 10% and pump is active. -1 is the waterlavel default val.
                 if(instance.active_watersource == 0){
                     if(Route_uplink.waterlevel_percent<=Route_uplink.min_waterlevel && Route_uplink.waterlevel_percent != -1){
                         await instance.downlink(0, 2); // Geht nicht, weil das auch aus macht, wenn Grundwasser läuft.
@@ -153,9 +153,9 @@ export class Route_uplink {
                 data.watering_time = default_time;
                 data.time_control = this.time_control;
                 data.weather_control = this.weather_control;
-                data.relais_nr = Route_uplink.amount_soil_sensors;
-
-                Route_uplink.amount_soil_sensors++;
+                data.relais_nr = this.relais_nr_counter;
+                // count up
+                this.relais_nr_counter++;
             }
             // Add editable fields for distance if data is from distance sensor
             if (data.distance) {

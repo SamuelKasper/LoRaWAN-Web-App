@@ -18,5 +18,5 @@ interface DB_entrie {
     watering_time?: string,
     time_control?: string,
     weather_control?: string,
-    relais_nr?: 3 | 4,
+    relais_nr?: number,
 }

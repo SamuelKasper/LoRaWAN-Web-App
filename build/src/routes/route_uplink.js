@@ -18,6 +18,7 @@ class Route_uplink {
         this.time_control = "true";
         this.weather_control = "true";
         this.weather = new weather_1.Weather();
+        this.relais_nr_counter = 3;
     }
     /** Processing uplink data. */
     process_uplink(req, res, db) {
@@ -35,7 +36,7 @@ class Route_uplink {
                 if (extended_data.soil_humidity) {
                     // Get instance of sensor
                     let instance = (0, server_1.get_sensor_instance)(extended_data.dev_eui);
-                    // Turn everything off if waterlevel is below 10% and pump is active
+                    // Turn everything off if waterlevel is below 10% and pump is active. -1 is the waterlavel default val.
                     if (instance.active_watersource == 0) {
                         if (Route_uplink.waterlevel_percent <= Route_uplink.min_waterlevel && Route_uplink.waterlevel_percent != -1) {
                             yield instance.downlink(0, 2); // Geht nicht, weil das auch aus macht, wenn Grundwasser läuft.
@@ -149,8 +150,9 @@ class Route_uplink {
                     data.watering_time = default_time;
                     data.time_control = this.time_control;
                     data.weather_control = this.weather_control;
-                    data.relais_nr = Route_uplink.amount_soil_sensors;
-                    Route_uplink.amount_soil_sensors++;
+                    data.relais_nr = this.relais_nr_counter;
+                    // count up
+                    this.relais_nr_counter++;
                 }
                 // Add editable fields for distance if data is from distance sensor
                 if (data.distance) {
@@ -162,7 +164,6 @@ class Route_uplink {
     }
 }
 Route_uplink.watering_rn = false;
-Route_uplink.amount_soil_sensors = 3;
 Route_uplink.waterlevel_percent = -1;
 Route_uplink.min_waterlevel = 10;
 exports.Route_uplink = Route_uplink;
