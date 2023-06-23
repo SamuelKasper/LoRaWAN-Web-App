@@ -33,9 +33,9 @@ export class Route_uplink {
                 let instance = get_sensor_instance(extended_data.dev_eui);
 
                 // Turn everything off if waterlevel is below 10% and pump is active. -1 is the waterlavel default val.
-                if(instance.active_watersource == 0){
+                if(instance.active_watersource == 1){
                     if(Route_uplink.waterlevel_percent<=Route_uplink.min_waterlevel && Route_uplink.waterlevel_percent != -1){
-                        await instance.downlink(0, 2); // Geht nicht, weil das auch aus macht, wenn Grundwasser läuft.
+                        await instance.downlink(0, 0); 
                         Route_uplink.watering_rn = false;
                         instance.valve_open = false;
                     }
@@ -47,7 +47,7 @@ export class Route_uplink {
                 // Check if any valve if open. If not stop watering.
                 if (!any_valve_open()) {
                     if (Route_uplink.watering_rn) {
-                        await instance.downlink(0, 2);
+                        await instance.downlink(0, 0);
                         Route_uplink.watering_rn = false;
                     } else {
                         console.log("Route_uplink: Watering already stopped.");

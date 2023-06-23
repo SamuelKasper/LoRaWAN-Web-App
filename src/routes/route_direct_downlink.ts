@@ -14,7 +14,7 @@ export class Route_direct_downlink {
         // Check if any valve if open. If not stop watering.
         if (!any_valve_open()) {
             if (Route_uplink.watering_rn == true) {
-                instance.downlink(0, 2);
+                instance.downlink(0, 0);
                 Route_uplink.watering_rn = false;
             } else {
                 console.log("Route_uplink: Watering already stopped.");

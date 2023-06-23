@@ -6,7 +6,7 @@ export class Soil_sensor {
     private timeout_id?: NodeJS.Timeout;
     private last_watering_time: string = "08:00";
     public valve_open: boolean = false;
-    public active_watersource: number = 2;
+    public active_watersource: number = 0;
 
     /** Checking if humidity is below or above the border values. */
     public async check_humidity(data: DB_entrie) {
@@ -132,10 +132,11 @@ export class Soil_sensor {
             } else {
                 console.log(`Waterlevel below 10% (${waterlevel}).`);
             }
-            console.log("Using valve for watering!");
-            payload_watering = 1;
+            console.log("Using groundwater / valve for watering!");
+            payload_watering = 2;
         } else {
-            payload_watering = 0;
+            console.log("Using pump for watering!");
+            payload_watering = 1;
         }
 
         await this.downlink(payload_valve, payload_watering);

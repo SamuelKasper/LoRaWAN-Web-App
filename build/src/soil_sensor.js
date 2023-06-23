@@ -17,7 +17,7 @@ class Soil_sensor {
         this.waiting_for_timer = false;
         this.last_watering_time = "08:00";
         this.valve_open = false;
-        this.active_watersource = 2;
+        this.active_watersource = 0;
     }
     /** Checking if humidity is below or above the border values. */
     check_humidity(data) {
@@ -151,11 +151,12 @@ class Soil_sensor {
                 else {
                     console.log(`Waterlevel below 10% (${waterlevel}).`);
                 }
-                console.log("Using valve for watering!");
-                payload_watering = 1;
+                console.log("Using groundwater / valve for watering!");
+                payload_watering = 2;
             }
             else {
-                payload_watering = 0;
+                console.log("Using pump for watering!");
+                payload_watering = 1;
             }
             yield this.downlink(payload_valve, payload_watering);
             // Update controlling variables
