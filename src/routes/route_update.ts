@@ -2,9 +2,10 @@ import { Request, Response } from "express";
 import { Database } from "../db";
 
 export class Route_update {
-    /** Processing data from user input fields send by form submit. */
+    /** Processing data from user input which was send by submit form. */
     public async update_user_input(req: Request, res: Response, db: Database) {
         let entrie = {};
+        console.log(req.body);
         // Set values for data of soil sensor
         if (req.body.watering_time) {
             entrie = {

@@ -11,10 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Route_update = void 0;
 class Route_update {
-    /** Processing data from user input fields send by form submit. */
+    /** Processing data from user input which was send by submit form. */
     update_user_input(req, res, db) {
         return __awaiter(this, void 0, void 0, function* () {
             let entrie = {};
+            console.log(req.body);
             // Set values for data of soil sensor
             if (req.body.watering_time) {
                 entrie = {

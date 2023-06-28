@@ -11,7 +11,7 @@ export class Route_direct_downlink {
         let instance = get_sensor_instance(id);
         await instance.prepare_payload(parseInt(sensor_data.relais_nr));
 
-        // Check if any valve if open. If not stop watering.
+        // Check if any valve is open. If not stop watering.
         if (!any_valve_open()) {
             if (Route_uplink.watering_rn == true) {
                 instance.downlink(0, 0);

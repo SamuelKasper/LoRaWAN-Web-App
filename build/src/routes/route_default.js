@@ -26,7 +26,7 @@ class Route_default {
                     let percent = 100 - (dist / max * 100);
                     let percent_str = percent.toFixed(1);
                     entries[i].distance = `${percent_str} % (${diff.toFixed(1)} cm)`;
-                    // Add alert field to entries to decide if alert should be called in ejs.
+                    // Add propertie alert to entries to decide if alert should be called in ejs.
                     if (percent < 10) {
                         entries[i].alert = "warning";
                     }
@@ -52,7 +52,7 @@ class Route_default {
                     let id = entries[i].dev_eui;
                     let instance = (0, server_1.get_sensor_instance)(id);
                     if (instance.valve_open && route_uplink_1.Route_uplink.watering_rn) {
-                        entries[i].last_soil_downlink = "Bewässerung läuft.";
+                        entries[i].last_soil_downlink = "Bewässerung ist aktiv";
                     }
                     else {
                         entries[i].last_soil_downlink = "Bewässerung ist inaktiv";
