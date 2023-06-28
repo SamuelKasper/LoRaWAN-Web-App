@@ -1,5 +1,5 @@
 # This project was implemented as a part of my bachelor thesis.
->Goal was the implementation of an intelligent wateringsystem based on LoRaWAN.
+>The goal was to implement a prototype of an intelligent irrigation system based on LoRaWAN.
 
 ## Implementation
 ### Frontend
@@ -8,12 +8,16 @@
 ### Backend
 >The Backend was implemented with Node.js, Express.js and TypeScript.
 
-### DB and WebHost
->As database MongoDB was used and the WebHost is Render.com.
->The Webapp also uses The Things Network.
+### DB and Web Host
+>As database, MongoDB was used and the Web Host is Render.com.
+>The webapp also uses The Things Network.
 
 ### Hardware
->The Webapp reads the names of the userdata and therfore only works with specific sensors. Following hardware should be used:
+>The webapp reads the names of the user data and therefore only works with specific sensors. Following hardware should be used:
 >- Distance sensor: Milesight EM310-UDL (868MHz)
 >- Soil moisture sensor: Dragino LSE01 (868MHz)
 >- As hardware controlling unit, the Seeeduino LoRaWAN was used.
+
+## Result
+>The webapp can be seen here: https://lorawan-web-app.onrender.com/ <br>
+>Due TTN restrictions, the ability to send downlinks is deactivated for anyone except of myself.
