@@ -106,6 +106,13 @@ body {
     display: block;
 }
 
+.relais_nr_style{
+    background-color: var(--accordion-inner);
+    color: var(--font);
+    border: none;
+    outline: none;
+}
+
 /*Sizes, boarders, alignments ---------------------------------------------------------*/
 table {
     width: 100%;
