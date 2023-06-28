@@ -30,12 +30,12 @@ export class Weather {
     }
 
     /** Returning the city. */
-    public get get_city() {
+    public get get_city(): string {
         return this.city;
     }
 
     /** Returning the weather */
-    public get get_weather() {
+    public get get_weather(): string {
         return this.weather_forecast;
     }
 }
