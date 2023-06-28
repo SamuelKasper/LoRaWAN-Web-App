@@ -15,7 +15,6 @@ class Route_update {
     update_user_input(req, res, db) {
         return __awaiter(this, void 0, void 0, function* () {
             let entrie = {};
-            console.log(req.body);
             // Set values for data of soil sensor
             if (req.body.watering_time) {
                 entrie = {

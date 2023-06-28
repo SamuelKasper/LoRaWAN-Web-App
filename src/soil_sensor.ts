@@ -106,7 +106,7 @@ export class Soil_sensor {
         }
     }
 
-    /** Preparing payload and sending downlinks for opening / closing valves and start / stop the watering. */
+    /** Preparing payload and calling downlink() */
     public async prepare_payload(payload_valve: number) {
         // Check if downlink is enabled by enviroment variable.
         if (process.env.ENABLE_DOWNLINK == "false") {

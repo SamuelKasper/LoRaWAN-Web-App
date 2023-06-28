@@ -125,7 +125,7 @@ class Soil_sensor {
             }
         });
     }
-    /** Preparing payload and sending downlinks for opening / closing valves and start / stop the watering. */
+    /** Preparing payload and calling downlink() */
     prepare_payload(payload_valve) {
         return __awaiter(this, void 0, void 0, function* () {
             // Check if downlink is enabled by enviroment variable.

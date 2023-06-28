@@ -162,7 +162,6 @@ export class Route_uplink {
                 data.max_distance = default_max_distance;
             }
         }
-
         return data;
     }
 }
