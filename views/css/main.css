@@ -295,4 +295,7 @@ input[type=radio] {
         padding-right: 0px;
     }
 
+    .relais_nr_style {
+        text-align: center;
+    }
 }
